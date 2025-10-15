@@ -30,6 +30,12 @@ body {
 
 
 
+.logo-section {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
 .logo {
     text-align: center;
 }
@@ -46,6 +52,28 @@ body {
     color: #888;
     display: block;
     margin-top: -5px;
+}
+
+/* Bull Image Positioning */
+.bull-pair {
+    display: flex;
+    align-items: center;
+    margin-left: 144px; /* 2 inches at 72 DPI */
+}
+
+.bull-image {
+    height: 60px;
+    width: auto;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.bull-right {
+    margin-right: 108px; /* 1.5 inches for half the 3-inch separation */
+}
+
+.bull-left {
+    transform: scaleX(-1); /* Flip horizontally to face left */
+    margin-left: 108px; /* 1.5 inches for half the 3-inch separation */
 }
 
 .performance-display {
@@ -378,6 +406,23 @@ body {
     
     .performance-value {
         font-size: 2rem;
+    }
+    
+    /* Bull positioning adjustments for mobile */
+    .bull-pair {
+        margin-left: 20px; /* Reduce spacing on mobile */
+    }
+    
+    .bull-right {
+        margin-right: 15px; /* Reduce separation on mobile */
+    }
+    
+    .bull-left {
+        margin-left: 15px;
+    }
+    
+    .bull-image {
+        height: 40px; /* Smaller bulls on mobile */
     }
     
     .legend {
