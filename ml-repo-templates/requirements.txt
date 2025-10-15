@@ -1,0 +1,16 @@
+# ML Repository Requirements
+# Copy this to your ML repository as requirements.txt
+
+# Core dependencies for ML pipeline
+requests>=2.31.0
+pandas>=2.0.0  
+numpy>=1.24.0
+yfinance>=0.2.0
+python-dateutil>=2.8.0
+
+# Optional: Add your specific ML dependencies below
+# scikit-learn>=1.3.0
+# tensorflow>=2.13.0
+# torch>=2.0.0
+# xgboost>=1.7.0
+# lightgbm>=4.0.0

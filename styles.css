@@ -1,0 +1,329 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #000;
+    color: #fff;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Header Styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    border-bottom: 1px solid #333;
+    background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+}
+
+.logo h1 {
+    font-size: 2.5rem;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.logo .subtitle {
+    font-size: 0.9rem;
+    color: #888;
+    display: block;
+    margin-top: -5px;
+}
+
+.performance-display {
+    text-align: right;
+}
+
+.performance-label {
+    font-size: 0.9rem;
+    color: #ccc;
+    margin-bottom: 5px;
+}
+
+.performance-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #00ff88;
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+    animation: pulse 2s infinite;
+}
+
+.performance-change {
+    font-size: 1.1rem;
+    color: #00ff88;
+    margin-top: 5px;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Main Content */
+.main-content {
+    padding: 30px 40px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    min-height: calc(100vh - 120px);
+}
+
+/* Chart Section */
+.chart-section {
+    background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.chart-header h2 {
+    color: #ffd700;
+    font-size: 1.8rem;
+}
+
+.legend {
+    display: flex;
+    gap: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.legend-color {
+    width: 20px;
+    height: 3px;
+    border-radius: 2px;
+}
+
+.legend-color.brightflow { background-color: #ffd700; }
+.legend-color.spy { background-color: #ff4444; }
+.legend-color.vfiax { background-color: #44ff44; }
+.legend-color.spdr { background-color: #4488ff; }
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    background: #000;
+    border: 1px solid #444;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+/* Ledger Section */
+.ledger-section {
+    background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.ledger-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.ledger-header h2 {
+    color: #ffd700;
+    font-size: 1.8rem;
+}
+
+.ledger-info {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.ledger-container {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background: #111;
+}
+
+.ledger-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.ledger-table th {
+    background: #222;
+    color: #ffd700;
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 2px solid #444;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.ledger-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #333;
+    color: #ccc;
+}
+
+.ledger-table tbody tr {
+    transition: all 0.3s ease;
+    animation: slideIn 0.5s ease-out;
+}
+
+.ledger-table tbody tr:hover {
+    background: #1a1a1a;
+    transform: translateX(5px);
+}
+
+.ledger-table tbody tr:nth-child(even) {
+    background: #0a0a0a;
+}
+
+/* Transaction Type Colors */
+.buy { color: #00ff88; }
+.sell { color: #ff4444; }
+
+/* Running Balance Styling */
+.running-balance {
+    font-weight: bold;
+    color: #00ff88;
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scrollbar Styling */
+.ledger-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.ledger-container::-webkit-scrollbar-track {
+    background: #222;
+    border-radius: 4px;
+}
+
+.ledger-container::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.ledger-container::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+/* Update Indicator */
+.update-indicator {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    z-index: 1000;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.update-indicator.success {
+    background: rgba(0, 255, 136, 0.9);
+    color: #000;
+    border: 1px solid #00ff88;
+}
+
+.update-indicator.no-update {
+    background: rgba(255, 215, 0, 0.9);
+    color: #000;
+    border: 1px solid #ffd700;
+}
+
+.update-indicator.error {
+    background: rgba(255, 68, 68, 0.9);
+    color: #fff;
+    border: 1px solid #ff4444;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .performance-display {
+        text-align: center;
+    }
+    
+    .update-indicator {
+        top: 10px;
+        right: 10px;
+        font-size: 0.8rem;
+        padding: 8px 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .legend {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .ledger-table {
+        font-size: 0.75rem;
+    }
+    
+    .ledger-table th,
+    .ledger-table td {
+        padding: 8px 4px;
+    }
+}
