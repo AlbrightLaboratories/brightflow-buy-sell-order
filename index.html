@@ -11,22 +11,39 @@
 <body>
     <!-- Header with Performance Display -->
     <header class="header">
-        <div class="logo-section">
-            <div class="logo">
-                <h1>BrightFlow</h1>
-                <span class="subtitle">Buy-Sell Order Tracker</span>
-            </div>
-            <div class="bull-pair">
-                <img src="GoldenBull.png" alt="Golden Bull 1" class="bull-image bull-right" />
-                <img src="GoldenBull.png" alt="Golden Bull 2" class="bull-image bull-left" />
+        <div class="header-left">
+            <button class="hamburger-menu" id="hamburgerMenu" aria-label="Toggle menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            <div class="logo-section">
+                <div class="logo">
+                    <h1>BrightFlow</h1>
+                    <span class="subtitle">Buy-Sell Order Tracker</span>
+                </div>
+                <div class="bull-pair">
+                    <img src="GoldenBull.png" alt="Golden Bull 1" class="bull-image bull-right" />
+                    <img src="GoldenBull.png" alt="Golden Bull 2" class="bull-image bull-left" />
+                </div>
             </div>
         </div>
         <div class="performance-display">
             <div class="performance-label">$2,100 portfolio started Sept 25, 2024:</div>
-            <div class="performance-value" id="currentValue">$500.00</div>
-            <div class="performance-change" id="dailyChange">-76.19% total return</div>
+            <div class="performance-value" id="currentValue">$10.00</div>
+            <div class="performance-change" id="dailyChange">-99.52% total return</div>
         </div>
     </header>
+
+    <!-- Navigation Menu -->
+    <nav class="nav-menu" id="navMenu">
+        <ul class="menu-items">
+            <li><a href="#invest" class="menu-link">Start Investing with us today</a></li>
+            <li><a href="#why" class="menu-link">Why we Exist</a></li>
+            <li><a href="#help" class="menu-link">Help</a></li>
+            <li><a href="#deposit" class="menu-link">Deposit / Withdraw / Transfer</a></li>
+        </ul>
+    </nav>
 
     <!-- Main Content Area -->
     <main class="main-content">
