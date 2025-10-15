@@ -7,7 +7,7 @@ let portfolio = {
     positions: {},           // Stock positions: {symbol: {shares, avgPrice, marketValue}}
     totalValue: 0,           // Will be loaded from performance.json
     startDate: null,         // Will be loaded from first performance data point
-    startValue: 2100.00,     // Original starting value (constant)
+    startValue: 1.00,        // Starting value - everyone starts at $1.00
     currentValue: 0          // Will be loaded from performance.json currentValue
 };
 let marketHour = 0; // Track simulated market hours since start
@@ -164,11 +164,9 @@ async function loadRealData() {
 
 // Initialize portfolio values from actual data files
 function initializePortfolioFromData(performanceData, transactionData) {
-    // Set current value from performance data (this is the decimal representation)
+    // Set current value from performance data (this is already the actual dollar value)
     portfolio.currentValue = performanceData.currentValue;
-    
-    // Calculate actual dollar amount from the decimal representation
-    portfolio.totalValue = performanceData.currentValue * portfolio.startValue;
+    portfolio.totalValue = performanceData.currentValue; // Direct value, no multiplication needed
     
     // Set cash based on current total value (assuming all cash for now, until we add position tracking)
     portfolio.cash = portfolio.totalValue;
@@ -686,9 +684,9 @@ function updatePerformanceForPeriod(range, chartData) {
     const startValue = chartData.brightflow[0];
     const endValue = chartData.brightflow[chartData.brightflow.length - 1];
     
-    // Convert to actual dollar amounts
-    const startDollar = startValue * portfolio.startValue;
-    const endDollar = endValue * portfolio.startValue;
+    // Values are already in dollars
+    const startDollar = startValue;
+    const endDollar = endValue;
     const periodReturn = ((endDollar - startDollar) / startDollar) * 100;
     const changeText = periodReturn >= 0 ? '+' : '';
     
@@ -974,6 +972,7 @@ function updateChartWithRealData(data) {
     
     datasets.forEach((key, index) => {
         const performanceArray = data.performance[key];
+        // Values are already in the correct format from the JSON
         performanceChart.data.datasets[index].data = performanceArray.map(item => item.value);
     });
     
@@ -990,11 +989,11 @@ function updatePerformanceDisplayWithRealData(data) {
     const currentValueEl = document.getElementById('currentValue');
     const dailyChangeEl = document.getElementById('dailyChange');
     
-    // Convert currentValue (decimal) to actual dollar amount
-    const dollarValue = data.currentValue * portfolio.startValue;
+    // Current value is already in dollars from the data
+    const dollarValue = data.currentValue;
     currentValueEl.textContent = '$' + dollarValue.toFixed(2);
     
-    // Calculate total return percentage from start
+    // Calculate total return percentage from start ($1.00)
     const totalReturn = ((dollarValue - portfolio.startValue) / portfolio.startValue) * 100;
     dailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}% total return`;
     dailyChangeEl.className = 'performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
