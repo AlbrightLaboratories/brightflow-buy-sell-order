@@ -1134,3 +1134,71 @@ function updateChart() {
     // Animate the update
     performanceChart.update('active');
 }
+
+// Hamburger Menu Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
+    const navMenu = document.getElementById('navMenu');
+    let isMenuOpen = false;
+
+    // Create overlay element
+    const overlay = document.createElement('div');
+    overlay.className = 'menu-overlay';
+    overlay.id = 'menuOverlay';
+    document.body.appendChild(overlay);
+
+    // Toggle menu function
+    function toggleMenu() {
+        isMenuOpen = !isMenuOpen;
+        hamburgerMenu.classList.toggle('active', isMenuOpen);
+        navMenu.classList.toggle('active', isMenuOpen);
+        overlay.classList.toggle('active', isMenuOpen);
+        
+        // Prevent body scroll when menu is open
+        document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+    }
+
+    // Close menu function
+    function closeMenu() {
+        isMenuOpen = false;
+        hamburgerMenu.classList.remove('active');
+        navMenu.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Event listeners
+    hamburgerMenu.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', closeMenu);
+
+    // Close menu when clicking on menu links
+    const menuLinks = document.querySelectorAll('.menu-link');
+    menuLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            closeMenu();
+            
+            // You can add navigation logic here
+            const href = this.getAttribute('href');
+            console.log('Menu item clicked:', href);
+            
+            // For now, just show an alert
+            const text = this.textContent;
+            alert(`"${text}" feature coming soon!`);
+        });
+    });
+
+    // Close menu on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isMenuOpen) {
+            closeMenu();
+        }
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && isMenuOpen) {
+            closeMenu();
+        }
+    });
+});
