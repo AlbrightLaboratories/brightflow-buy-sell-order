@@ -7,7 +7,8 @@ let portfolio = {
     positions: {},           // Stock positions: {symbol: {shares, avgPrice, marketValue}}
     totalValue: 0,           // Will be loaded from performance.json
     startDate: null,         // Will be loaded from first performance data point
-    startValue: 1.00,        // Starting value - everyone starts at $1.00
+    startValue: 1.00,        // Normalized baseline for calculations (all entities start at 1.00)
+    actualStartValue: 2100.00, // Your actual investment amount
     currentValue: 0          // Will be loaded from performance.json currentValue
 };
 let marketHour = 0; // Track simulated market hours since start
@@ -164,9 +165,11 @@ async function loadRealData() {
 
 // Initialize portfolio values from actual data files
 function initializePortfolioFromData(performanceData, transactionData) {
-    // Set current value from performance data (this is already the actual dollar value)
+    // Set current value from performance data (this is the normalized multiplier)
     portfolio.currentValue = performanceData.currentValue;
-    portfolio.totalValue = performanceData.currentValue; // Direct value, no multiplication needed
+    
+    // Calculate actual portfolio value: normalized value × actual investment
+    portfolio.totalValue = performanceData.currentValue * portfolio.actualStartValue;
     
     // Set cash based on current total value (assuming all cash for now, until we add position tracking)
     portfolio.cash = portfolio.totalValue;
@@ -180,9 +183,10 @@ function initializePortfolioFromData(performanceData, transactionData) {
     }
     
     console.log('Portfolio initialized from data:', {
-        currentValue: portfolio.currentValue,
-        totalValue: portfolio.totalValue,
-        startValue: portfolio.startValue,
+        normalizedValue: portfolio.currentValue,
+        actualValue: portfolio.totalValue,
+        actualStartValue: portfolio.actualStartValue,
+        returnPct: ((portfolio.currentValue - 1.0) * 100).toFixed(2) + '%',
         startDate: portfolio.startDate
     });
 }
@@ -684,10 +688,10 @@ function updatePerformanceForPeriod(range, chartData) {
     const startValue = chartData.brightflow[0];
     const endValue = chartData.brightflow[chartData.brightflow.length - 1];
     
-    // Values are already in dollars
-    const startDollar = startValue;
-    const endDollar = endValue;
-    const periodReturn = ((endDollar - startDollar) / startDollar) * 100;
+    // Convert normalized values to actual dollars
+    const startDollar = startValue * portfolio.actualStartValue;
+    const endDollar = endValue * portfolio.actualStartValue;
+    const periodReturn = ((endValue - startValue) / startValue) * 100;
     const changeText = periodReturn >= 0 ? '+' : '';
     
     // Get period label
@@ -701,7 +705,7 @@ function updatePerformanceForPeriod(range, chartData) {
         '5y': 'all time'
     };
     
-    // Animate to current end value in dollars
+    // Animate to current end value in actual dollars
     const currentDisplayValue = parseFloat(currentValueEl.textContent.replace(/[$,]/g, ''));
     animateValue(currentValueEl, currentDisplayValue, endDollar, 1000);
     
@@ -989,12 +993,15 @@ function updatePerformanceDisplayWithRealData(data) {
     const currentValueEl = document.getElementById('currentValue');
     const dailyChangeEl = document.getElementById('dailyChange');
     
-    // Current value is already in dollars from the data
-    const dollarValue = data.currentValue;
-    currentValueEl.textContent = '$' + dollarValue.toFixed(2);
+    // Calculate actual dollar value: normalized value × actual investment
+    const actualDollarValue = data.currentValue * portfolio.actualStartValue;
+    currentValueEl.textContent = '$' + actualDollarValue.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
     
-    // Calculate total return percentage from start ($1.00)
-    const totalReturn = ((dollarValue - portfolio.startValue) / portfolio.startValue) * 100;
+    // Calculate total return percentage from normalized baseline (1.00)
+    const totalReturn = ((data.currentValue - portfolio.startValue) / portfolio.startValue) * 100;
     dailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}% total return`;
     dailyChangeEl.className = 'performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
 }
