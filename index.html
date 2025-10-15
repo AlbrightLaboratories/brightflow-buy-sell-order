@@ -22,9 +22,23 @@
                     <h1>BrightFlow</h1>
                     <span class="subtitle">Buy-Sell Order Tracker</span>
                 </div>
-                <div class="bull-pair">
-                    <img src="GoldenBull.png" alt="Golden Bull 1" class="bull-image bull-right" />
-                    <img src="GoldenBull.png" alt="Golden Bull 2" class="bull-image bull-left" />
+                <div class="bull-search-container">
+                    <img src="GoldenBull.png" alt="Golden Bull 1" class="bull-image bull-left" />
+                    <div class="search-container">
+                        <input type="text" id="stockSearch" class="stock-search-input" placeholder="Search stocks (e.g. AAPL, MSFT)" maxlength="10">
+                        <button id="searchButton" class="search-button">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <img src="GoldenBull.png" alt="Golden Bull 2" class="bull-image bull-right" />
+                    <div class="stock-price-display" id="stockPriceDisplay">
+                        <div class="stock-symbol" id="stockSymbol"></div>
+                        <div class="stock-price" id="stockPrice"></div>
+                        <div class="price-change" id="priceChange"></div>
+                    </div>
                 </div>
             </div>
         </div>
