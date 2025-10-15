@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Golden gradient with multiple stops for richness -->
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="20%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="80%" style="stop-color:#B8860B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DAA520;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Sparkling highlight gradient -->
+    <radialGradient id="sparkle" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.8" />
+      <stop offset="30%" style="stop-color:#FFD700;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#B8860B;stop-opacity:0.2" />
+    </radialGradient>
+    
+    <!-- Shadow gradient -->
+    <linearGradient id="shadow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#654321;stop-opacity:0.8" />
+    </linearGradient>
+    
+    <!-- Glow filter for sparkle effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Bull body (powerful, muscular) -->
+  <ellipse cx="40" cy="50" rx="20" ry="15" fill="url(#goldGradient)" stroke="#B8860B" stroke-width="1"/>
+  
+  <!-- Bull head (aggressive, forward-leaning like Lamborghini) -->
+  <ellipse cx="40" cy="25" rx="15" ry="12" fill="url(#goldGradient)" stroke="#B8860B" stroke-width="1"/>
+  
+  <!-- Powerful neck connecting head to body -->
+  <rect x="32" y="35" width="16" height="8" fill="url(#goldGradient)" stroke="#B8860B" stroke-width="1"/>
+  
+  <!-- Iconic bull horns (sharp, intimidating) -->
+  <path d="M 28 20 Q 25 15 23 18 Q 26 22 30 20" fill="url(#goldGradient)" stroke="#8B4513" stroke-width="1"/>
+  <path d="M 52 20 Q 55 15 57 18 Q 54 22 50 20" fill="url(#goldGradient)" stroke="#8B4513" stroke-width="1"/>
+  
+  <!-- Bull legs (stable, powerful stance like Lamborghini logo) -->
+  <rect x="25" y="62" width="6" height="15" fill="url(#goldGradient)" stroke="#B8860B" stroke-width="1"/>
+  <rect x="35" y="62" width="6" height="15" fill="url(#goldGradient)" stroke="#B8860B" stroke-width="1"/>
+  <rect x="45" y="62" width="6" height="15" fill="url(#goldGradient)" stroke="#B8860B" stroke-width="1"/>
+  <rect x="55" y="62" width="6" height="15" fill="url(#goldGradient)" stroke="#B8860B" stroke-width="1"/>
+  
+  <!-- Bull tail (dynamic, curved) -->
+  <path d="M 58 48 Q 65 52 62 58 Q 58 55 60 50" fill="url(#goldGradient)" stroke="#B8860B" stroke-width="1"/>
+  
+  <!-- Eyes (fierce, determined) -->
+  <circle cx="35" cy="22" r="2" fill="#8B0000"/>
+  <circle cx="45" cy="22" r="2" fill="#8B0000"/>
+  
+  <!-- Nostrils (flared, aggressive) -->
+  <ellipse cx="37" cy="30" rx="1.5" ry="1" fill="#8B4513"/>
+  <ellipse cx="43" cy="30" rx="1.5" ry="1" fill="#8B4513"/>
+  
+  <!-- Sparkle highlights for glistening effect -->
+  <circle cx="32" cy="18" r="2" fill="url(#sparkle)" filter="url(#glow)" opacity="0.8"/>
+  <circle cx="48" cy="22" r="1.5" fill="url(#sparkle)" filter="url(#glow)" opacity="0.6"/>
+  <circle cx="35" cy="45" r="2.5" fill="url(#sparkle)" filter="url(#glow)" opacity="0.7"/>
+  <circle cx="50" cy="52" r="2" fill="url(#sparkle)" filter="url(#glow)" opacity="0.5"/>
+  <circle cx="28" cy="55" r="1" fill="url(#sparkle)" filter="url(#glow)" opacity="0.9"/>
+  
+  <!-- Additional gleam lines for metallic effect -->
+  <line x1="25" y1="35" x2="35" y2="25" stroke="#FFFFFF" stroke-width="1" opacity="0.6"/>
+  <line x1="45" y1="25" x2="55" y2="35" stroke="#FFFFFF" stroke-width="1" opacity="0.6"/>
+  <line x1="30" y1="50" x2="50" y2="48" stroke="#FFFFFF" stroke-width="0.8" opacity="0.4"/>
+</svg>
