@@ -2,12 +2,13 @@
 let performanceChart;
 let transactionData = [];
 let portfolio = {
-    cash: 1.00,              // Starting cash balance
-    settledCash: 1.00,       // Available for trading (T+1 settlement)
+    cash: 0,                 // Will be calculated from data
+    settledCash: 0,          // Will be calculated from data  
     positions: {},           // Stock positions: {symbol: {shares, avgPrice, marketValue}}
-    totalValue: 1.00,        // Total portfolio value
-    startDate: new Date('2025-10-15'),
-    startValue: 1.00
+    totalValue: 0,           // Will be loaded from performance.json
+    startDate: null,         // Will be loaded from first performance data point
+    startValue: 2100.00,     // Original starting value (constant)
+    currentValue: 0          // Will be loaded from performance.json currentValue
 };
 let marketHour = 0; // Track simulated market hours since start
 let historicalData = null; // Store complete historical dataset
@@ -21,57 +22,20 @@ document.addEventListener('DOMContentLoaded', function() {
     startRealTimeUpdates();
 });
 
-// Generate complete historical data from Oct 15, 2025 to current
+// Generate complete historical data from performance.json data
 function generateCompleteHistoricalData() {
-    const startDate = new Date('2025-10-15');
-    const currentDate = new Date();
-    const data = {
+    // This function will be replaced by real data loading
+    // For now, return empty data structure to be populated by loadRealData()
+    return {
         dates: [],
         brightflow: [],
         spy: [],
         vfiax: [],
         spdr: []
     };
-    
-    // Generate daily data points
-    let currentPortfolioValue = portfolio.startValue;
-    let currentSpyValue = portfolio.startValue;
-    let currentVfiaxValue = portfolio.startValue;
-    let currentSpdrValue = portfolio.startValue;
-    
-    let date = new Date(startDate);
-    
-    while (date <= currentDate) {
-        // Only include weekdays (market days)
-        if (date.getDay() >= 1 && date.getDay() <= 5) {
-            data.dates.push(new Date(date));
-            
-            // BrightFlow: Superior performance with ML algorithm
-            const brightflowDaily = 0.12 / 252 + (Math.random() - 0.5) * 0.025; // 12% annual + volatility
-            currentPortfolioValue *= (1 + brightflowDaily);
-            data.brightflow.push(currentPortfolioValue);
-            
-            // SPY: Market performance
-            const spyDaily = 0.08 / 252 + (Math.random() - 0.5) * 0.018;  // 8% annual
-            currentSpyValue *= (1 + spyDaily);
-            data.spy.push(currentSpyValue);
-            
-            // VFIAX: Slightly lower than SPY
-            const vfiaxDaily = 0.078 / 252 + (Math.random() - 0.5) * 0.017;
-            currentVfiaxValue *= (1 + vfiaxDaily);
-            data.vfiax.push(currentVfiaxValue);
-            
-            // SPDR: Similar to SPY but with slight tracking difference
-            const spdrDaily = 0.079 / 252 + (Math.random() - 0.5) * 0.018;
-            currentSpdrValue *= (1 + spdrDaily);
-            data.spdr.push(currentSpdrValue);
-        }
-        
-        date.setDate(date.getDate() + 1);
-    }
-    
-    return data;
 }
+
+
 
 // Get data for specific time range
 function getDataForTimeRange(range) {
@@ -163,7 +127,7 @@ function updateChartTimeRange(range) {
     updatePerformanceForPeriod(range, chartData);
 }
 
-// Load real data from JSON files
+// Load real data from JSON files and initialize portfolio dynamically
 async function loadRealData() {
     try {
         // Load performance data
@@ -174,6 +138,12 @@ async function loadRealData() {
         const transactionResponse = await fetch('./data/transactions.json');
         const transactionDataResponse = await transactionResponse.json();
         
+        // Initialize portfolio from real data
+        initializePortfolioFromData(performanceData, transactionDataResponse);
+        
+        // Set historical data from performance file
+        historicalData = convertPerformanceDataToHistorical(performanceData);
+        
         // Update chart with real data
         updateChartWithRealData(performanceData);
         
@@ -182,7 +152,6 @@ async function loadRealData() {
         
         // Update transaction table
         transactionData = transactionDataResponse.transactions;
-        currentBalance = transactionDataResponse.currentBalance;
         populateTransactionTable();
         
     } catch (error) {
@@ -191,6 +160,61 @@ async function loadRealData() {
         generateMockData();
         populateTransactionTable();
     }
+}
+
+// Initialize portfolio values from actual data files
+function initializePortfolioFromData(performanceData, transactionData) {
+    // Set current value from performance data (this is the decimal representation)
+    portfolio.currentValue = performanceData.currentValue;
+    
+    // Calculate actual dollar amount from the decimal representation
+    portfolio.totalValue = performanceData.currentValue * portfolio.startValue;
+    
+    // Set cash based on current total value (assuming all cash for now, until we add position tracking)
+    portfolio.cash = portfolio.totalValue;
+    portfolio.settledCash = portfolio.totalValue;
+    
+    // Get start date from first performance data point
+    if (performanceData.performance && performanceData.performance.brightflow && performanceData.performance.brightflow.length > 0) {
+        portfolio.startDate = new Date(performanceData.performance.brightflow[0].date);
+    } else {
+        portfolio.startDate = new Date('2025-10-15'); // Default fallback
+    }
+    
+    console.log('Portfolio initialized from data:', {
+        currentValue: portfolio.currentValue,
+        totalValue: portfolio.totalValue,
+        startValue: portfolio.startValue,
+        startDate: portfolio.startDate
+    });
+}
+
+// Convert performance.json data to historical data format for charts
+function convertPerformanceDataToHistorical(performanceData) {
+    const data = {
+        dates: [],
+        brightflow: [],
+        spy: [],
+        vfiax: [],
+        spdr: []
+    };
+    
+    // Convert each dataset
+    const datasets = ['brightflow', 'spy', 'vfiax', 'spdr'];
+    
+    datasets.forEach(key => {
+        if (performanceData.performance[key]) {
+            performanceData.performance[key].forEach((item, index) => {
+                if (key === 'brightflow') {
+                    // Only add dates once (from brightflow data)
+                    data.dates.push(new Date(item.date));
+                }
+                data[key].push(item.value);
+            });
+        }
+    });
+    
+    return data;
 }
 
 // Chart initialization with animations
@@ -661,7 +685,11 @@ function updatePerformanceForPeriod(range, chartData) {
     
     const startValue = chartData.brightflow[0];
     const endValue = chartData.brightflow[chartData.brightflow.length - 1];
-    const periodReturn = ((endValue - startValue) / startValue) * 100;
+    
+    // Convert to actual dollar amounts
+    const startDollar = startValue * portfolio.startValue;
+    const endDollar = endValue * portfolio.startValue;
+    const periodReturn = ((endDollar - startDollar) / startDollar) * 100;
     const changeText = periodReturn >= 0 ? '+' : '';
     
     // Get period label
@@ -675,9 +703,9 @@ function updatePerformanceForPeriod(range, chartData) {
         '5y': 'all time'
     };
     
-    // Animate to current end value
+    // Animate to current end value in dollars
     const currentDisplayValue = parseFloat(currentValueEl.textContent.replace(/[$,]/g, ''));
-    animateValue(currentValueEl, currentDisplayValue, endValue, 1000);
+    animateValue(currentValueEl, currentDisplayValue, endDollar, 1000);
     
     // Update period return
     dailyChangeEl.textContent = `${changeText}${periodReturn.toFixed(2)}% ${periodLabels[range]}`;
@@ -962,11 +990,14 @@ function updatePerformanceDisplayWithRealData(data) {
     const currentValueEl = document.getElementById('currentValue');
     const dailyChangeEl = document.getElementById('dailyChange');
     
-    currentValueEl.textContent = '$' + data.currentValue.toFixed(2);
+    // Convert currentValue (decimal) to actual dollar amount
+    const dollarValue = data.currentValue * portfolio.startValue;
+    currentValueEl.textContent = '$' + dollarValue.toFixed(2);
     
-    const changeText = data.dailyChange >= 0 ? '+' : '';
-    dailyChangeEl.textContent = `${changeText}${(data.dailyChange * 100).toFixed(2)}% today`;
-    dailyChangeEl.className = 'performance-change ' + (data.dailyChange >= 0 ? 'positive' : 'negative');
+    // Calculate total return percentage from start
+    const totalReturn = ((dollarValue - portfolio.startValue) / portfolio.startValue) * 100;
+    dailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}% total return`;
+    dailyChangeEl.className = 'performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
 }
 
 // Periodically check for updated data with smart caching
