@@ -170,11 +170,9 @@ async function loadRealData() {
 
 // Initialize portfolio values from actual data files
 function initializePortfolioFromData(performanceData, transactionData) {
-    // Set current value from performance data (this is the normalized multiplier)
+    // Set current value from performance data (this is the normalized value)
     portfolio.currentValue = performanceData.currentValue;
-    
-    // Calculate actual portfolio value: normalized value × actual investment
-    portfolio.totalValue = performanceData.currentValue * portfolio.actualStartValue;
+    portfolio.totalValue = performanceData.currentValue; // Keep it as normalized value
     
     // Set cash based on current total value (assuming all cash for now, until we add position tracking)
     portfolio.cash = portfolio.totalValue;
@@ -189,8 +187,8 @@ function initializePortfolioFromData(performanceData, transactionData) {
     
     console.log('Portfolio initialized from data:', {
         normalizedValue: portfolio.currentValue,
-        actualValue: portfolio.totalValue,
-        actualStartValue: portfolio.actualStartValue,
+        totalValue: portfolio.totalValue,
+        startValue: portfolio.startValue,
         returnPct: ((portfolio.currentValue - 1.0) * 100).toFixed(2) + '%',
         startDate: portfolio.startDate
     });
@@ -699,9 +697,9 @@ function updatePerformanceForPeriod(range, chartData) {
     const startValue = chartData.brightflow[0];
     const endValue = chartData.brightflow[chartData.brightflow.length - 1];
     
-    // Convert normalized values to actual dollars
-    const startDollar = startValue * portfolio.actualStartValue;
-    const endDollar = endValue * portfolio.actualStartValue;
+    // Use normalized values directly (no multiplication needed)
+    const startDollar = startValue;
+    const endDollar = endValue;
     const periodReturn = ((endValue - startValue) / startValue) * 100;
     const changeText = periodReturn >= 0 ? '+' : '';
     
@@ -716,7 +714,7 @@ function updatePerformanceForPeriod(range, chartData) {
         '5y': 'all time'
     };
     
-    // Animate to current end value in actual dollars
+    // Animate to current end value in normalized dollars
     const currentDisplayValue = parseFloat(currentValueEl.textContent.replace(/[$,]/g, ''));
     animateValue(currentValueEl, currentDisplayValue, endDollar, 1000);
     
@@ -1004,17 +1002,20 @@ function updatePerformanceDisplayWithRealData(data) {
     const currentValueEl = document.getElementById('currentValue');
     const dailyChangeEl = document.getElementById('dailyChange');
     
-    // Calculate actual dollar value: normalized value × actual investment
-    const actualDollarValue = data.currentValue * portfolio.actualStartValue;
-    currentValueEl.textContent = '$' + actualDollarValue.toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
+    // Show the normalized value directly (what $1.00 is worth now)
+    const normalizedValue = data.currentValue;
+    currentValueEl.textContent = '$' + normalizedValue.toFixed(2);
     
     // Calculate total return percentage from normalized baseline (1.00)
-    const totalReturn = ((data.currentValue - portfolio.startValue) / portfolio.startValue) * 100;
+    const totalReturn = ((normalizedValue - portfolio.startValue) / portfolio.startValue) * 100;
     dailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}% total return`;
     dailyChangeEl.className = 'performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
+    
+    console.log('Performance Display Updated:', {
+        normalizedValue: normalizedValue,
+        startValue: portfolio.startValue,
+        totalReturn: totalReturn.toFixed(2) + '%'
+    });
 }
 
 // Periodically check for updated data with smart caching
