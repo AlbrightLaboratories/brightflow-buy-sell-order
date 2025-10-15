@@ -160,6 +160,10 @@ async function loadRealData() {
         transactionData = transactionDataResponse.transactions;
         populateTransactionTable();
         
+        // Mark that we have real data loaded to prevent demo mode
+        localStorage.setItem('lastRealDataUpdate', Date.now().toString());
+        localStorage.setItem('lastDataUpdate', performanceData.lastUpdated);
+        
     } catch (error) {
         console.warn('Could not load real data, falling back to mock data:', error);
         // Fallback to mock data if files don't exist yet
