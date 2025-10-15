@@ -661,11 +661,11 @@ function updatePerformanceDisplay() {
     const currentValueEl = document.getElementById('currentValue');
     const dailyChangeEl = document.getElementById('dailyChange');
     
-    // Calculate total return from starting value
-    const totalReturn = ((portfolio.totalValue - portfolio.startValue) / portfolio.startValue) * 100;
+    // Calculate total return from normalized baseline (1.00 to current multiplier)
+    const totalReturn = ((portfolio.currentValue - portfolio.startValue) / portfolio.startValue) * 100;
     const changeText = totalReturn >= 0 ? '+' : '';
     
-    // Animate value change
+    // Animate value change (show actual dollar amount)
     const currentDisplayValue = parseFloat(currentValueEl.textContent.replace(/[$,]/g, ''));
     animateValue(currentValueEl, currentDisplayValue, portfolio.totalValue, 1000);
     
