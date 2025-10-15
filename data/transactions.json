@@ -1,0 +1,43 @@
+{
+  "lastUpdated": "2024-10-14T10:30:00Z",
+  "totalTransactions": 847,
+  "currentBalance": 12534.67,
+  "transactions": [
+    {
+      "id": "tx_847",
+      "timestamp": "2024-10-14T09:45:23Z",
+      "action": "BUY",
+      "symbol": "AAPL",
+      "quantity": 25,
+      "price": 178.45,
+      "amount": -4461.25,
+      "runningBalance": 12534.67,
+      "confidence": 0.87,
+      "strategy": "momentum"
+    },
+    {
+      "id": "tx_846", 
+      "timestamp": "2024-10-14T08:30:15Z",
+      "action": "SELL",
+      "symbol": "GOOGL",
+      "quantity": 15,
+      "price": 145.20,
+      "amount": 2178.00,
+      "runningBalance": 16995.92,
+      "confidence": 0.92,
+      "strategy": "profit_taking"
+    },
+    {
+      "id": "tx_845",
+      "timestamp": "2024-10-13T15:20:08Z", 
+      "action": "BUY",
+      "symbol": "MSFT",
+      "quantity": 30,
+      "price": 412.80,
+      "amount": -12384.00,
+      "runningBalance": 14817.92,
+      "confidence": 0.89,
+      "strategy": "value"
+    }
+  ]
+}

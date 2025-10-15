@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrightFlow Buy-Sell Order Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+</head>
+<body>
+    <!-- Header with Performance Display -->
+    <header class="header">
+        <div class="logo">
+            <h1>BrightFlow</h1>
+            <span class="subtitle">Buy-Sell Order Tracker</span>
+        </div>
+        <div class="performance-display">
+            <div class="performance-label">$1 invested Sept 25, 2024 is now worth:</div>
+            <div class="performance-value" id="currentValue">$1.47</div>
+            <div class="performance-change" id="dailyChange">+2.34% today</div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Chart Section -->
+        <section class="chart-section">
+            <div class="chart-header">
+                <h2>Performance Comparison</h2>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color brightflow"></div>
+                        <span>BrightFlow</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color spy"></div>
+                        <span>SPY</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color vfiax"></div>
+                        <span>VFIAX</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color spdr"></div>
+                        <span>SPDR S&P 500</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Transaction Ledger Section -->
+        <section class="ledger-section">
+            <div class="ledger-header">
+                <h2>Transaction Ledger</h2>
+                <div class="ledger-info">Last 50 Transactions</div>
+            </div>
+            <div class="ledger-container">
+                <table class="ledger-table" id="ledgerTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Action</th>
+                            <th>Symbol</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Amount</th>
+                            <th>Running Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledgerBody">
+                        <!-- Transactions will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+name: Update BrightFlow Data
+
+on:
+  # Allow manual trigger
+  workflow_dispatch:
+  
+  # Allow trigger from external repositories
+  repository_dispatch:
+    types: [update-brightflow-data]
+
+  # Schedule updates (hourly from 4:30 AM to 8 PM EST)
+  schedule:
+    - cron: '30 9-23 * * *'     # Every hour at :30 minutes, 4:30 AM to 7:30 PM EST (UTC-5)
+    - cron: '30 0-1 * * *'      # Also covers 7:30 PM to 8:30 PM EST
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Update performance data
+      run: |
+        # This will be triggered by the ML repo with data payload
+        echo "Updating performance data..."
+        
+        # If triggered via repository_dispatch, the data will be in github.event.client_payload
+        if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+          echo '${{ toJSON(github.event.client_payload.performance_data) }}' > data/performance.json
+          echo '${{ toJSON(github.event.client_payload.transaction_data) }}' > data/transactions.json
+        fi
+        
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data/*.json
+        
+        # Only commit if there are changes
+        if ! git diff --staged --quiet; then
+          git commit -m "Update BrightFlow data - $(date)"
+          git push
+        else
+          echo "No changes to commit"
+        fi
