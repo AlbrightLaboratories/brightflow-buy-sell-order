@@ -21,12 +21,99 @@ body {
     padding: 20px 40px;
     border-bottom: 1px solid #333;
     background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+    position: relative;
+}
+
+.header-left,
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-left {
+    flex: 1;
+}
+
+.header-right {
+    flex: 1;
+    justify-content: flex-end;
+}
+
+/* Bull Logo Styles */
+.bull-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    animation: gentlePulse 3s ease-in-out infinite;
+}
+
+.bull-logo {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
+    transition: all 0.3s ease;
+}
+
+.bull-logo:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.7));
+}
+
+.bull-logo.mirrored {
+    transform: scaleX(-1);
+}
+
+.bull-logo.mirrored:hover {
+    transform: scaleX(-1) scale(1.1);
+}
+
+/* Bowing effect - bulls slightly angled toward center */
+.bull-left .bull-logo {
+    transform: rotate(5deg);
+}
+
+.bull-right .bull-logo {
+    transform: scaleX(-1) rotate(5deg);
+}
+
+.bull-left .bull-logo:hover {
+    transform: rotate(5deg) scale(1.1);
+}
+
+.bull-right .bull-logo:hover {
+    transform: scaleX(-1) rotate(5deg) scale(1.1);
+}
+
+/* Sparkle animation for glistening effect */
+@keyframes sparkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+.sparkle {
+    animation: sparkle 2s ease-in-out infinite;
+    animation-delay: calc(var(--sparkle-delay, 0) * 0.3s);
+}
+
+.sparkle:nth-child(1) { animation-delay: 0s; }
+.sparkle:nth-child(2) { animation-delay: 0.5s; }
+.sparkle:nth-child(3) { animation-delay: 1s; }
+.sparkle:nth-child(4) { animation-delay: 1.5s; }
+
+/* Gentle pulse animation for power effect */
+@keyframes gentlePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.logo {
+    text-align: center;
 }
 
 .logo h1 {
     font-size: 2.5rem;
     color: #ffd700;
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    margin: 0;
 }
 
 .logo .subtitle {
@@ -349,6 +436,46 @@ body {
 }
 
 @media (max-width: 768px) {
+    /* Header responsive adjustments */
+    .header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .header-left,
+    .header-right {
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .header-left {
+        order: 1;
+    }
+    
+    .performance-display {
+        order: 2;
+        text-align: center;
+    }
+    
+    .header-right {
+        order: 3;
+    }
+    
+    /* Bull logos smaller on mobile */
+    .bull-logo {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .logo h1 {
+        font-size: 2rem;
+    }
+    
+    .performance-value {
+        font-size: 2rem;
+    }
+    
     .legend {
         flex-direction: column;
         gap: 10px;
