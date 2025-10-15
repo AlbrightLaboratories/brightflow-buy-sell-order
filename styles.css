@@ -96,11 +96,12 @@ body {
     margin-top: -5px;
 }
 
-/* Bull Image Positioning */
-.bull-pair {
+/* Bull and Search Container */
+.bull-search-container {
     display: flex;
     align-items: center;
     margin-left: 144px; /* 2 inches at 72 DPI */
+    gap: 20px;
 }
 
 .bull-image {
@@ -109,13 +110,119 @@ body {
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
-.bull-right {
-    margin-right: 108px; /* 1.5 inches for half the 3-inch separation */
-}
-
 .bull-left {
     transform: scaleX(-1); /* Flip horizontally to face left */
-    margin-left: 108px; /* 1.5 inches for half the 3-inch separation */
+}
+
+.bull-right {
+    transform: scaleX(1); /* Normal orientation facing right */
+}
+
+/* Stock Search Styling */
+.search-container {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 25px;
+    padding: 8px 16px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.search-container:focus-within {
+    border-color: #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.stock-search-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 14px;
+    width: 200px;
+    padding: 6px 12px;
+    text-transform: uppercase;
+}
+
+.stock-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: none;
+}
+
+.search-button {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 8px;
+}
+
+.search-button:hover {
+    background: linear-gradient(135deg, #ffed4e, #ffd700);
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+}
+
+.search-button svg {
+    color: #000;
+}
+
+/* Stock Price Display */
+.stock-price-display {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 12px;
+    padding: 12px 20px;
+    backdrop-filter: blur(10px);
+    min-width: 140px;
+    animation: fadeIn 0.5s ease;
+}
+
+.stock-price-display.active {
+    display: flex;
+}
+
+.stock-symbol {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.stock-price {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 4px 0;
+}
+
+.price-change {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.price-change.positive {
+    color: #00ff88;
+}
+
+.price-change.negative {
+    color: #ff4757;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .performance-display {
@@ -450,21 +557,39 @@ body {
         font-size: 2rem;
     }
     
-    /* Bull positioning adjustments for mobile */
-    .bull-pair {
-        margin-left: 20px; /* Reduce spacing on mobile */
-    }
-    
-    .bull-right {
-        margin-right: 15px; /* Reduce separation on mobile */
-    }
-    
-    .bull-left {
-        margin-left: 15px;
+    /* Bull and search adjustments for mobile */
+    .bull-search-container {
+        margin-left: 10px;
+        gap: 10px;
+        flex-wrap: wrap;
     }
     
     .bull-image {
         height: 40px; /* Smaller bulls on mobile */
+    }
+    
+    .search-container {
+        order: 3;
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .stock-search-input {
+        width: 150px;
+        font-size: 12px;
+    }
+    
+    .stock-price-display {
+        min-width: 100px;
+        padding: 8px 12px;
+    }
+    
+    .stock-symbol {
+        font-size: 14px;
+    }
+    
+    .stock-price {
+        font-size: 16px;
     }
     
     /* Mobile menu adjustments */

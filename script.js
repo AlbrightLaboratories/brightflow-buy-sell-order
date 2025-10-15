@@ -1202,3 +1202,96 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Stock Search Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('stockSearch');
+    const searchButton = document.getElementById('searchButton');
+    const priceDisplay = document.getElementById('stockPriceDisplay');
+    const stockSymbol = document.getElementById('stockSymbol');
+    const stockPrice = document.getElementById('stockPrice');
+    const priceChange = document.getElementById('priceChange');
+
+    // Mock stock data for demo (replace with real API later)
+    const mockStockData = {
+        'AAPL': { price: 175.43, change: 2.34, changePercent: 1.35 },
+        'MSFT': { price: 332.89, change: -1.23, changePercent: -0.37 },
+        'GOOGL': { price: 138.21, change: 0.87, changePercent: 0.63 },
+        'TSLA': { price: 248.50, change: -4.12, changePercent: -1.63 },
+        'AMZN': { price: 127.74, change: 3.21, changePercent: 2.58 },
+        'NVDA': { price: 118.32, change: 5.67, changePercent: 5.03 },
+        'META': { price: 501.25, change: -2.10, changePercent: -0.42 },
+        'NFLX': { price: 485.73, change: 8.45, changePercent: 1.77 },
+        'SPY': { price: 428.67, change: 1.23, changePercent: 0.29 },
+        'QQQ': { price: 372.14, change: 2.87, changePercent: 0.78 }
+    };
+
+    function searchStock() {
+        const symbol = searchInput.value.trim().toUpperCase();
+        
+        if (!symbol) {
+            alert('Please enter a stock symbol');
+            return;
+        }
+
+        // Show loading state
+        stockSymbol.textContent = symbol;
+        stockPrice.textContent = 'Loading...';
+        priceChange.textContent = '';
+        priceDisplay.classList.add('active');
+
+        // Simulate API delay
+        setTimeout(() => {
+            if (mockStockData[symbol]) {
+                const data = mockStockData[symbol];
+                displayStockData(symbol, data);
+            } else {
+                displayError(symbol);
+            }
+        }, 500);
+    }
+
+    function displayStockData(symbol, data) {
+        stockSymbol.textContent = symbol;
+        stockPrice.textContent = `$${data.price.toFixed(2)}`;
+        
+        const changeClass = data.change >= 0 ? 'positive' : 'negative';
+        const changeSign = data.change >= 0 ? '+' : '';
+        priceChange.textContent = `${changeSign}$${data.change.toFixed(2)} (${changeSign}${data.changePercent.toFixed(2)}%)`;
+        priceChange.className = `price-change ${changeClass}`;
+    }
+
+    function displayError(symbol) {
+        stockSymbol.textContent = symbol;
+        stockPrice.textContent = 'Not Found';
+        priceChange.textContent = 'Symbol not available';
+        priceChange.className = 'price-change negative';
+    }
+
+    // Event listeners
+    searchButton.addEventListener('click', searchStock);
+    
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchStock();
+        }
+    });
+
+    searchInput.addEventListener('input', function() {
+        // Auto-uppercase and limit to 10 characters
+        this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '').substring(0, 10);
+    });
+
+    // Hide price display when clicking elsewhere
+    document.addEventListener('click', function(e) {
+        if (!priceDisplay.contains(e.target) && 
+            !searchInput.contains(e.target) && 
+            !searchButton.contains(e.target)) {
+            if (priceDisplay.classList.contains('active')) {
+                setTimeout(() => {
+                    priceDisplay.classList.remove('active');
+                }, 3000); // Hide after 3 seconds
+            }
+        }
+    });
+});
