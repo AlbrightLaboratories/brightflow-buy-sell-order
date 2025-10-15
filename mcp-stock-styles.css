@@ -1,0 +1,261 @@
+/* Enhanced Stock Search Styles */
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+}
+
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    gap: 10px;
+    color: #666;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.results-list {
+    padding: 0;
+}
+
+.stock-result {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
+}
+
+.stock-result:hover {
+    background-color: #f8f9fa;
+}
+
+.stock-result:last-child {
+    border-bottom: none;
+}
+
+.stock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.stock-header h3 {
+    margin: 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
+
+.source {
+    font-size: 0.8em;
+    color: #666;
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.stock-price {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 8px;
+}
+
+.current-price {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #333;
+}
+
+.change {
+    font-size: 1em;
+    font-weight: semibold;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.change.positive {
+    color: #28a745;
+    background: #d4edda;
+}
+
+.change.negative {
+    color: #dc3545;
+    background: #f8d7da;
+}
+
+.stock-date {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.historical-btn, .back-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease;
+}
+
+.historical-btn:hover, .back-btn:hover {
+    background: #0056b3;
+}
+
+.historical-data {
+    padding: 20px;
+}
+
+.historical-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.historical-header h3 {
+    margin: 0;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.historical-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+.historical-table th,
+.historical-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.historical-table th {
+    background: #f8f9fa;
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9em;
+    text-transform: uppercase;
+}
+
+.historical-table td {
+    font-size: 0.9em;
+}
+
+.historical-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.error-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    color: #dc3545;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    margin: 10px 20px;
+}
+
+.error-icon {
+    font-size: 1.2em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .search-results {
+        max-height: 300px;
+    }
+    
+    .stock-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .stock-price {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .current-price {
+        font-size: 1.2em;
+    }
+    
+    .historical-table {
+        font-size: 0.8em;
+    }
+    
+    .historical-table th,
+    .historical-table td {
+        padding: 6px 8px;
+    }
+}
+
+/* Integration with existing BrightFlow styles */
+.stock-search-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.stock-search-container input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1em;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+}
+
+.stock-search-container input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Animation for results appearing */
+.search-results {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.search-results[style*="block"] {
+    opacity: 1;
+    transform: translateY(0);
+}
