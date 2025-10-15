@@ -2,39 +2,7 @@
 * {
     margin: 0;
     padding: 0;
-    box-s/* Enhanced golden bull appearance with advanced effects */
-.bull-logo::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: -8px;
-    right: -8px;
-    bottom: -8px;
-    background: 
-        /* Multi-layer golden aura */
-        radial-gradient(ellipse at 30% 30%, rgba(255, 215, 0, 0.3) 0%, transparent 40%),
-        radial-gradient(ellipse at 70% 70%, rgba(255, 165, 0, 0.2) 0%, transparent 50%),
-        radial-gradient(ellipse at center, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
-    border-radius: 50%;
-    z-index: -1;
-    animation: goldenAura 4s ease-in-out infinite;
-}
-
-/* Add a secondary glow layer */
-.bull-logo::after {
-    content: '';
-    position: absolute;
-    top: -12px;
-    left: -12px;
-    right: -12px;
-    bottom: -12px;
-    background: radial-gradient(ellipse at center, 
-        rgba(255, 215, 0, 0.05) 0%,
-        rgba(255, 140, 0, 0.03) 40%,
-        transparent 80%);
-    border-radius: 50%;
-    z-index: -2;
-    animation: goldenAura 6s ease-in-out infinite reverse;
+    box-sizing: border-box;
 }
 
 body {
@@ -56,184 +24,11 @@ body {
     position: relative;
 }
 
-.header-left,
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
 
-.header-left {
-    flex: 1;
-}
 
-.header-right {
-    flex: 1;
-    justify-content: flex-end;
-}
 
-/* Bull Logo Styles - PNG Enhanced */
-.bull-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    animation: gentlePulse 3s ease-in-out infinite;
-}
 
-.bull-logo {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-    /* Advanced PNG background removal and golden enhancement */
-    filter: 
-        /* Remove background by increasing contrast and brightness */
-        contrast(1.3)
-        brightness(1.2)
-        saturate(1.4)
-        /* Add golden glow and sparkle */
-        drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))
-        drop-shadow(0 0 16px rgba(255, 215, 0, 0.3))
-        drop-shadow(0 0 24px rgba(255, 165, 0, 0.2));
-    
-    /* Mix blend mode to enhance golden colors */
-    mix-blend-mode: screen;
-    
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-}
 
-/* Enhance golden bull appearance */
-.bull-logo::before {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    background: radial-gradient(ellipse at center, 
-        rgba(255, 215, 0, 0.1) 0%,
-        rgba(255, 165, 0, 0.05) 30%,
-        transparent 70%);
-    border-radius: 50%;
-    z-index: -1;
-    animation: goldenAura 4s ease-in-out infinite;
-}
-
-@keyframes goldenAura {
-    0%, 100% { 
-        transform: scale(1);
-        opacity: 0.5;
-    }
-    50% { 
-        transform: scale(1.1);
-        opacity: 0.8;
-    }
-}
-
-.bull-logo:hover {
-    transform: scale(1.15);
-    filter: 
-        contrast(1.5)
-        brightness(1.4)
-        saturate(1.6)
-        drop-shadow(0 0 12px rgba(255, 215, 0, 0.8))
-        drop-shadow(0 0 24px rgba(255, 215, 0, 0.5))
-        drop-shadow(0 0 36px rgba(255, 165, 0, 0.3))
-        drop-shadow(0 0 48px rgba(255, 140, 0, 0.2));
-}
-
-/* Bowing effect - bulls slightly angled toward center */
-.bull-left .bull-logo {
-    transform: rotate(8deg) scale(1);
-}
-
-.bull-right .bull-logo {
-    transform: scaleX(-1) rotate(8deg) scale(1);
-}
-
-.bull-left .bull-logo:hover {
-    transform: rotate(8deg) scale(1.15);
-}
-
-.bull-right .bull-logo:hover {
-    transform: scaleX(-1) rotate(8deg) scale(1.15);
-}
-
-/* Enhanced sparkle animations for PNG bulls */
-.bull-container::after {
-    content: '✨';
-    position: absolute;
-    font-size: 12px;
-    color: #FFD700;
-    animation: sparkleFloat 3s ease-in-out infinite;
-    pointer-events: none;
-    z-index: 10;
-}
-
-.bull-left .bull-container::after {
-    top: -5px;
-    right: -5px;
-    animation-delay: 0s;
-}
-
-.bull-right .bull-container::after {
-    top: -5px;
-    left: -5px;
-    animation-delay: 1.5s;
-}
-
-@keyframes sparkleFloat {
-    0%, 100% { 
-        opacity: 0.4;
-        transform: translateY(0px) scale(0.8);
-    }
-    50% { 
-        opacity: 1;
-        transform: translateY(-5px) scale(1.2);
-    }
-}
-
-/* Additional sparkle effects */
-.bull-container::before {
-    content: '⭐';
-    position: absolute;
-    font-size: 8px;
-    color: #FFA500;
-    animation: sparkleRotate 4s linear infinite;
-    pointer-events: none;
-    z-index: 10;
-}
-
-.bull-left .bull-container::before {
-    bottom: -5px;
-    left: -5px;
-}
-
-.bull-right .bull-container::before {
-    bottom: -5px;
-    right: -5px;
-}
-
-@keyframes sparkleRotate {
-    0% { 
-        opacity: 0.3;
-        transform: rotate(0deg) scale(0.6);
-    }
-    50% { 
-        opacity: 0.8;
-        transform: rotate(180deg) scale(1);
-    }
-    100% { 
-        opacity: 0.3;
-        transform: rotate(360deg) scale(0.6);
-    }
-}
-
-/* Gentle pulse animation for power effect */
-@keyframes gentlePulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-}
 
 .logo {
     text-align: center;
@@ -573,29 +368,8 @@ body {
         gap: 15px;
     }
     
-    .header-left,
-    .header-right {
-        justify-content: center;
-        gap: 10px;
-    }
-    
-    .header-left {
-        order: 1;
-    }
-    
     .performance-display {
-        order: 2;
         text-align: center;
-    }
-    
-    .header-right {
-        order: 3;
-    }
-    
-    /* Bull logos smaller on mobile */
-    .bull-logo {
-        width: 45px;
-        height: 45px;
     }
     
     .logo h1 {
