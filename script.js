@@ -19,8 +19,13 @@ let currentTimeRange = '14d'; // Default view
 document.addEventListener('DOMContentLoaded', function() {
     initializeChart();
     setupTimeRangeControls();
-    loadRealData();
-    startRealTimeUpdates();
+    loadRealData().then(() => {
+        // Start real-time updates only after data is loaded
+        startRealTimeUpdates();
+    }).catch(() => {
+        // If loading fails, still start updates for demo mode
+        startRealTimeUpdates();
+    });
 });
 
 // Generate complete historical data from performance.json data
@@ -660,6 +665,12 @@ function shouldShowDemo() {
 function updatePerformanceDisplay() {
     const currentValueEl = document.getElementById('currentValue');
     const dailyChangeEl = document.getElementById('dailyChange');
+    
+    // Don't update if data hasn't been loaded yet
+    if (!portfolio.currentValue || portfolio.currentValue === 0) {
+        console.log('Waiting for data to load before updating display...');
+        return;
+    }
     
     // Calculate total return from normalized baseline (1.00 to current multiplier)
     const totalReturn = ((portfolio.currentValue - portfolio.startValue) / portfolio.startValue) * 100;
