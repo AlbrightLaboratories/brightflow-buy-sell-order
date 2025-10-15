@@ -2,12 +2,12 @@
 let performanceChart;
 let transactionData = [];
 let portfolio = {
-    cash: 2100.00,           // Starting cash balance
-    settledCash: 2100.00,    // Available for trading (T+1 settlement)
+    cash: 1.00,              // Starting cash balance
+    settledCash: 1.00,       // Available for trading (T+1 settlement)
     positions: {},           // Stock positions: {symbol: {shares, avgPrice, marketValue}}
-    totalValue: 2100.00,     // Total portfolio value
-    startDate: new Date('2024-09-25'),
-    startValue: 2100.00
+    totalValue: 1.00,        // Total portfolio value
+    startDate: new Date('2025-10-15'),
+    startValue: 1.00
 };
 let marketHour = 0; // Track simulated market hours since start
 let historicalData = null; // Store complete historical dataset
@@ -21,9 +21,9 @@ document.addEventListener('DOMContentLoaded', function() {
     startRealTimeUpdates();
 });
 
-// Generate complete historical data from Sept 25, 2024 to current
+// Generate complete historical data from Oct 15, 2025 to current
 function generateCompleteHistoricalData() {
-    const startDate = new Date('2024-09-25');
+    const startDate = new Date('2025-10-15');
     const currentDate = new Date();
     const data = {
         dates: [],
