@@ -135,14 +135,42 @@ function updateChartTimeRange(range) {
 
 // Load real data from JSON files and initialize portfolio dynamically
 async function loadRealData() {
+    console.log('🔄 Loading real data...');
+    
     try {
-        // Load performance data
-        const performanceResponse = await fetch('./data/performance.json');
-        const performanceData = await performanceResponse.json();
+        // Load performance data with error handling
+        console.log('📊 Fetching performance data...');
+        const performanceResponse = await fetch('./data/performance.json', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Cache-Control': 'no-cache'
+            }
+        });
         
-        // Load transaction data
-        const transactionResponse = await fetch('./data/transactions.json');
+        if (!performanceResponse.ok) {
+            throw new Error(`Performance data fetch failed: ${performanceResponse.status} ${performanceResponse.statusText}`);
+        }
+        
+        const performanceData = await performanceResponse.json();
+        console.log('✅ Performance data loaded:', performanceData);
+        
+        // Load transaction data with error handling
+        console.log('📋 Fetching transaction data...');
+        const transactionResponse = await fetch('./data/transactions.json', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Cache-Control': 'no-cache'
+            }
+        });
+        
+        if (!transactionResponse.ok) {
+            throw new Error(`Transaction data fetch failed: ${transactionResponse.status} ${transactionResponse.statusText}`);
+        }
+        
         const transactionDataResponse = await transactionResponse.json();
+        console.log('✅ Transaction data loaded:', transactionDataResponse);
         
         // Initialize portfolio from real data
         initializePortfolioFromData(performanceData, transactionDataResponse);
@@ -164,9 +192,15 @@ async function loadRealData() {
         localStorage.setItem('lastRealDataUpdate', Date.now().toString());
         localStorage.setItem('lastDataUpdate', performanceData.lastUpdated);
         
+        console.log('✅ Real data loaded successfully');
+        showUpdateIndicator('success');
+        
     } catch (error) {
-        console.warn('Could not load real data, falling back to mock data:', error);
+        console.error('❌ Could not load real data:', error);
+        showUpdateIndicator('error');
+        
         // Fallback to mock data if files don't exist yet
+        console.log('🔄 Falling back to mock data...');
         generateMockData();
         populateTransactionTable();
     }
