@@ -17,10 +17,12 @@ let realDataLoaded = false; // Track if real data is loaded
 let realPerformanceData = null; // Store real performance data
 let currentTimeRange = '1d'; // Default view - current day
 let selectedCompetitors = ['spy', 'vfiax', 'spdr']; // Default competitors
+let mobileChart = null; // Mobile chart instance
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initializeChart();
+    initializeMobileChart();
     setupTimeRangeControls();
     loadRealData().then(() => {
         // Start real-time updates only after data is loaded
@@ -281,6 +283,7 @@ async function loadRealData() {
         
         // Update chart with real data
         updateChartWithRealData(performanceData);
+        updateMobileChartWithRealData(performanceData);
         
         // Update transaction data first
         transactionData = transactionDataResponse.transactions || [];
@@ -289,6 +292,7 @@ async function loadRealData() {
         updatePerformanceDisplayWithRealData(performanceData, transactionDataResponse);
         
         populateTransactionTable();
+        populateMobileTransactionList();
         
         // Mark that we have real data loaded to prevent demo mode
         localStorage.setItem('lastRealDataUpdate', Date.now().toString());
@@ -1261,6 +1265,75 @@ function updateChartWithRealData(data) {
     console.log('✅ Chart updated successfully');
 }
 
+// Initialize mobile chart
+function initializeMobileChart() {
+    const mobileChartCanvas = document.getElementById('mobileChart');
+    if (!mobileChartCanvas) {
+        console.log('📱 No mobile chart canvas found');
+        return;
+    }
+    
+    console.log('📱 Initializing mobile chart...');
+    
+    mobileChart = new Chart(mobileChartCanvas, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'BrightFlow',
+                data: [],
+                borderColor: '#ffd700',
+                backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    display: false
+                },
+                y: {
+                    display: false
+                }
+            },
+            elements: {
+                point: {
+                    radius: 0
+                }
+            }
+        }
+    });
+    
+    console.log('✅ Mobile chart initialized');
+}
+
+// Update mobile chart with real data
+function updateMobileChartWithRealData(data) {
+    if (!mobileChart) return;
+    
+    console.log('📱 Updating mobile chart with real data');
+    
+    const brightflowData = data.performance.brightflow || [];
+    
+    if (brightflowData.length > 0) {
+        mobileChart.data.labels = brightflowData.map(item => 
+            new Date(item.date).toLocaleDateString()
+        );
+        mobileChart.data.datasets[0].data = brightflowData.map(item => item.value);
+        mobileChart.update('active');
+        console.log('✅ Mobile chart updated with', brightflowData.length, 'data points');
+    }
+}
+
 // Update performance display with real data
 function updatePerformanceDisplayWithRealData(performanceData, transactionData = null) {
     const currentValueEl = document.getElementById('currentValue');
@@ -1290,6 +1363,18 @@ function updatePerformanceDisplayWithRealData(performanceData, transactionData =
     currentValueEl.textContent = '$' + displayValue.toFixed(2);
     dailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}% total return`;
     dailyChangeEl.className = 'performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
+    
+    // Update mobile elements if they exist
+    const mobileCurrentValueEl = document.getElementById('mobileCurrentValue');
+    const mobileDailyChangeEl = document.getElementById('mobileDailyChange');
+    
+    if (mobileCurrentValueEl) {
+        mobileCurrentValueEl.textContent = '$' + displayValue.toFixed(2);
+    }
+    if (mobileDailyChangeEl) {
+        mobileDailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%`;
+        mobileDailyChangeEl.className = 'mobile-performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
+    }
     
     console.log('Performance Display Updated:', {
         displayValue: displayValue,
@@ -1581,6 +1666,91 @@ function updateChartWithSelectedCompetitors() {
     performanceChart.update('active');
     
     console.log('Chart updated with selected competitors:', selectedCompetitors);
+}
+
+// Populate mobile transaction list
+function populateMobileTransactionList() {
+    const mobileTransactionList = document.getElementById('mobileTransactionList');
+    if (!mobileTransactionList) {
+        console.log('📱 No mobile transaction list found');
+        return;
+    }
+    
+    console.log('📱 Populating mobile transaction list with data:', transactionData);
+    
+    // Clear existing content
+    mobileTransactionList.innerHTML = '';
+    
+    // Check if we have transaction data
+    if (!transactionData || !Array.isArray(transactionData)) {
+        console.warn('📱 No transaction data available for mobile');
+        mobileTransactionList.innerHTML = '<div class="mobile-no-transactions">No recent trades</div>';
+        return;
+    }
+    
+    // Filter transactions from last 24 hours (or today if no time data available)
+    const now = new Date();
+    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    
+    // Since transactions.json only has dates (no times), show today's transactions
+    const todayStr = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    const yesterdayStr = oneDayAgo.toISOString().split('T')[0];
+    
+    const last24HourTransactions = transactionData.filter(transaction => {
+        // Check if transaction and timestamp exist
+        if (!transaction || !transaction.timestamp) {
+            return false;
+        }
+        
+        let txDateStr;
+        if (typeof transaction.timestamp === 'string') {
+            // Extract date from timestamp (format: 2025-10-15T09:30:00Z)
+            txDateStr = transaction.timestamp.split('T')[0];
+        } else if (transaction.timestamp instanceof Date) {
+            txDateStr = transaction.timestamp.toISOString().split('T')[0];
+        } else {
+            return false;
+        }
+        
+        // Show transactions from today and yesterday
+        return txDateStr === todayStr || txDateStr === yesterdayStr;
+    }).reverse(); // Most recent first
+    
+    console.log('📱 Found transactions for mobile display:', last24HourTransactions.length);
+    
+    // If no transactions in last 24 hours, show message
+    if (last24HourTransactions.length === 0) {
+        mobileTransactionList.innerHTML = '<div class="mobile-no-transactions">No recent trades</div>';
+        return;
+    }
+    
+    // Show only the last 5 transactions for mobile
+    const recentTransactions = last24HourTransactions.slice(0, 5);
+    
+    recentTransactions.forEach((transaction, index) => {
+        const transactionDiv = document.createElement('div');
+        transactionDiv.className = 'mobile-transaction-item';
+        
+        const txDate = new Date(transaction.timestamp);
+        const isPositive = transaction.amount > 0;
+        
+        transactionDiv.innerHTML = `
+            <div class="mobile-transaction-header">
+                <span class="mobile-transaction-symbol">${transaction.symbol}</span>
+                <span class="mobile-transaction-action ${transaction.action.toLowerCase()}">${transaction.action}</span>
+            </div>
+            <div class="mobile-transaction-details">
+                <span class="mobile-transaction-amount ${isPositive ? 'positive' : 'negative'}">
+                    ${isPositive ? '+' : ''}$${Math.abs(transaction.amount).toFixed(2)}
+                </span>
+                <span class="mobile-transaction-time">${txDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            </div>
+        `;
+        
+        mobileTransactionList.appendChild(transactionDiv);
+    });
+    
+    console.log('✅ Mobile transaction list populated with', recentTransactions.length, 'transactions');
 }
 
 // Make forceRefreshData available globally for manual refresh
