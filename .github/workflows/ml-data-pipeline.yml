@@ -1,0 +1,102 @@
+name: ML Data Pipeline
+
+on:
+    schedule:
+        # Run every 2 hours during market hours (9 AM - 4 PM EST)
+        - cron: "0 9,11,13,15 * * 1-5"
+        # Run every 6 hours outside market hours
+        - cron: "0 0,6,12,18 * * *"
+    workflow_dispatch: # Allow manual trigger
+    push:
+        branches:
+            - main
+
+jobs:
+    ml-learning:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.9"
+
+            - name: Install dependencies
+              run: |
+                  pip install requests pandas numpy
+
+            - name: Run ML Learning System
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  python ml_learning_system.py
+
+    site-data-reader:
+        runs-on: ubuntu-latest
+        needs: ml-learning
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.9"
+
+            - name: Install dependencies
+              run: |
+                  pip install requests pandas numpy scikit-learn
+
+            - name: Run Site Data Reader
+              run: |
+                  python site_data_reader.py
+
+    competitor-monitor:
+        runs-on: ubuntu-latest
+        needs: [ml-learning, site-data-reader]
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.9"
+
+            - name: Install dependencies
+              run: |
+                  pip install yfinance requests pandas numpy scikit-learn
+
+            - name: Run Competitor Monitor
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  python competitor_monitor.py
+
+    update-website:
+        runs-on: ubuntu-latest
+        needs: [ml-learning, site-data-reader, competitor-monitor]
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Safe commit and push data updates
+                run: |
+                    # Use safe update script to prevent merge conflicts
+                    python ml-safe-update.py
+                    
+                    git config --local user.email "action@github.com"
+                    git config --local user.name "GitHub Action"
+
+                    # Add all data files
+                    git add data/
+
+                    # Check if there are changes
+                    if git diff --staged --quiet; then
+                        echo "No changes to commit"
+                    else
+                        git commit -m "🤖 Auto-update ML data pipeline - $(date)"
+                        git push
+                    fi

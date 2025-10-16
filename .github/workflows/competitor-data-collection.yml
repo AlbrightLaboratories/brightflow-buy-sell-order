@@ -1,0 +1,46 @@
+name: Competitor Data Collection
+
+on:
+    schedule:
+        # Run daily at 6 PM EST (after market close)
+        - cron: "0 23 * * 1-5"
+    workflow_dispatch: # Allow manual trigger
+
+jobs:
+    collect-competitor-data:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.9"
+
+            - name: Install dependencies
+              run: |
+                  pip install yfinance requests pandas numpy scikit-learn
+
+            - name: Run Competitor Data Collector
+              run: |
+                  python competitor_data_collector.py
+
+            - name: Safe commit and push competitor data
+                run: |
+                    # Use safe update script to prevent merge conflicts
+                    python ml-safe-update.py
+                    
+                    git config --local user.email "action@github.com"
+                    git config --local user.name "GitHub Action"
+
+                    # Add competitor data files
+                    git add data/competitor_performance.json data/competitor_performance_comparison.json
+
+                    # Check if there are changes
+                    if git diff --staged --quiet; then
+                        echo "No competitor data changes to commit"
+                    else
+                        git commit -m "📊 Update competitor data - $(date)"
+                        git push
+                    fi

@@ -1,0 +1,67 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ml-learning-cronjob
+  namespace: brightflow-ml
+  labels:
+    app: brightflow-ml
+    component: ml-learning
+spec:
+  # Run every 2 hours
+  schedule: "0 */2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: brightflow-ml
+            component: ml-learning
+        spec:
+          containers:
+          - name: ml-learning
+            image: python:3.9-slim
+            imagePullPolicy: IfNotPresent
+            command: ["/bin/bash"]
+            args:
+              - -c
+              - |
+                # Install dependencies
+                pip install requests pandas numpy
+                
+                # Copy application code
+                cp /app/ml_learning_system.py /tmp/
+                
+                # Run the ML learning system
+                cd /tmp
+                python ml_learning_system.py
+            env:
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: brightflow-secrets
+                  key: github-token
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            volumeMounts:
+            - name: app-code
+              mountPath: /app
+            - name: data-volume
+              mountPath: /data
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "100m"
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
+          volumes:
+          - name: app-code
+            configMap:
+              name: brightflow-app-code
+          - name: data-volume
+            persistentVolumeClaim:
+              claimName: brightflow-data-pvc
+          restartPolicy: OnFailure

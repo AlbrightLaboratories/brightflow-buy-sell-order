@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: competitor-monitor
+  namespace: brightflow-ml
+  labels:
+    app: brightflow-ml
+    component: competitor-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: brightflow-ml
+      component: competitor-monitor
+  template:
+    metadata:
+      labels:
+        app: brightflow-ml
+        component: competitor-monitor
+    spec:
+      containers:
+        - name: competitor-monitor
+          image: python:3.9-slim
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash"]
+          args:
+            - -c
+            - |
+              # Install dependencies
+              pip install yfinance requests pandas numpy scikit-learn
+
+              # Copy application code
+              cp /app/competitor_monitor.py /tmp/
+              cp /app/requirements.txt /tmp/ 2>/dev/null || true
+
+              # Run the competitor monitor
+              cd /tmp
+              python competitor_monitor.py
+
+              # Keep container running for logs
+              tail -f /dev/null
+          env:
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: brightflow-secrets
+                  key: github-token
+            - name: PYTHONUNBUFFERED
+              value: "1"
+          volumeMounts:
+            - name: app-code
+              mountPath: /app
+            - name: data-volume
+              mountPath: /data
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - "test -f /data/competitor_analysis.json || echo 'running'"
+            initialDelaySeconds: 60
+            periodSeconds: 120
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - "test -f /data/competitor_analysis.json"
+            initialDelaySeconds: 10
+            periodSeconds: 30
+      volumes:
+        - name: app-code
+          configMap:
+            name: brightflow-app-code
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: brightflow-data-pvc
+      restartPolicy: Always

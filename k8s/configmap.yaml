@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: brightflow-config
+  namespace: brightflow-ml
+data:
+  # API Configuration
+  GITHUB_API_URL: "https://api.github.com"
+  YAHOO_FINANCE_BASE_URL: "https://query1.finance.yahoo.com"
+  WEBSITE_BASE_URL: "https://albright-laboratories.github.io/brightflow-buy-sell-order"
+  
+  # Repository Configuration
+  REPO_OWNER: "AlbrightLaboratories"
+  ML_REPO_NAME: "brightflow-ML"
+  WEBSITE_REPO_NAME: "brightflow-buy-sell-order"
+  
+  # Data Endpoints
+  PERFORMANCE_ENDPOINT: "/data/performance.json"
+  TRANSACTIONS_ENDPOINT: "/data/transactions.json"
+  MARKET_DATA_ENDPOINT: "/data/hourly_market_data.json"
+  
+  # Competitor Symbols
+  COMPETITOR_SYMBOLS: "SPY,VFIAX,SPDR"
+  
+  # ML Configuration
+  ML_CONFIDENCE_THRESHOLD: "0.75"
+  ML_POSITION_SIZE: "0.1"
+  ML_LOOKBACK_PERIOD: "252"
+  
+  # Performance Thresholds
+  MIN_OUTPERFORMANCE: "2.0"
+  TARGET_OUTPERFORMANCE: "5.0"
+  MAX_DRAWDOWN: "10.0"
+  MIN_WIN_RATE: "60.0"
+  
+  # Update Intervals (in minutes)
+  COMPETITOR_UPDATE_INTERVAL: "15"
+  ML_LEARNING_INTERVAL: "360"
+  SITE_DATA_INTERVAL: "30"
+  
+  # Logging Configuration
+  LOG_LEVEL: "INFO"
+  LOG_FORMAT: "json"

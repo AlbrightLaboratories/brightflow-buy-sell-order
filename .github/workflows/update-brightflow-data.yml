@@ -345,9 +345,12 @@ jobs:
           echo "Changes detected, will commit and push"
         fi
 
-    - name: Commit and push changes
+    - name: Safe commit and push changes
       if: steps.changes.outputs.changed == 'true' || github.event.inputs.force_update == 'true'
       run: |
+        # Use safe update script to prevent merge conflicts
+        python ml-safe-update.py
+        
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         

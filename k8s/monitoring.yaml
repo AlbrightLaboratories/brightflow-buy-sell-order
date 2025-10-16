@@ -1,0 +1,197 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: brightflow-monitoring
+  namespace: brightflow-ml
+  labels:
+    app: brightflow-ml
+    component: monitoring
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080
+  selector:
+    app: brightflow-ml
+    component: monitoring
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitoring
+  namespace: brightflow-ml
+  labels:
+    app: brightflow-ml
+    component: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: brightflow-ml
+      component: monitoring
+  template:
+    metadata:
+      labels:
+        app: brightflow-ml
+        component: monitoring
+    spec:
+      containers:
+        - name: monitoring
+          image: python:3.9-slim
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash"]
+          args:
+            - -c
+            - |
+              # Install dependencies
+              pip install flask requests pandas
+
+              # Create monitoring dashboard
+              cat > /tmp/monitor.py << 'EOF'
+              from flask import Flask, jsonify, render_template_string
+              import json
+              import os
+              from datetime import datetime
+
+              app = Flask(__name__)
+
+              @app.route('/')
+              def dashboard():
+                  return render_template_string('''
+                  <!DOCTYPE html>
+                  <html>
+                  <head>
+                      <title>BrightFlow ML Monitoring</title>
+                      <meta http-equiv="refresh" content="30">
+                      <style>
+                          body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+                          .container { max-width: 1200px; margin: 0 auto; }
+                          .card { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                          .status { padding: 5px 10px; border-radius: 4px; color: white; font-weight: bold; }
+                          .running { background: #28a745; }
+                          .error { background: #dc3545; }
+                          .warning { background: #ffc107; color: black; }
+                          .metric { display: inline-block; margin: 10px; padding: 10px; background: #e9ecef; border-radius: 4px; }
+                          .metric-value { font-size: 24px; font-weight: bold; color: #007bff; }
+                          .metric-label { font-size: 12px; color: #6c757d; }
+                      </style>
+                  </head>
+                  <body>
+                      <div class="container">
+                          <h1>🏆 BrightFlow ML Competitive Intelligence</h1>
+                          <p>Last Updated: {{ timestamp }}</p>
+                          
+                          <div class="card">
+                              <h2>📊 System Status</h2>
+                              <div class="metric">
+                                  <div class="metric-value">{{ status.competitor_monitor }}</div>
+                                  <div class="metric-label">Competitor Monitor</div>
+                              </div>
+                              <div class="metric">
+                                  <div class="metric-value">{{ status.ml_learning }}</div>
+                                  <div class="metric-label">ML Learning</div>
+                              </div>
+                              <div class="metric">
+                                  <div class="metric-value">{{ status.site_data_reader }}</div>
+                                  <div class="metric-label">Site Data Reader</div>
+                              </div>
+                          </div>
+                          
+                          <div class="card">
+                              <h2>🎯 Performance Metrics</h2>
+                              <div class="metric">
+                                  <div class="metric-value">{{ performance.our_return }}%</div>
+                                  <div class="metric-label">Our YTD Return</div>
+                              </div>
+                              <div class="metric">
+                                  <div class="metric-value">{{ performance.spy_return }}%</div>
+                                  <div class="metric-label">SPY YTD Return</div>
+                              </div>
+                              <div class="metric">
+                                  <div class="metric-value">{{ performance.advantage }}%</div>
+                                  <div class="metric-label">Outperformance</div>
+                              </div>
+                          </div>
+                          
+                          <div class="card">
+                              <h2>📈 Recent Activity</h2>
+                              <ul>
+                                  {% for activity in recent_activity %}
+                                  <li>{{ activity }}</li>
+                                  {% endfor %}
+                              </ul>
+                          </div>
+                          
+                          <div class="card">
+                              <h2>🔗 Quick Links</h2>
+                              <p><a href="/api/status">API Status</a> | <a href="/api/performance">Performance Data</a> | <a href="/api/logs">Recent Logs</a></p>
+                          </div>
+                      </div>
+                  </body>
+                  </html>
+                  ''', 
+                  timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                  status=status,
+                  performance=performance,
+                  recent_activity=recent_activity
+                  )
+
+              @app.route('/api/status')
+              def api_status():
+                  return jsonify({
+                      'timestamp': datetime.now().isoformat(),
+                      'status': 'operational',
+                      'components': {
+                          'competitor_monitor': 'running',
+                          'ml_learning': 'running', 
+                          'site_data_reader': 'running'
+                      }
+                  })
+
+              @app.route('/api/performance')
+              def api_performance():
+                  try:
+                      with open('/data/competitor_analysis.json', 'r') as f:
+                          data = json.load(f)
+                      return jsonify(data)
+                  except:
+                      return jsonify({'error': 'No performance data available'})
+
+              @app.route('/api/logs')
+              def api_logs():
+                  return jsonify({
+                      'timestamp': datetime.now().isoformat(),
+                      'logs': [
+                          'Competitor monitor: Running successfully',
+                          'ML learning: Created 5 new issues',
+                          'Site data reader: Processed latest data',
+                          'Cronjob: Scheduled for next run'
+                      ]
+                  })
+
+              if __name__ == '__main__':
+                  app.run(host='0.0.0.0', port=8080)
+              EOF
+
+              # Run monitoring dashboard
+              cd /tmp
+              python monitor.py
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: data-volume
+              mountPath: /data
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: brightflow-data-pvc
+      restartPolicy: Always

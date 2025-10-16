@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: brightflow-ml
+  labels:
+    name: brightflow-ml
+    purpose: competitive-intelligence
+    environment: production

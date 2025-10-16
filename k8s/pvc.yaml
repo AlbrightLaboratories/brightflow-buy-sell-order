@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: brightflow-data-pvc
+  namespace: brightflow-ml
+  labels:
+    app: brightflow-ml
+    component: data-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: local-path # Adjust based on your storage class

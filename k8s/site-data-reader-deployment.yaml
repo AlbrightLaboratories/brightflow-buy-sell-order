@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: site-data-reader
+  namespace: brightflow-ml
+  labels:
+    app: brightflow-ml
+    component: site-data-reader
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: brightflow-ml
+      component: site-data-reader
+  template:
+    metadata:
+      labels:
+        app: brightflow-ml
+        component: site-data-reader
+    spec:
+      containers:
+        - name: site-data-reader
+          image: python:3.9-slim
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash"]
+          args:
+            - -c
+            - |
+              # Install dependencies
+              pip install requests pandas numpy scikit-learn
+
+              # Copy application code
+              cp /app/site_data_reader.py /tmp/
+
+              # Run the site data reader
+              cd /tmp
+              python site_data_reader.py
+
+              # Keep container running for logs
+              tail -f /dev/null
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+          volumeMounts:
+            - name: app-code
+              mountPath: /app
+            - name: data-volume
+              mountPath: /data
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - "test -f /data/ml_datapoint.json || echo 'running'"
+            initialDelaySeconds: 60
+            periodSeconds: 120
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - "test -f /data/ml_datapoint.json"
+            initialDelaySeconds: 10
+            periodSeconds: 30
+      volumes:
+        - name: app-code
+          configMap:
+            name: brightflow-app-code
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: brightflow-data-pvc
+      restartPolicy: Always

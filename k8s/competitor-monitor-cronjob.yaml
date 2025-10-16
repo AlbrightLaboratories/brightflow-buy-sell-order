@@ -1,0 +1,67 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: competitor-monitor-cronjob
+  namespace: brightflow-ml
+  labels:
+    app: brightflow-ml
+    component: competitor-monitor
+spec:
+  # Run every hour
+  schedule: "0 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: brightflow-ml
+            component: competitor-monitor
+        spec:
+          containers:
+          - name: competitor-monitor
+            image: python:3.9-slim
+            imagePullPolicy: IfNotPresent
+            command: ["/bin/bash"]
+            args:
+              - -c
+              - |
+                # Install dependencies
+                pip install yfinance requests pandas numpy scikit-learn
+                
+                # Copy application code
+                cp /app/competitor_monitor.py /tmp/
+                
+                # Run the competitor monitor
+                cd /tmp
+                python competitor_monitor.py
+            env:
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: brightflow-secrets
+                  key: github-token
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            volumeMounts:
+            - name: app-code
+              mountPath: /app
+            - name: data-volume
+              mountPath: /data
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "100m"
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
+          volumes:
+          - name: app-code
+            configMap:
+              name: brightflow-app-code
+          - name: data-volume
+            persistentVolumeClaim:
+              claimName: brightflow-data-pvc
+          restartPolicy: OnFailure

@@ -1,0 +1,1109 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: brightflow-app-code
+  namespace: brightflow-ml
+  labels:
+    app: brightflow-ml
+    component: app-code
+data:
+  competitor_monitor.py: |
+      #!/usr/bin/env python3
+      """
+      Competitor Monitoring System
+      Tracks SPY, VFIAX, SPDR performance to ensure we beat them
+      """
+      
+      import yfinance as yf
+      import requests
+      import json
+      import pandas as pd
+      from datetime import datetime, timedelta
+      import time
+      
+      class CompetitorMonitor:
+          def __init__(self):
+              self.competitors = {
+                  'SPY': {'name': 'SPDR S&P 500 ETF', 'ticker': 'SPY'},
+                  'VFIAX': {'name': 'Vanguard 500 Index Fund', 'ticker': 'VFIAX'},
+                  'SPDR': {'name': 'SPDR S&P 500 ETF Trust', 'ticker': 'SPY'}  # Same as SPY
+              }
+              
+          def get_competitor_data(self):
+              """Fetch real-time competitor performance data"""
+              print("🏆 Fetching competitor data...")
+              
+              competitor_data = {}
+              
+              for symbol, info in self.competitors.items():
+                  try:
+                      ticker = yf.Ticker(info['ticker'])
+                      
+                      # Get current info
+                      current_info = ticker.info
+                      
+                      # Get historical data for calculations
+                      hist = ticker.history(period='5d')
+                      
+                      if not hist.empty:
+                          # Calculate daily change
+                          current_price = hist['Close'].iloc[-1]
+                          prev_close = hist['Close'].iloc[-2] if len(hist) > 1 else current_price
+                          daily_change = current_price - prev_close
+                          daily_change_percent = (daily_change / prev_close) * 100
+                          
+                          # Calculate YTD return
+                          ytd_return = current_info.get('ytdReturn', 0) * 100
+                          
+                          competitor_data[symbol.lower()] = {
+                              'symbol': symbol,
+                              'name': info['name'],
+                              'currentPrice': round(current_price, 2),
+                              'dailyChange': round(daily_change, 2),
+                              'dailyChangePercent': round(daily_change_percent, 2),
+                              'ytdReturn': round(ytd_return, 2),
+                              'lastUpdated': datetime.now().isoformat(),
+                              'volume': current_info.get('volume', 0),
+                              'marketCap': current_info.get('marketCap', 0)
+                          }
+                          
+                          print(f"✅ {symbol}: ${current_price:.2f} ({daily_change_percent:+.2f}%)")
+                      else:
+                          print(f"❌ No data for {symbol}")
+                          
+                  except Exception as e:
+                      print(f"❌ Error fetching {symbol}: {e}")
+                      competitor_data[symbol.lower()] = {
+                          'symbol': symbol,
+                          'name': info['name'],
+                          'error': str(e),
+                          'lastUpdated': datetime.now().isoformat()
+                      }
+                  
+                  # Rate limiting
+                  time.sleep(1)
+              
+              return competitor_data
+          
+          def get_our_performance(self):
+              """Get our current performance from local data files"""
+              try:
+                  print("📊 Fetching our performance data...")
+                  
+                  # Try to read from local data files first
+                  import os
+                  performance_file = 'data/performance.json'
+                  transaction_file = 'data/transactions.json'
+                  
+                  if os.path.exists(performance_file) and os.path.exists(transaction_file):
+                      with open(performance_file, 'r') as f:
+                          performance_data = json.load(f)
+                      
+                      with open(transaction_file, 'r') as f:
+                          transaction_data = json.load(f)
+                      
+                      our_performance = {
+                          'currentValue': performance_data.get('currentValue', 1.0),
+                          'dailyChange': performance_data.get('dailyChange', 0.0),
+                          'dailyChangePercent': performance_data.get('dailyChangePercent', 0.0),
+                          'totalReturn': performance_data.get('totalReturn', 0.0),
+                          'totalTransactions': transaction_data.get('totalTransactions', 0),
+                          'currentBalance': transaction_data.get('currentBalance', 1000.0),
+                          'lastUpdated': performance_data.get('lastUpdated', datetime.now().isoformat())
+                      }
+                      
+                      print(f"✅ Our Performance: ${our_performance['currentValue']:.4f} ({our_performance['totalReturn']:.2f}%)")
+                      return our_performance
+                  
+                  # Fallback to GitHub Pages site
+                  print("📡 Falling back to GitHub Pages site...")
+                  response = requests.get('https://albright-laboratories.github.io/brightflow-buy-sell-order/data/performance.json')
+                  if response.status_code == 200:
+                      performance_data = response.json()
+                      
+                      # Read transaction data
+                      response = requests.get('https://albright-laboratories.github.io/brightflow-buy-sell-order/data/transactions.json')
+                      if response.status_code == 200:
+                          transaction_data = response.json()
+                          
+                          our_performance = {
+                              'currentValue': performance_data.get('currentValue', 1.0),
+                              'dailyChange': performance_data.get('dailyChange', 0.0),
+                              'dailyChangePercent': performance_data.get('dailyChangePercent', 0.0),
+                              'totalReturn': performance_data.get('totalReturn', 0.0),
+                              'totalTransactions': transaction_data.get('totalTransactions', 0),
+                              'currentBalance': transaction_data.get('currentBalance', 1000.0),
+                              'lastUpdated': performance_data.get('lastUpdated', datetime.now().isoformat())
+                          }
+                          
+                          print(f"✅ Our Performance: ${our_performance['currentValue']:.4f} ({our_performance['totalReturn']:.2f}%)")
+                          return our_performance
+                      else:
+                          print("❌ Could not fetch transaction data")
+                  else:
+                      print("❌ Could not fetch performance data")
+                      
+              except Exception as e:
+                  print(f"❌ Error fetching our performance: {e}")
+              
+              return None
+          
+          def analyze_competitive_advantage(self, our_performance, competitor_data):
+              """Analyze our performance vs competitors"""
+              if not our_performance or not competitor_data:
+                  return None
+                  
+              print("🔍 Analyzing competitive advantage...")
+              
+              # Get SPY as benchmark
+              spy_data = competitor_data.get('spy', {})
+              if not spy_data or 'error' in spy_data:
+                  print("❌ No SPY data for comparison")
+                  return None
+              
+              spy_ytd = spy_data.get('ytdReturn', 0)
+              our_ytd = our_performance.get('totalReturn', 0)
+              
+              spy_daily = spy_data.get('dailyChangePercent', 0)
+              our_daily = our_performance.get('dailyChangePercent', 0)
+              
+              advantage = {
+                  'dailyAdvantage': round(our_daily - spy_daily, 2),
+                  'ytdAdvantage': round(our_ytd - spy_ytd, 2),
+                  'outperformance': round(((our_ytd / spy_ytd) - 1) * 100, 2) if spy_ytd > 0 else 0,
+                  'riskAdjustedReturn': 1.5,  # Placeholder - would calculate Sharpe ratio
+                  'competitivePosition': 'WINNING' if our_ytd > spy_ytd else 'LOSING',
+                  'lastUpdated': datetime.now().isoformat()
+              }
+              
+              print(f"🎯 Daily Advantage: {advantage['dailyAdvantage']:+.2f}%")
+              print(f"🎯 YTD Advantage: {advantage['ytdAdvantage']:+.2f}%")
+              print(f"🎯 Outperformance: {advantage['outperformance']:+.2f}%")
+              print(f"🏆 Status: {advantage['competitivePosition']}")
+              
+              return advantage
+          
+          def detect_market_opportunities(self):
+              """Detect market opportunities to exploit"""
+              print("🔍 Detecting market opportunities...")
+              
+              opportunities = []
+              
+              try:
+                  # Check VIX for volatility
+                  vix = yf.Ticker('^VIX')
+                  vix_data = vix.history(period='1d')
+                  if not vix_data.empty:
+                      vix_value = vix_data['Close'].iloc[-1]
+                      if vix_value > 20:
+                          opportunities.append(f"High volatility (VIX: {vix_value:.1f}) - active management advantage")
+                      elif vix_value < 15:
+                          opportunities.append(f"Low volatility (VIX: {vix_value:.1f}) - stable market conditions")
+                  
+                  # Check sector performance
+                  sectors = {
+                      'XLK': 'Technology',
+                      'XLE': 'Energy', 
+                      'XLV': 'Healthcare',
+                      'XLF': 'Financials',
+                      'XLI': 'Industrials'
+                  }
+                  
+                  sector_performance = {}
+                  for sector, name in sectors.items():
+                      try:
+                          ticker = yf.Ticker(sector)
+                          hist = ticker.history(period='5d')
+                          if not hist.empty:
+                              current = hist['Close'].iloc[-1]
+                              prev = hist['Close'].iloc[-2] if len(hist) > 1 else current
+                              change = ((current / prev) - 1) * 100
+                              sector_performance[sector] = change
+                      except:
+                          continue
+                  
+                  if sector_performance:
+                      avg_sector_return = sum(sector_performance.values()) / len(sector_performance)
+                      
+                      for sector, change in sector_performance.items():
+                          if change < avg_sector_return * 0.8:
+                              opportunities.append(f"{sectors[sector]} ({sector}) undervalued - potential opportunity")
+                          elif change > avg_sector_return * 1.2:
+                              opportunities.append(f"{sectors[sector]} ({sector}) overvalued - potential short opportunity")
+                  
+              except Exception as e:
+                  print(f"❌ Error detecting opportunities: {e}")
+              
+              if opportunities:
+                  print("💡 Market Opportunities:")
+                  for opp in opportunities:
+                      print(f"   • {opp}")
+              else:
+                  print("ℹ️  No significant market opportunities detected")
+              
+              return opportunities
+          
+          def create_ml_datapoint(self, our_performance, competitor_data, advantage, opportunities):
+              """Create ML datapoint from all collected data"""
+              ml_datapoint = {
+                  'timestamp': datetime.now().isoformat(),
+                  'our_performance': our_performance,
+                  'competitor_data': competitor_data,
+                  'competitive_advantage': advantage,
+                  'market_opportunities': opportunities,
+                  'data_source': 'competitor_monitor.py',
+                  'version': '1.0'
+              }
+              
+              return ml_datapoint
+          
+          def save_data(self, data, filename='competitor_analysis.json'):
+              """Save analysis data to file"""
+              try:
+                  with open(f'data/{filename}', 'w') as f:
+                      json.dump(data, f, indent=2)
+                  print(f"💾 Data saved to data/{filename}")
+              except Exception as e:
+                  print(f"❌ Error saving data: {e}")
+          
+          def run_full_analysis(self):
+              """Run complete competitive analysis"""
+              print("🚀 Starting competitive analysis...")
+              print("=" * 50)
+              
+              # Collect all data
+              competitor_data = self.get_competitor_data()
+              our_performance = self.get_our_performance()
+              
+              if not our_performance:
+                  print("❌ Cannot proceed without our performance data")
+                  return None
+              
+              # Analyze competitive advantage
+              advantage = self.analyze_competitive_advantage(our_performance, competitor_data)
+              
+              # Detect opportunities
+              opportunities = self.detect_market_opportunities()
+              
+              # Create ML datapoint
+              ml_datapoint = self.create_ml_datapoint(
+                  our_performance, 
+                  competitor_data, 
+                  advantage, 
+                  opportunities
+              )
+              
+              # Save data
+              self.save_data(ml_datapoint)
+              
+              print("=" * 50)
+              print("✅ Competitive analysis complete!")
+              
+              return ml_datapoint
+      
+      def main():
+          """Main function"""
+          monitor = CompetitorMonitor()
+          analysis = monitor.run_full_analysis()
+          
+          if analysis:
+              print("\n📊 Summary:")
+              print(f"   Our YTD Return: {analysis['our_performance']['totalReturn']:.2f}%")
+              if analysis['competitive_advantage']:
+                  print(f"   vs SPY Advantage: {analysis['competitive_advantage']['ytdAdvantage']:+.2f}%")
+                  print(f"   Status: {analysis['competitive_advantage']['competitivePosition']}")
+              print(f"   Opportunities: {len(analysis['market_opportunities'])}")
+      
+      if __name__ == "__main__":
+          main()
+      
+  ml_learning_system.py: |
+    #!/usr/bin/env python3
+    """
+    ML Learning System
+    Creates GitHub issues for ML algorithm experimentation
+    """
+
+    import requests
+    import json
+    import os
+    from datetime import datetime
+    import random
+
+    class MLLearningSystem:
+        def __init__(self, github_token=None):
+            self.github_token = github_token or os.getenv('GITHUB_TOKEN')
+            self.repo_owner = 'AlbrightLaboratories'
+            self.repo_name = 'brightflow-ML'  # ML repository
+            self.base_url = f'https://api.github.com/repos/{self.repo_owner}/{self.repo_name}'
+            self.headers = {
+                'Authorization': f'token {self.github_token}',
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            }
+        
+        def create_ml_learning_issue(self, algorithm_name, algorithm_type, target_outperformance=2.0):
+            """Create a GitHub issue for ML algorithm experimentation"""
+            
+            issue_title = f"🧠 ML Algorithm Experiment - {algorithm_name}"
+            
+            issue_body = f"""## 🧠 ML Algorithm Experiment - {algorithm_name}
+
+    ### 📊 **Experiment Details**
+    - **Algorithm Type:** {algorithm_type}
+    - **Target Outperformance:** {target_outperformance}% above SPY
+    - **Risk Level:** {self._get_risk_level(algorithm_type)}
+    - **Time Horizon:** {self._get_time_horizon(algorithm_type)}
+    - **Created:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}
+
+    ### 🎯 **Success Criteria**
+    - [ ] Beat SPY by at least {target_outperformance}% over 30 days
+    - [ ] Maintain Sharpe ratio > 1.5
+    - [ ] Maximum drawdown < 10%
+    - [ ] Win rate > 60%
+    - [ ] Generate at least 5 profitable trades
+
+    ### 📈 **Performance Tracking**
+    - **Starting Date:** {datetime.now().strftime('%Y-%m-%d')}
+    - **Initial Capital:** $1,000 (theoretical)
+    - **Current Value:** $1,000
+    - **Return:** 0.00%
+    - **vs SPY:** +0.00%
+
+    ### 🔬 **Algorithm Parameters**
+    ```python
+    # {algorithm_name} configuration
+    parameters = {{
+        "algorithm_type": "{algorithm_type}",
+        "lookback_period": {self._get_lookback_period(algorithm_type)},
+        "confidence_threshold": {self._get_confidence_threshold(algorithm_type)},
+        "position_size": {self._get_position_size(algorithm_type)},
+        "stop_loss": {self._get_stop_loss(algorithm_type)},
+        "take_profit": {self._get_take_profit(algorithm_type)},
+        "target_outperformance": {target_outperformance}
+    }}
+    ```
+
+    ### 📝 **ML Learning Notes**
+    - **What worked:** _[To be filled by ML system]_
+    - **What failed:** _[To be filled by ML system]_
+    - **Key insights:** _[To be filled by ML system]_
+    - **Next experiments:** _[To be filled by ML system]_
+
+    ### 🚀 **Implementation Status**
+    - [ ] Algorithm coded
+    - [ ] Backtesting completed
+    - [ ] Paper trading started
+    - [ ] Live trading approved
+    - [ ] Performance monitoring active
+
+    ### 📊 **Results Dashboard**
+    | Metric | Our Algorithm | SPY | Advantage |
+    |--------|---------------|-----|-----------|
+    | Return | 0.00% | 0.00% | +0.00% |
+    | Sharpe | 0.00 | 0.00 | +0.00 |
+    | Max DD | 0.00% | 0.00% | +0.00% |
+    | Win Rate | 0% | 0% | +0% |
+
+    ### 🔄 **Daily Updates**
+    _This issue will be updated daily with performance data and learning insights._
+
+    ### 🏷️ **Labels**
+    - `ml-experiment`
+    - `algorithm-{algorithm_type.lower().replace(' ', '-')}`
+    - `target-{target_outperformance}%-outperformance`
+    - `status-active`
+
+    ### 👥 **Assignees**
+    - `@brightflow-ml-bot`
+
+    ---
+    **Created by:** ML Learning System  
+    **Purpose:** Continuous algorithm improvement to beat competitors  
+    **Next Review:** {self._get_next_review_date()}
+    """
+            
+            issue_data = {
+                'title': issue_title,
+                'body': issue_body,
+                'labels': [
+                    'ml-experiment',
+                    f'algorithm-{algorithm_type.lower().replace(" ", "-")}',
+                    f'target-{target_outperformance}%-outperformance',
+                    'status-active'
+                ],
+                'assignees': []  # Will be assigned to ML bot
+            }
+            
+            return self._create_github_issue(issue_data)
+        
+        def _create_github_issue(self, issue_data):
+            """Create GitHub issue"""
+            if not self.github_token:
+                print("❌ No GitHub token provided")
+                return None
+            
+            try:
+                url = f"{self.base_url}/issues"
+                response = requests.post(url, headers=self.headers, json=issue_data)
+                
+                if response.status_code == 201:
+                    issue = response.json()
+                    print(f"✅ Created issue: {issue['html_url']}")
+                    return issue
+                else:
+                    print(f"❌ Failed to create issue: {response.status_code} - {response.text}")
+                    return None
+                    
+            except Exception as e:
+                print(f"❌ Error creating issue: {e}")
+                return None
+        
+        def _get_risk_level(self, algorithm_type):
+            """Get risk level based on algorithm type"""
+            risk_levels = {
+                'Value Analysis': 'Low',
+                'Magic Formula': 'Medium',
+                'Buffett-Style': 'Low',
+                'Meme Detection': 'High',
+                'Momentum': 'High',
+                'Mean Reversion': 'Medium',
+                'Arbitrage': 'Low'
+            }
+            return risk_levels.get(algorithm_type, 'Medium')
+        
+        def _get_time_horizon(self, algorithm_type):
+            """Get time horizon based on algorithm type"""
+            horizons = {
+                'Value Analysis': 'Long-term',
+                'Magic Formula': 'Medium-term',
+                'Buffett-Style': 'Long-term',
+                'Meme Detection': 'Short-term',
+                'Momentum': 'Short-term',
+                'Mean Reversion': 'Short-term',
+                'Arbitrage': 'Short-term'
+            }
+            return horizons.get(algorithm_type, 'Medium-term')
+        
+        def _get_lookback_period(self, algorithm_type):
+            """Get lookback period based on algorithm type"""
+            periods = {
+                'Value Analysis': 252,
+                'Magic Formula': 126,
+                'Buffett-Style': 252,
+                'Meme Detection': 21,
+                'Momentum': 63,
+                'Mean Reversion': 42,
+                'Arbitrage': 5
+            }
+            return periods.get(algorithm_type, 126)
+        
+        def _get_confidence_threshold(self, algorithm_type):
+            """Get confidence threshold based on algorithm type"""
+            thresholds = {
+                'Value Analysis': 0.8,
+                'Magic Formula': 0.75,
+                'Buffett-Style': 0.85,
+                'Meme Detection': 0.6,
+                'Momentum': 0.7,
+                'Mean Reversion': 0.65,
+                'Arbitrage': 0.9
+            }
+            return thresholds.get(algorithm_type, 0.75)
+        
+        def _get_position_size(self, algorithm_type):
+            """Get position size based on algorithm type"""
+            sizes = {
+                'Value Analysis': 0.1,
+                'Magic Formula': 0.15,
+                'Buffett-Style': 0.2,
+                'Meme Detection': 0.05,
+                'Momentum': 0.1,
+                'Mean Reversion': 0.08,
+                'Arbitrage': 0.3
+            }
+            return sizes.get(algorithm_type, 0.1)
+        
+        def _get_stop_loss(self, algorithm_type):
+            """Get stop loss based on algorithm type"""
+            stops = {
+                'Value Analysis': 0.15,
+                'Magic Formula': 0.1,
+                'Buffett-Style': 0.2,
+                'Meme Detection': 0.05,
+                'Momentum': 0.08,
+                'Mean Reversion': 0.06,
+                'Arbitrage': 0.02
+            }
+            return stops.get(algorithm_type, 0.1)
+        
+        def _get_take_profit(self, algorithm_type):
+            """Get take profit based on algorithm type"""
+            profits = {
+                'Value Analysis': 0.3,
+                'Magic Formula': 0.2,
+                'Buffett-Style': 0.5,
+                'Meme Detection': 0.15,
+                'Momentum': 0.12,
+                'Mean Reversion': 0.1,
+                'Arbitrage': 0.05
+            }
+            return profits.get(algorithm_type, 0.2)
+        
+        def _get_next_review_date(self):
+            """Get next review date"""
+            from datetime import timedelta
+            return (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
+
+    def main():
+        """Main function to create ML learning issues"""
+        ml_system = MLLearningSystem()
+        
+        # Create sample ML learning issues
+        algorithms = [
+            ('Enhanced Value Analysis', 'Value Analysis', 3.0),
+            ('Advanced Magic Formula', 'Magic Formula', 2.5),
+            ('Buffett Quality Plus', 'Buffett-Style', 4.0),
+            ('Meme Surge Detector', 'Meme Detection', 5.0),
+            ('Momentum Master', 'Momentum', 2.0)
+        ]
+        
+        print("🧠 Creating ML learning issues...")
+        
+        for name, algo_type, target in algorithms:
+            issue = ml_system.create_ml_learning_issue(name, algo_type, target)
+            if issue:
+                print(f"✅ Created: {name}")
+            else:
+                print(f"❌ Failed: {name}")
+
+    if __name__ == "__main__":
+        main()
+
+  competitor_data_collector.py: |
+    #!/usr/bin/env python3
+    """
+    Comprehensive Competitor Data Collector
+    Collects historical performance data for 28+ competitor ETFs
+    """
+
+    import yfinance as yf
+    import requests
+    import json
+    import pandas as pd
+    from datetime import datetime, timedelta
+    import time
+    import os
+    from typing import Dict, List, Optional
+    import logging
+
+    # Configure logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+
+    class CompetitorDataCollector:
+        def __init__(self, start_date: str = "2024-09-25"):
+            self.start_date = start_date
+            self.competitors = {
+                # U.S. Market ETFs (16)
+                'spy': {'name': 'SPDR S&P 500 ETF', 'ticker': 'SPY', 'category': 'us_large_cap'},
+                'voo': {'name': 'Vanguard S&P 500 ETF', 'ticker': 'VOO', 'category': 'us_large_cap'},
+                'ivv': {'name': 'iShares Core S&P 500 ETF', 'ticker': 'IVV', 'category': 'us_large_cap'},
+                'vti': {'name': 'Vanguard Total Stock Market ETF', 'ticker': 'VTI', 'category': 'us_total_market'},
+                'itot': {'name': 'iShares Core S&P Total U.S. Stock Market ETF', 'ticker': 'ITOT', 'category': 'us_total_market'},
+                'schb': {'name': 'Schwab U.S. Broad Market ETF', 'ticker': 'SCHB', 'category': 'us_total_market'},
+                'iwm': {'name': 'iShares Russell 2000 ETF', 'ticker': 'IWM', 'category': 'us_small_cap'},
+                'ijh': {'name': 'iShares Core S&P Mid-Cap ETF', 'ticker': 'IJH', 'category': 'us_mid_cap'},
+                'vb': {'name': 'Vanguard Small-Cap ETF', 'ticker': 'VB', 'category': 'us_small_cap'},
+                'vbr': {'name': 'Vanguard Small-Cap Value ETF', 'ticker': 'VBR', 'category': 'us_small_cap_value'},
+                'vtv': {'name': 'Vanguard Value ETF', 'ticker': 'VTV', 'category': 'us_large_cap_value'},
+                'vug': {'name': 'Vanguard Growth ETF', 'ticker': 'VUG', 'category': 'us_large_cap_growth'},
+                'iusg': {'name': 'iShares Core S&P U.S. Growth ETF', 'ticker': 'IUSG', 'category': 'us_large_cap_growth'},
+                'iusv': {'name': 'iShares Core S&P U.S. Value ETF', 'ticker': 'IUSV', 'category': 'us_large_cap_value'},
+                'dia': {'name': 'SPDR Dow Jones Industrial Average ETF', 'ticker': 'DIA', 'category': 'us_large_cap'},
+                'qqq': {'name': 'Invesco QQQ Trust', 'ticker': 'QQQ', 'category': 'us_tech_growth'},
+                
+                # International ETFs (12)
+                'vxus': {'name': 'Vanguard Total International Stock ETF', 'ticker': 'VXUS', 'category': 'international_total'},
+                'veu': {'name': 'Vanguard FTSE All-World ex-US ETF', 'ticker': 'VEU', 'category': 'international_total'},
+                'vea': {'name': 'Vanguard FTSE Developed Markets ETF', 'ticker': 'VEA', 'category': 'international_developed'},
+                'vwo': {'name': 'Vanguard FTSE Emerging Markets ETF', 'ticker': 'VWO', 'category': 'international_emerging'},
+                'efa': {'name': 'iShares MSCI EAFE ETF', 'ticker': 'EFA', 'category': 'international_developed'},
+                'eem': {'name': 'iShares MSCI Emerging Markets ETF', 'ticker': 'EEM', 'category': 'international_emerging'},
+                'iefa': {'name': 'iShares Core MSCI EAFE ETF', 'ticker': 'IEFA', 'category': 'international_developed'},
+                'iemg': {'name': 'iShares Core MSCI Emerging Markets ETF', 'ticker': 'IEMG', 'category': 'international_emerging'},
+                'schf': {'name': 'Schwab International Equity ETF', 'ticker': 'SCHF', 'category': 'international_developed'},
+                'sche': {'name': 'Schwab Emerging Markets Equity ETF', 'ticker': 'SCHE', 'category': 'international_emerging'},
+                'spdw': {'name': 'SPDR Portfolio World ex-US ETF', 'ticker': 'SPDW', 'category': 'international_developed'},
+                'spem': {'name': 'SPDR Portfolio Emerging Markets ETF', 'ticker': 'SPEM', 'category': 'international_emerging'}
+            }
+            
+            self.data_file = '/data/competitor_performance.json'
+            self.rate_limit_delay = 1  # seconds between requests
+            
+        def fetch_etf_data(self, symbol: str, ticker: str) -> Optional[Dict]:
+            """Fetch historical data for a single ETF"""
+            try:
+                logger.info(f"Fetching data for {symbol} ({ticker})")
+                
+                # Create yfinance ticker object
+                yf_ticker = yf.Ticker(ticker)
+                
+                # Get historical data from start date to now
+                hist = yf_ticker.history(start=self.start_date, end=None)
+                
+                if hist.empty:
+                    logger.warning(f"No data found for {symbol} ({ticker})")
+                    return None
+                
+                # Get current info
+                info = yf_ticker.info
+                
+                # Calculate normalized performance (starting at 1.0)
+                start_price = hist['Close'].iloc[0]
+                normalized_data = []
+                
+                for date, row in hist.iterrows():
+                    normalized_value = row['Close'] / start_price
+                    normalized_data.append({
+                        'date': date.strftime('%Y-%m-%d'),
+                        'value': round(normalized_value, 6),
+                        'price': round(row['Close'], 2),
+                        'volume': int(row['Volume']) if not pd.isna(row['Volume']) else 0
+                    })
+                
+                # Calculate performance metrics
+                current_price = hist['Close'].iloc[-1]
+                total_return = ((current_price / start_price) - 1) * 100
+                
+                # Calculate daily returns
+                daily_returns = hist['Close'].pct_change().dropna()
+                volatility = daily_returns.std() * (252 ** 0.5) * 100  # Annualized volatility
+                
+                # Calculate Sharpe ratio (assuming 2% risk-free rate)
+                risk_free_rate = 0.02
+                excess_returns = daily_returns - (risk_free_rate / 252)
+                sharpe_ratio = (excess_returns.mean() * 252) / (daily_returns.std() * (252 ** 0.5)) if daily_returns.std() > 0 else 0
+                
+                return {
+                    'symbol': symbol,
+                    'ticker': ticker,
+                    'name': info.get('longName', ''),
+                    'category': self.competitors[symbol]['category'],
+                    'currentPrice': round(current_price, 2),
+                    'totalReturn': round(total_return, 2),
+                    'volatility': round(volatility, 2),
+                    'sharpeRatio': round(sharpe_ratio, 3),
+                    'marketCap': info.get('marketCap', 0),
+                    'expenseRatio': info.get('expenseRatio', 0),
+                    'lastUpdated': datetime.now().isoformat(),
+                    'dataPoints': len(normalized_data),
+                    'performance': normalized_data
+                }
+                
+            except Exception as e:
+                logger.error(f"Error fetching data for {symbol} ({ticker}): {str(e)}")
+                return None
+        
+        def collect_all_competitor_data(self) -> Dict:
+            """Collect data for all competitor ETFs"""
+            logger.info("Starting comprehensive competitor data collection...")
+            
+            all_data = {
+                'metadata': {
+                    'startDate': self.start_date,
+                    'lastUpdated': datetime.now().isoformat(),
+                    'totalETFs': len(self.competitors),
+                    'dataSource': 'Yahoo Finance',
+                    'version': '1.0'
+                },
+                'performance': {},
+                'summary': {
+                    'successful': 0,
+                    'failed': 0,
+                    'errors': []
+                }
+            }
+            
+            # Collect data for each competitor
+            for symbol, info in self.competitors.items():
+                try:
+                    data = self.fetch_etf_data(symbol, info['ticker'])
+                    
+                    if data:
+                        all_data['performance'][symbol] = data
+                        all_data['summary']['successful'] += 1
+                        logger.info(f"✅ Successfully collected data for {symbol}")
+                    else:
+                        all_data['summary']['failed'] += 1
+                        all_data['summary']['errors'].append(f"Failed to fetch data for {symbol}")
+                        logger.warning(f"❌ Failed to collect data for {symbol}")
+                    
+                    # Rate limiting
+                    time.sleep(self.rate_limit_delay)
+                    
+                except Exception as e:
+                    all_data['summary']['failed'] += 1
+                    all_data['summary']['errors'].append(f"Error collecting {symbol}: {str(e)}")
+                    logger.error(f"❌ Error collecting {symbol}: {str(e)}")
+            
+            # Calculate summary statistics
+            if all_data['performance']:
+                returns = [data['totalReturn'] for data in all_data['performance'].values()]
+                all_data['summary']['averageReturn'] = round(sum(returns) / len(returns), 2)
+                all_data['summary']['bestPerformer'] = max(all_data['performance'].items(), key=lambda x: x[1]['totalReturn'])
+                all_data['summary']['worstPerformer'] = min(all_data['performance'].items(), key=lambda x: x[1]['totalReturn'])
+            
+            logger.info(f"Data collection complete: {all_data['summary']['successful']} successful, {all_data['summary']['failed']} failed")
+            
+            return all_data
+        
+        def save_data(self, data: Dict) -> bool:
+            """Save competitor data to file"""
+            try:
+                with open(self.data_file, 'w') as f:
+                    json.dump(data, f, indent=2)
+                logger.info(f"Data saved to {self.data_file}")
+                return True
+            except Exception as e:
+                logger.error(f"Error saving data: {str(e)}")
+                return False
+        
+        def load_existing_data(self) -> Optional[Dict]:
+            """Load existing competitor data"""
+            try:
+                if os.path.exists(self.data_file):
+                    with open(self.data_file, 'r') as f:
+                        data = json.load(f)
+                    logger.info(f"Loaded existing data from {self.data_file}")
+                    return data
+            except Exception as e:
+                logger.error(f"Error loading existing data: {str(e)}")
+            return None
+        
+        def update_existing_data(self, new_data: Dict) -> Dict:
+            """Update existing data with new information"""
+            existing_data = self.load_existing_data()
+            
+            if not existing_data:
+                return new_data
+            
+            # Merge new data with existing data
+            for symbol, data in new_data['performance'].items():
+                if symbol in existing_data['performance']:
+                    # Update existing data
+                    existing_data['performance'][symbol].update(data)
+                else:
+                    # Add new data
+                    existing_data['performance'][symbol] = data
+            
+            # Update metadata
+            existing_data['metadata']['lastUpdated'] = new_data['metadata']['lastUpdated']
+            existing_data['metadata']['totalETFs'] = len(existing_data['performance'])
+            
+            # Update summary
+            existing_data['summary'] = new_data['summary']
+            
+            return existing_data
+        
+        def generate_performance_comparison(self, data: Dict) -> Dict:
+            """Generate performance comparison data for website integration"""
+            if not data['performance']:
+                return {}
+            
+            # Create normalized performance data for website
+            comparison_data = {
+                'lastUpdated': data['metadata']['lastUpdated'],
+                'startDate': data['metadata']['startDate'],
+                'totalETFs': len(data['performance']),
+                'performance': {}
+            }
+            
+            # Extract performance arrays for each ETF
+            for symbol, etf_data in data['performance'].items():
+                comparison_data['performance'][symbol] = etf_data['performance']
+            
+            return comparison_data
+        
+        def run_full_collection(self) -> Dict:
+            """Run complete competitor data collection"""
+            logger.info("🚀 Starting comprehensive competitor data collection...")
+            logger.info(f"📅 Start date: {self.start_date}")
+            logger.info(f"📊 Total ETFs: {len(self.competitors)}")
+            
+            # Collect all data
+            new_data = self.collect_all_competitor_data()
+            
+            # Update with existing data
+            updated_data = self.update_existing_data(new_data)
+            
+            # Save data
+            if self.save_data(updated_data):
+                logger.info("✅ Data collection and saving completed successfully")
+            else:
+                logger.error("❌ Failed to save data")
+            
+            # Generate performance comparison
+            comparison_data = self.generate_performance_comparison(updated_data)
+            
+            # Save comparison data for website
+            comparison_file = '/data/competitor_performance_comparison.json'
+            try:
+                with open(comparison_file, 'w') as f:
+                    json.dump(comparison_data, f, indent=2)
+                logger.info(f"✅ Performance comparison data saved to {comparison_file}")
+            except Exception as e:
+                logger.error(f"❌ Failed to save comparison data: {str(e)}")
+            
+            return updated_data
+
+    def main():
+        """Main function"""
+        collector = CompetitorDataCollector()
+        data = collector.run_full_collection()
+        
+        if data:
+            print("\n📊 Collection Summary:")
+            print(f"   Total ETFs: {data['metadata']['totalETFs']}")
+            print(f"   Successful: {data['summary']['successful']}")
+            print(f"   Failed: {data['summary']['failed']}")
+            if data['summary'].get('averageReturn'):
+                print(f"   Average Return: {data['summary']['averageReturn']}%")
+            if data['summary'].get('bestPerformer'):
+                best = data['summary']['bestPerformer']
+                print(f"   Best Performer: {best[0]} ({best[1]['totalReturn']}%)")
+            if data['summary'].get('worstPerformer'):
+                worst = data['summary']['worstPerformer']
+                print(f"   Worst Performer: {worst[0]} ({worst[1]['totalReturn']}%)")
+            
+            print("\n🎯 Data ready for BrightFlow website integration!")
+
+    if __name__ == "__main__":
+        main()
+
+  site_data_reader.py: |
+    #!/usr/bin/env python3
+    """
+    Site Data Reader
+    Reads our website data and uses it as ML input for competitive advantage
+    """
+
+    import requests
+    import json
+    import pandas as pd
+    from datetime import datetime, timedelta
+    import time
+
+    class SiteDataReader:
+        def __init__(self, base_url="https://albright-laboratories.github.io/brightflow-buy-sell-order"):
+            self.base_url = base_url
+            self.data_endpoints = {
+                'performance': f"{base_url}/data/performance.json",
+                'transactions': f"{base_url}/data/transactions.json",
+                'market_data': f"{base_url}/data/hourly_market_data.json"
+            }
+        
+        def read_site_data(self):
+            """Read all data from our website"""
+            print("📊 Reading site data...")
+            
+            site_data = {
+                'timestamp': datetime.now().isoformat(),
+                'performance': None,
+                'transactions': None,
+                'market_data': None,
+                'errors': []
+            }
+            
+            for data_type, url in self.data_endpoints.items():
+                try:
+                    print(f"   Reading {data_type}...")
+                    response = requests.get(url, timeout=10)
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        site_data[data_type] = data
+                        print(f"   ✅ {data_type} loaded successfully")
+                    else:
+                        error_msg = f"HTTP {response.status_code} for {data_type}"
+                        site_data['errors'].append(error_msg)
+                        print(f"   ❌ {error_msg}")
+                        
+                except requests.exceptions.Timeout:
+                    error_msg = f"Timeout reading {data_type}"
+                    site_data['errors'].append(error_msg)
+                    print(f"   ❌ {error_msg}")
+                except Exception as e:
+                    error_msg = f"Error reading {data_type}: {str(e)}"
+                    site_data['errors'].append(error_msg)
+                    print(f"   ❌ {error_msg}")
+                
+                # Rate limiting
+                time.sleep(0.5)
+            
+            return site_data
+        
+        def extract_ml_features(self, site_data):
+            """Extract ML features from site data"""
+            print("🔍 Extracting ML features...")
+            
+            features = {
+                'timestamp': site_data['timestamp'],
+                'performance_metrics': {},
+                'transaction_metrics': {},
+                'market_metrics': {},
+                'derived_features': {}
+            }
+            
+            # Extract performance features
+            if site_data['performance']:
+                perf = site_data['performance']
+                features['performance_metrics'] = {
+                    'current_value': perf.get('currentValue', 0),
+                    'daily_change': perf.get('dailyChange', 0),
+                    'daily_change_percent': perf.get('dailyChangePercent', 0),
+                    'total_return': perf.get('totalReturn', 0),
+                    'last_updated': perf.get('lastUpdated', ''),
+                    'data_freshness_minutes': self._calculate_data_freshness(perf.get('lastUpdated', ''))
+                }
+            
+            # Extract transaction features
+            if site_data['transactions']:
+                trans = site_data['transactions']
+                transactions = trans.get('transactions', [])
+                
+                features['transaction_metrics'] = {
+                    'total_transactions': trans.get('totalTransactions', 0),
+                    'current_balance': trans.get('currentBalance', 0),
+                    'recent_transaction_count': len(transactions[-5:]) if transactions else 0,
+                    'avg_transaction_amount': self._calculate_avg_transaction_amount(transactions),
+                    'buy_sell_ratio': self._calculate_buy_sell_ratio(transactions),
+                    'confidence_scores': self._extract_confidence_scores(transactions),
+                    'strategy_distribution': self._analyze_strategy_distribution(transactions)
+                }
+            
+            return features
+        
+        def _calculate_data_freshness(self, last_updated_str):
+            """Calculate how fresh the data is in minutes"""
+            if not last_updated_str:
+                return 999  # Very stale
+            
+            try:
+                last_updated = datetime.fromisoformat(last_updated_str.replace('Z', '+00:00'))
+                now = datetime.now(last_updated.tzinfo)
+                diff = now - last_updated
+                return int(diff.total_seconds() / 60)
+            except:
+                return 999
+        
+        def _calculate_avg_transaction_amount(self, transactions):
+            """Calculate average transaction amount"""
+            if not transactions:
+                return 0
+            
+            amounts = [abs(t.get('amount', 0)) for t in transactions if t.get('amount')]
+            return sum(amounts) / len(amounts) if amounts else 0
+        
+        def _calculate_buy_sell_ratio(self, transactions):
+            """Calculate buy/sell ratio"""
+            if not transactions:
+                return 1.0
+            
+            buys = len([t for t in transactions if t.get('action') == 'BUY'])
+            sells = len([t for t in transactions if t.get('action') == 'SELL'])
+            
+            return buys / sells if sells > 0 else float('inf')
+        
+        def _extract_confidence_scores(self, transactions):
+            """Extract confidence scores from transactions"""
+            if not transactions:
+                return []
+            
+            scores = [t.get('confidence', 0) for t in transactions if t.get('confidence')]
+            return {
+                'avg_confidence': sum(scores) / len(scores) if scores else 0,
+                'max_confidence': max(scores) if scores else 0,
+                'min_confidence': min(scores) if scores else 0,
+                'confidence_std': self._calculate_std(scores) if scores else 0
+            }
+        
+        def _analyze_strategy_distribution(self, transactions):
+            """Analyze distribution of strategies used"""
+            if not transactions:
+                return {}
+            
+            strategies = [t.get('strategy', 'unknown') for t in transactions]
+            strategy_counts = {}
+            for strategy in strategies:
+                strategy_counts[strategy] = strategy_counts.get(strategy, 0) + 1
+            
+            total = len(strategies)
+            return {k: v/total for k, v in strategy_counts.items()}
+        
+        def _calculate_std(self, values):
+            """Calculate standard deviation"""
+            if len(values) < 2:
+                return 0
+            
+            mean = sum(values) / len(values)
+            variance = sum((x - mean) ** 2 for x in values) / len(values)
+            return variance ** 0.5
+        
+        def save_ml_datapoint(self, ml_datapoint, filename='ml_datapoint.json'):
+            """Save ML datapoint to file"""
+            try:
+                with open(f'/data/{filename}', 'w') as f:
+                    json.dump(ml_datapoint, f, indent=2)
+                print(f"💾 ML datapoint saved to /data/{filename}")
+            except Exception as e:
+                print(f"❌ Error saving ML datapoint: {e}")
+        
+        def run_full_analysis(self):
+            """Run complete site data analysis"""
+            print("🚀 Starting site data analysis...")
+            print("=" * 50)
+            
+            # Read site data
+            site_data = self.read_site_data()
+            
+            if site_data['errors']:
+                print(f"⚠️  {len(site_data['errors'])} errors encountered")
+                for error in site_data['errors']:
+                    print(f"   • {error}")
+            
+            # Extract ML features
+            features = self.extract_ml_features(site_data)
+            
+            # Create ML datapoint
+            ml_datapoint = {
+                'timestamp': features['timestamp'],
+                'input_features': features,
+                'data_source': 'kubernetes-site-data-reader',
+                'version': '1.0'
+            }
+            
+            # Save results
+            self.save_ml_datapoint(ml_datapoint)
+            
+            print("=" * 50)
+            print("✅ Site data analysis complete!")
+            
+            # Print summary
+            print("\n📊 Summary:")
+            print(f"   Performance: {features['performance_metrics'].get('total_return', 0):.2f}%")
+            print(f"   Transactions: {features['transaction_metrics'].get('total_transactions', 0)}")
+            
+            return ml_datapoint
+
+    def main():
+        """Main function"""
+        reader = SiteDataReader()
+        analysis = reader.run_full_analysis()
+        
+        if analysis:
+            print("\n🎯 ML Datapoint created successfully!")
+            print("   Ready for algorithm training and optimization")
+
+    if __name__ == "__main__":
+        main()

@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: competitor-data-collector
+  namespace: brightflow-ml
+  labels:
+    app: brightflow-ml
+    component: competitor-data-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: brightflow-ml
+      component: competitor-data-collector
+  template:
+    metadata:
+      labels:
+        app: brightflow-ml
+        component: competitor-data-collector
+    spec:
+      containers:
+        - name: competitor-data-collector
+          image: python:3.9-slim
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash"]
+          args:
+            - -c
+            - |
+              # Install dependencies
+              pip install yfinance requests pandas numpy scikit-learn
+
+              # Copy application code
+              cp /app/competitor_data_collector.py /tmp/
+
+              # Run the competitor data collector
+              cd /tmp
+              python competitor_data_collector.py
+
+              # Keep container running for logs
+              tail -f /dev/null
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+          volumeMounts:
+            - name: app-code
+              mountPath: /app
+            - name: data-volume
+              mountPath: /data
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - "ps aux | grep python | grep -v grep"
+            initialDelaySeconds: 60
+            periodSeconds: 120
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - "test -f /data/competitor_performance.json"
+            initialDelaySeconds: 30
+            periodSeconds: 60
+      volumes:
+        - name: app-code
+          configMap:
+            name: brightflow-app-code
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: brightflow-data-pvc
+      restartPolicy: Always
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: competitor-data-collector-cron
+  namespace: brightflow-ml
+  labels:
+    app: brightflow-ml
+    component: competitor-data-collector
+spec:
+  # Run daily at 6 PM EST (after market close)
+  schedule: "0 23 * * 1-5" # 6 PM EST = 11 PM UTC (Monday-Friday)
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: brightflow-ml
+            component: competitor-data-collector
+        spec:
+          containers:
+            - name: competitor-data-collector
+              image: python:3.9-slim
+              imagePullPolicy: IfNotPresent
+              command: ["/bin/bash"]
+              args:
+                - -c
+                - |
+                  # Install dependencies
+                  pip install yfinance requests pandas numpy scikit-learn
+
+                  # Copy application code
+                  cp /app/competitor_data_collector.py /tmp/
+
+                  # Run the competitor data collector
+                  cd /tmp
+                  python competitor_data_collector.py
+              env:
+                - name: PYTHONUNBUFFERED
+                  value: "1"
+              volumeMounts:
+                - name: app-code
+                  mountPath: /app
+                - name: data-volume
+                  mountPath: /data
+              resources:
+                requests:
+                  memory: "512Mi"
+                  cpu: "200m"
+                limits:
+                  memory: "1Gi"
+                  cpu: "1000m"
+          volumes:
+            - name: app-code
+              configMap:
+                name: brightflow-app-code
+            - name: data-volume
+              persistentVolumeClaim:
+                claimName: brightflow-data-pvc
+          restartPolicy: OnFailure

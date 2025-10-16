@@ -1,0 +1,83 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: competitive-intelligence
+  namespace: brightflow-ml
+  labels:
+    app: brightflow-ml
+    component: cronjob
+spec:
+  # Run every 6 hours
+  schedule: "0 */6 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: brightflow-ml
+            component: cronjob
+        spec:
+          containers:
+            - name: competitive-intelligence
+              image: python:3.9-slim
+              imagePullPolicy: IfNotPresent
+              command: ["/bin/bash"]
+              args:
+                - -c
+                - |
+                  # Install dependencies
+                  pip install yfinance requests pandas numpy scikit-learn
+
+                  # Copy application code
+                  cp /app/competitor_monitor.py /tmp/
+                  cp /app/ml_learning_system.py /tmp/
+                  cp /app/site_data_reader.py /tmp/
+
+                  # Run all components
+                  cd /tmp
+                  echo "🏆 Running competitive intelligence analysis..."
+
+                  # 1. Monitor competitors
+                  echo "Step 1: Monitoring competitors..."
+                  python competitor_monitor.py
+
+                  # 2. Read site data
+                  echo "Step 2: Reading site data..."
+                  python site_data_reader.py
+
+                  # 3. Create ML learning issues
+                  echo "Step 3: Creating ML learning issues..."
+                  python ml_learning_system.py
+
+                  echo "✅ Competitive intelligence analysis complete!"
+              env:
+                - name: GITHUB_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: brightflow-secrets
+                      key: github-token
+                - name: PYTHONUNBUFFERED
+                  value: "1"
+              volumeMounts:
+                - name: app-code
+                  mountPath: /app
+                - name: data-volume
+                  mountPath: /data
+              resources:
+                requests:
+                  memory: "512Mi"
+                  cpu: "200m"
+                limits:
+                  memory: "1Gi"
+                  cpu: "1000m"
+          volumes:
+            - name: app-code
+              configMap:
+                name: brightflow-app-code
+            - name: data-volume
+              persistentVolumeClaim:
+                claimName: brightflow-data-pvc
+          restartPolicy: OnFailure
