@@ -1,0 +1,64 @@
+{
+  "timestamp": "2025-10-16T02:51:38.652692",
+  "our_performance": {
+    "currentValue": 1.009002,
+    "dailyChange": 0.9,
+    "dailyChangePercent": 0.9,
+    "totalReturn": 0.9,
+    "totalTransactions": 14,
+    "currentBalance": 488.25,
+    "lastUpdated": "2025-10-16T02:49:51.011860Z"
+  },
+  "competitor_data": {
+    "spy": {
+      "symbol": "SPY",
+      "name": "SPDR S&P 500 ETF",
+      "currentPrice": 665.17,
+      "dailyChange": 2.94,
+      "dailyChangePercent": 0.44,
+      "ytdReturn": 1474.1,
+      "lastUpdated": "2025-10-16T02:51:30.684332",
+      "volume": 81339790,
+      "marketCap": 610481078272
+    },
+    "vfiax": {
+      "symbol": "VFIAX",
+      "name": "Vanguard 500 Index Fund",
+      "currentPrice": 615.98,
+      "dailyChange": 2.52,
+      "dailyChangePercent": 0.41,
+      "ytdReturn": 1479.53,
+      "lastUpdated": "2025-10-16T02:51:33.148287",
+      "volume": 0,
+      "marketCap": 0
+    },
+    "spdr": {
+      "symbol": "SPDR",
+      "name": "SPDR S&P 500 ETF Trust",
+      "currentPrice": 665.17,
+      "dailyChange": 2.94,
+      "dailyChangePercent": 0.44,
+      "ytdReturn": 1474.1,
+      "lastUpdated": "2025-10-16T02:51:34.543094",
+      "volume": 81339790,
+      "marketCap": 610481078272
+    }
+  },
+  "competitive_advantage": {
+    "dailyAdvantage": 0.46,
+    "ytdAdvantage": -1473.2,
+    "outperformance": -99.94,
+    "riskAdjustedReturn": 1.5,
+    "competitivePosition": "LOSING",
+    "lastUpdated": "2025-10-16T02:51:35.555908"
+  },
+  "market_opportunities": [
+    "High volatility (VIX: 20.6) - active management advantage",
+    "Technology (XLK) overvalued - potential short opportunity",
+    "Energy (XLE) undervalued - potential opportunity",
+    "Financials (XLF) undervalued - potential opportunity",
+    "Industrials (XLI) undervalued - potential opportunity"
+  ],
+  "data_source": "competitor_monitor.py",
+  "version": "1.0"
+}
