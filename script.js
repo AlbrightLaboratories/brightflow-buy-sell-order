@@ -16,10 +16,13 @@ let historicalData = null; // Store complete historical dataset
 let realDataLoaded = false; // Track if real data is loaded
 let realPerformanceData = null; // Store real performance data
 let currentTimeRange = '1d'; // Default view - current day
+let selectedCompetitors = ['spy', 'vfiax', 'spdr']; // Default competitors
+let mobileChart = null; // Mobile chart instance
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initializeChart();
+    initializeMobileChart();
     setupTimeRangeControls();
     loadRealData().then(() => {
         // Start real-time updates only after data is loaded
@@ -100,12 +103,23 @@ function getDataForTimeRange(range) {
 
 // Setup time range control buttons
 function setupTimeRangeControls() {
-    const buttons = document.querySelectorAll('.time-btn');
+    // Setup desktop buttons
+    const desktopButtons = document.querySelectorAll('.time-btn');
+    setupTimeRangeButtons(desktopButtons);
     
+    // Setup mobile buttons
+    const mobileButtons = document.querySelectorAll('.mobile-time-btn');
+    setupTimeRangeButtons(mobileButtons);
+}
+
+// Setup time range buttons (works for both desktop and mobile)
+function setupTimeRangeButtons(buttons) {
     buttons.forEach(button => {
         button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            buttons.forEach(btn => btn.classList.remove('active'));
+            // Remove active class from all buttons of the same type
+            const buttonClass = this.classList.contains('mobile-time-btn') ? 'mobile-time-btn' : 'time-btn';
+            const allButtons = document.querySelectorAll('.' + buttonClass);
+            allButtons.forEach(btn => btn.classList.remove('active'));
             
             // Add active class to clicked button
             this.classList.add('active');
@@ -137,6 +151,11 @@ function updateChartTimeRange(range) {
         // Update chart with smooth animation
         performanceChart.update('active');
         
+        // Update mobile chart if it exists
+        if (mobileChart) {
+            updateMobileChartWithTimeRange(range, chartData);
+        }
+        
         // Update performance display for the selected period
         updatePerformanceForPeriod(range, chartData);
     } else if (historicalData) {
@@ -152,6 +171,11 @@ function updateChartTimeRange(range) {
         
         // Update chart with smooth animation
         performanceChart.update('active');
+        
+        // Update mobile chart if it exists
+        if (mobileChart) {
+            updateMobileChartWithTimeRange(range, chartData);
+        }
         
         // Update performance display for the selected period
         updatePerformanceForPeriod(range, chartData);
@@ -280,13 +304,16 @@ async function loadRealData() {
         
         // Update chart with real data
         updateChartWithRealData(performanceData);
+        updateMobileChartWithRealData(performanceData);
         
-        // Update performance display
-        updatePerformanceDisplayWithRealData(performanceData);
-        
-        // Update transaction data
+        // Update transaction data first
         transactionData = transactionDataResponse.transactions || [];
+        
+        // Update performance display with transaction data (contains currentBalance)
+        updatePerformanceDisplayWithRealData(performanceData, transactionDataResponse);
+        
         populateTransactionTable();
+        populateMobileTransactionList();
         
         // Mark that we have real data loaded to prevent demo mode
         localStorage.setItem('lastRealDataUpdate', Date.now().toString());
@@ -308,9 +335,17 @@ async function loadRealData() {
 
 // Initialize portfolio values from actual data files
 function initializePortfolioFromData(performanceData, transactionData) {
-    // Set current value from performance data (this is the normalized value)
-    portfolio.currentValue = performanceData.currentValue;
-    portfolio.totalValue = performanceData.currentValue; // Keep it as normalized value
+    // Use actual running balance from transactions if available, otherwise use normalized value
+    if (transactionData && transactionData.currentBalance && transactionData.currentBalance > 0) {
+        portfolio.currentValue = transactionData.currentBalance;
+        portfolio.totalValue = transactionData.currentBalance;
+        console.log('💰 Portfolio initialized with transaction balance:', transactionData.currentBalance);
+    } else {
+        // Fallback to normalized value
+        portfolio.currentValue = performanceData.currentValue;
+        portfolio.totalValue = performanceData.currentValue;
+        console.log('📊 Portfolio initialized with normalized value:', performanceData.currentValue);
+    }
     
     // Set cash based on current total value (assuming all cash for now, until we add position tracking)
     portfolio.cash = portfolio.totalValue;
@@ -884,6 +919,12 @@ function shouldShowDemo() {
 
 // Update the performance display with animation
 function updatePerformanceDisplay() {
+    // Don't update if we have real data loaded (it will be handled by updatePerformanceDisplayWithRealData)
+    if (realDataLoaded && realPerformanceData) {
+        console.log('📊 Skipping performance display update - using real transaction data');
+        return;
+    }
+    
     const currentValueEl = document.getElementById('currentValue');
     const dailyChangeEl = document.getElementById('dailyChange');
     
@@ -1105,6 +1146,12 @@ function simulateHourlyMarketActivity() {
 
 // Update portfolio value based on current market prices
 function updatePortfolioValue() {
+    // Don't override portfolio value if we have real transaction data
+    if (realDataLoaded && realPerformanceData) {
+        console.log('📊 Skipping portfolio update - using real transaction data');
+        return;
+    }
+    
     const stockPrices = {
         'AAPL': 178.50,
         'GOOGL': 145.20,
@@ -1239,8 +1286,91 @@ function updateChartWithRealData(data) {
     console.log('✅ Chart updated successfully');
 }
 
+// Initialize mobile chart
+function initializeMobileChart() {
+    const mobileChartCanvas = document.getElementById('mobileChart');
+    if (!mobileChartCanvas) {
+        console.log('📱 No mobile chart canvas found');
+        return;
+    }
+    
+    console.log('📱 Initializing mobile chart...');
+    
+    mobileChart = new Chart(mobileChartCanvas, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'BrightFlow',
+                data: [],
+                borderColor: '#ffd700',
+                backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    display: false
+                },
+                y: {
+                    display: false
+                }
+            },
+            elements: {
+                point: {
+                    radius: 0
+                }
+            }
+        }
+    });
+    
+    console.log('✅ Mobile chart initialized');
+}
+
+// Update mobile chart with real data
+function updateMobileChartWithRealData(data) {
+    if (!mobileChart) return;
+    
+    console.log('📱 Updating mobile chart with real data');
+    
+    const brightflowData = data.performance.brightflow || [];
+    
+    if (brightflowData.length > 0) {
+        mobileChart.data.labels = brightflowData.map(item => 
+            new Date(item.date).toLocaleDateString()
+        );
+        mobileChart.data.datasets[0].data = brightflowData.map(item => item.value);
+        mobileChart.update('active');
+        console.log('✅ Mobile chart updated with', brightflowData.length, 'data points');
+    }
+}
+
+// Update mobile chart with time range data
+function updateMobileChartWithTimeRange(range, chartData) {
+    if (!mobileChart) return;
+    
+    console.log('📱 Updating mobile chart for time range:', range);
+    
+    if (chartData.brightflow && chartData.brightflow.length > 0) {
+        mobileChart.data.labels = chartData.labels;
+        mobileChart.data.datasets[0].data = chartData.brightflow;
+        mobileChart.update('active');
+        console.log('✅ Mobile chart updated for', range, 'with', chartData.brightflow.length, 'data points');
+    }
+}
+
 // Update performance display with real data
-function updatePerformanceDisplayWithRealData(data) {
+function updatePerformanceDisplayWithRealData(performanceData, transactionData = null) {
     const currentValueEl = document.getElementById('currentValue');
     const dailyChangeEl = document.getElementById('dailyChange');
     
@@ -1248,20 +1378,38 @@ function updatePerformanceDisplayWithRealData(data) {
     let displayValue;
     let totalReturn;
     
-    if (data.currentBalance && data.currentBalance > 0) {
+    // Check for currentBalance in transaction data first, then performance data
+    const currentBalance = (transactionData && transactionData.currentBalance) || 
+                          (performanceData && performanceData.currentBalance);
+    
+    if (currentBalance && currentBalance > 0) {
         // Use actual running balance from transactions
-        displayValue = data.currentBalance;
+        displayValue = currentBalance;
         // Calculate return from $1.00 starting amount
         totalReturn = ((displayValue - 1.00) / 1.00) * 100;
+        console.log('💰 Using transaction balance:', displayValue, 'Return:', totalReturn.toFixed(2) + '%');
     } else {
         // Fallback to normalized value
-        displayValue = data.currentValue;
+        displayValue = performanceData.currentValue;
         totalReturn = ((displayValue - portfolio.startValue) / portfolio.startValue) * 100;
+        console.log('📊 Using normalized value:', displayValue, 'Return:', totalReturn.toFixed(2) + '%');
     }
     
     currentValueEl.textContent = '$' + displayValue.toFixed(2);
     dailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}% total return`;
     dailyChangeEl.className = 'performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
+    
+    // Update mobile elements if they exist
+    const mobileCurrentValueEl = document.getElementById('mobileCurrentValue');
+    const mobileDailyChangeEl = document.getElementById('mobileDailyChange');
+    
+    if (mobileCurrentValueEl) {
+        mobileCurrentValueEl.textContent = '$' + displayValue.toFixed(2);
+    }
+    if (mobileDailyChangeEl) {
+        mobileDailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%`;
+        mobileDailyChangeEl.className = 'mobile-performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
+    }
     
     console.log('Performance Display Updated:', {
         displayValue: displayValue,
@@ -1300,11 +1448,13 @@ async function checkForUpdates() {
             
             // Update charts and display
             updateChartWithRealData(performanceData);
-            updatePerformanceDisplayWithRealData(performanceData);
             
-            // Update transaction data
-            transactionData = transactionData.transactions || [];
-            populateTransactionTableWithRealData({ transactions: transactionData });
+            // Update transaction data first
+            const transactionDataArray = transactionData.transactions || [];
+            
+            // Update performance display with transaction data
+            updatePerformanceDisplayWithRealData(performanceData, transactionData);
+            populateTransactionTableWithRealData({ transactions: transactionDataArray });
             
             // Store the update time
             localStorage.setItem('lastDataUpdate', performanceData.lastUpdated);
@@ -1368,6 +1518,322 @@ function forceRefreshData() {
         console.error('❌ Force refresh failed:', error);
         showUpdateIndicator('error');
     });
+    
+    // Initialize competitor modal
+    initializeCompetitorModal();
+    
+    // Initialize mobile menu
+    initializeMobileMenu();
+}
+
+// Competitor data definitions
+const competitorData = {
+    usMarket: [
+        { symbol: 'SPY', description: 'SPDR S&P 500 ETF Trust - Tracks S&P 500 index' },
+        { symbol: 'VOO', description: 'Vanguard S&P 500 ETF - Low-cost S&P 500 tracking' },
+        { symbol: 'IVV', description: 'iShares Core S&P 500 ETF - S&P 500 index fund' },
+        { symbol: 'VTI', description: 'Vanguard Total Stock Market ETF - Broad market exposure' },
+        { symbol: 'ITOT', description: 'iShares Core S&P Total U.S. Stock Market ETF' },
+        { symbol: 'SCHB', description: 'Schwab U.S. Broad Market ETF - Total market index' },
+        { symbol: 'IWM', description: 'iShares Russell 2000 ETF - Small-cap stocks' },
+        { symbol: 'IJH', description: 'iShares Core S&P Mid-Cap ETF - Mid-cap exposure' },
+        { symbol: 'VB', description: 'Vanguard Small-Cap ETF - Small-cap value stocks' },
+        { symbol: 'VBR', description: 'Vanguard Small-Cap Value ETF - Small-cap value' },
+        { symbol: 'VTV', description: 'Vanguard Value ETF - Large-cap value stocks' },
+        { symbol: 'VUG', description: 'Vanguard Growth ETF - Large-cap growth stocks' },
+        { symbol: 'IUSG', description: 'iShares Core S&P U.S. Growth ETF - Growth stocks' },
+        { symbol: 'IUSV', description: 'iShares Core S&P U.S. Value ETF - Value stocks' },
+        { symbol: 'DIA', description: 'SPDR Dow Jones Industrial Average ETF - Dow 30' },
+        { symbol: 'QQQ', description: 'Invesco QQQ Trust - NASDAQ-100 index' }
+    ],
+    international: [
+        { symbol: 'VXUS', description: 'Vanguard Total International Stock ETF - Global ex-US' },
+        { symbol: 'VEU', description: 'Vanguard FTSE All-World ex-US ETF - International' },
+        { symbol: 'VEA', description: 'Vanguard FTSE Developed Markets ETF - Developed markets' },
+        { symbol: 'VWO', description: 'Vanguard FTSE Emerging Markets ETF - Emerging markets' },
+        { symbol: 'EFA', description: 'iShares MSCI EAFE ETF - Developed international' },
+        { symbol: 'EEM', description: 'iShares MSCI Emerging Markets ETF - Emerging markets' },
+        { symbol: 'IEFA', description: 'iShares Core MSCI EAFE IMI Index ETF - International' },
+        { symbol: 'IEMG', description: 'iShares Core MSCI Emerging Markets IMI Index ETF' },
+        { symbol: 'SCHF', description: 'Schwab International Equity ETF - International' },
+        { symbol: 'SCHE', description: 'Schwab Emerging Markets Equity ETF - Emerging markets' },
+        { symbol: 'SPDW', description: 'SPDR Portfolio World ex-US ETF - International' },
+        { symbol: 'SPEM', description: 'SPDR Portfolio Emerging Markets ETF - Emerging markets' }
+    ]
+};
+
+// Initialize competitor modal
+function initializeCompetitorModal() {
+    const modal = document.getElementById('competitorModal');
+    const closeBtn = document.getElementById('competitorModalClose');
+    const applyBtn = document.getElementById('applyCompetitorSelection');
+    const resetBtn = document.getElementById('resetCompetitorSelection');
+    
+    // Populate competitor lists
+    populateCompetitorLists();
+    
+    // Event listeners
+    closeBtn.addEventListener('click', closeCompetitorModal);
+    applyBtn.addEventListener('click', applyCompetitorSelection);
+    resetBtn.addEventListener('click', resetCompetitorSelection);
+    
+    // Close modal when clicking overlay
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeCompetitorModal();
+        }
+    });
+}
+
+// Populate competitor lists
+function populateCompetitorLists() {
+    const usContainer = document.getElementById('usMarketETFs');
+    const intContainer = document.getElementById('internationalETFs');
+    
+    // Populate US Market ETFs
+    competitorData.usMarket.forEach(competitor => {
+        const item = createCompetitorItem(competitor);
+        usContainer.appendChild(item);
+    });
+    
+    // Populate International ETFs
+    competitorData.international.forEach(competitor => {
+        const item = createCompetitorItem(competitor);
+        intContainer.appendChild(item);
+    });
+}
+
+// Create competitor item element
+function createCompetitorItem(competitor) {
+    const item = document.createElement('div');
+    item.className = 'competitor-item';
+    
+    const isSelected = selectedCompetitors.includes(competitor.symbol.toLowerCase());
+    
+    item.innerHTML = `
+        <input type="checkbox" id="comp_${competitor.symbol}" value="${competitor.symbol.toLowerCase()}" ${isSelected ? 'checked' : ''}>
+        <div class="competitor-info">
+            <div class="competitor-symbol">${competitor.symbol}</div>
+            <div class="competitor-description">${competitor.description}</div>
+        </div>
+    `;
+    
+    // Add click handler for the entire item
+    item.addEventListener('click', function(e) {
+        if (e.target.type !== 'checkbox') {
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+        }
+    });
+    
+    return item;
+}
+
+// Open competitor modal
+function openCompetitorModal() {
+    const modal = document.getElementById('competitorModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// Close competitor modal
+function closeCompetitorModal() {
+    const modal = document.getElementById('competitorModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Apply competitor selection
+function applyCompetitorSelection() {
+    const checkboxes = document.querySelectorAll('#competitorModal input[type="checkbox"]:checked');
+    selectedCompetitors = Array.from(checkboxes).map(cb => cb.value);
+    
+    console.log('Selected competitors:', selectedCompetitors);
+    
+    // Update chart with new competitors
+    updateChartWithSelectedCompetitors();
+    
+    // Close modal
+    closeCompetitorModal();
+    
+    // Show success message
+    showUpdateIndicator('success');
+}
+
+// Reset competitor selection to default
+function resetCompetitorSelection() {
+    selectedCompetitors = ['spy', 'vfiax', 'spdr'];
+    
+    // Update checkboxes
+    const checkboxes = document.querySelectorAll('#competitorModal input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+        cb.checked = selectedCompetitors.includes(cb.value);
+    });
+    
+    console.log('Reset competitors to default:', selectedCompetitors);
+}
+
+// Update chart with selected competitors
+function updateChartWithSelectedCompetitors() {
+    if (!performanceChart || !realPerformanceData) return;
+    
+    // Update chart datasets based on selected competitors
+    const datasets = ['brightflow', 'spy', 'vfiax', 'spdr'];
+    const allCompetitors = ['spy', 'voo', 'ivv', 'vti', 'itot', 'schb', 'iwm', 'ijh', 'vb', 'vbr', 'vtv', 'vug', 'iusg', 'iusv', 'dia', 'qqq', 'vxus', 'veu', 'vea', 'vwo', 'efa', 'eem', 'iefa', 'iemg', 'schf', 'sche', 'spdw', 'spem'];
+    
+    // Hide all competitor datasets first
+    datasets.forEach((dataset, index) => {
+        if (index > 0) { // Skip brightflow (index 0)
+            performanceChart.data.datasets[index].hidden = true;
+        }
+    });
+    
+    // Show selected competitors
+    selectedCompetitors.forEach(competitor => {
+        const competitorIndex = allCompetitors.indexOf(competitor);
+        if (competitorIndex !== -1) {
+            // Map to chart dataset index (1=spy, 2=vfiax, 3=spdr)
+            const chartIndex = ['spy', 'vfiax', 'spdr'].indexOf(competitor);
+            if (chartIndex !== -1) {
+                performanceChart.data.datasets[chartIndex + 1].hidden = false;
+            }
+        }
+    });
+    
+    // Update chart
+    performanceChart.update('active');
+    
+    console.log('Chart updated with selected competitors:', selectedCompetitors);
+}
+
+// Populate mobile transaction list
+function populateMobileTransactionList() {
+    const mobileTransactionList = document.getElementById('mobileTransactionList');
+    if (!mobileTransactionList) {
+        console.log('📱 No mobile transaction list found');
+        return;
+    }
+    
+    console.log('📱 Populating mobile transaction list with data:', transactionData);
+    
+    // Clear existing content
+    mobileTransactionList.innerHTML = '';
+    
+    // Check if we have transaction data
+    if (!transactionData || !Array.isArray(transactionData)) {
+        console.warn('📱 No transaction data available for mobile');
+        mobileTransactionList.innerHTML = '<div class="mobile-no-transactions">No recent trades</div>';
+        return;
+    }
+    
+    // Filter transactions from last 24 hours (or today if no time data available)
+    const now = new Date();
+    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    
+    // Since transactions.json only has dates (no times), show today's transactions
+    const todayStr = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    const yesterdayStr = oneDayAgo.toISOString().split('T')[0];
+    
+    const last24HourTransactions = transactionData.filter(transaction => {
+        // Check if transaction and timestamp exist
+        if (!transaction || !transaction.timestamp) {
+            return false;
+        }
+        
+        let txDateStr;
+        if (typeof transaction.timestamp === 'string') {
+            // Extract date from timestamp (format: 2025-10-15T09:30:00Z)
+            txDateStr = transaction.timestamp.split('T')[0];
+        } else if (transaction.timestamp instanceof Date) {
+            txDateStr = transaction.timestamp.toISOString().split('T')[0];
+        } else {
+            return false;
+        }
+        
+        // Show transactions from today and yesterday
+        return txDateStr === todayStr || txDateStr === yesterdayStr;
+    }).reverse(); // Most recent first
+    
+    console.log('📱 Found transactions for mobile display:', last24HourTransactions.length);
+    
+    // If no transactions in last 24 hours, show message
+    if (last24HourTransactions.length === 0) {
+        mobileTransactionList.innerHTML = '<div class="mobile-no-transactions">No recent trades</div>';
+        return;
+    }
+    
+    // Show only the last 5 transactions for mobile
+    const recentTransactions = last24HourTransactions.slice(0, 5);
+    
+    recentTransactions.forEach((transaction, index) => {
+        const transactionDiv = document.createElement('div');
+        transactionDiv.className = 'mobile-transaction-item';
+        
+        const txDate = new Date(transaction.timestamp);
+        const isPositive = transaction.amount > 0;
+        
+        transactionDiv.innerHTML = `
+            <div class="mobile-transaction-header">
+                <span class="mobile-transaction-symbol">${transaction.symbol}</span>
+                <span class="mobile-transaction-action ${transaction.action.toLowerCase()}">${transaction.action}</span>
+            </div>
+            <div class="mobile-transaction-details">
+                <span class="mobile-transaction-amount ${isPositive ? 'positive' : 'negative'}">
+                    ${isPositive ? '+' : ''}$${Math.abs(transaction.amount).toFixed(2)}
+                </span>
+                <span class="mobile-transaction-time">${txDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            </div>
+        `;
+        
+        mobileTransactionList.appendChild(transactionDiv);
+    });
+    
+    console.log('✅ Mobile transaction list populated with', recentTransactions.length, 'transactions');
+}
+
+// Initialize mobile menu
+function initializeMobileMenu() {
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    
+    if (!mobileMenuBtn || !mobileMenuOverlay) {
+        console.log('📱 No mobile menu elements found');
+        return;
+    }
+    
+    console.log('📱 Initializing mobile menu...');
+    
+    // Toggle mobile menu
+    mobileMenuBtn.addEventListener('click', function() {
+        mobileMenuOverlay.classList.toggle('active');
+        console.log('📱 Mobile menu toggled');
+    });
+    
+    // Close mobile menu when clicking overlay
+    mobileMenuOverlay.addEventListener('click', function(e) {
+        if (e.target === mobileMenuOverlay) {
+            mobileMenuOverlay.classList.remove('active');
+            console.log('📱 Mobile menu closed');
+        }
+    });
+    
+    // Close mobile menu when clicking menu links
+    const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+    mobileMenuLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            mobileMenuOverlay.classList.remove('active');
+            
+            const href = this.getAttribute('href');
+            console.log('📱 Mobile menu item clicked:', href);
+            
+            // Show alert for now
+            const text = this.textContent;
+            alert(`"${text}" feature coming soon!`);
+        });
+    });
+    
+    console.log('✅ Mobile menu initialized');
 }
 
 // Make forceRefreshData available globally for manual refresh
@@ -1508,9 +1974,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const href = this.getAttribute('href');
             console.log('Menu item clicked:', href);
             
-            // For now, just show an alert
-            const text = this.textContent;
-            alert(`"${text}" feature coming soon!`);
+            // Handle competitor menu
+            if (href === '#competitors') {
+                openCompetitorModal();
+            } else {
+                // For now, just show an alert
+                const text = this.textContent;
+                alert(`"${text}" feature coming soon!`);
+            }
         });
     });
 

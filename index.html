@@ -7,8 +7,13 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+    <script>
+        // Fix for date-fns exports issue
+        if (typeof exports === 'undefined') {
+            window.exports = {};
+        }
+    </script>
     <script src="mobile-detection.js"></script>
-    <script src="debug-data.js"></script>
     <script src="stock-search-fast.js"></script>
 </head>
 <body>
@@ -48,19 +53,20 @@
         <div class="performance-display">
             <div class="performance-label">$1.00 portfolio started Sept 25, 2024:</div>
             <div class="performance-value" id="currentValue">$1.00</div>
-            <div class="performance-change" id="dailyChange">-99.95% total return</div>
+            <div class="performance-change" id="dailyChange">0.00% total return</div>
         </div>
     </header>
 
     <!-- Navigation Menu -->
     <nav class="nav-menu" id="navMenu">
-        <ul class="menu-items">
-            <li><a href="#invest" class="menu-link">Start Investing with us today</a></li>
-            <li><a href="#loans" class="menu-link">Loans</a></li>
-            <li><a href="#why" class="menu-link">Why we Exist</a></li>
-            <li><a href="#help" class="menu-link">Help</a></li>
-            <li><a href="#deposit" class="menu-link">Deposit / Withdraw / Transfer</a></li>
-        </ul>
+            <ul class="menu-items">
+                <li><a href="#invest" class="menu-link">Start Investing with us today</a></li>
+                <li><a href="#loans" class="menu-link">Loans</a></li>
+                <li><a href="#competitors" class="menu-link" id="competitorMenuToggle">Compare with Competitors</a></li>
+                <li><a href="#why" class="menu-link">Why we Exist</a></li>
+                <li><a href="#help" class="menu-link">Help</a></li>
+                <li><a href="#deposit" class="menu-link">Deposit / Withdraw / Transfer</a></li>
+            </ul>
     </nav>
 
     <!-- Main Content Area -->
@@ -130,6 +136,39 @@
             </div>
         </section>
     </main>
+
+    <!-- Competitor Selection Modal -->
+    <div class="modal-overlay" id="competitorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Compare with Competitors</h2>
+                <button class="modal-close" id="competitorModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="competitor-sections">
+                    <!-- U.S. Market ETFs -->
+                    <div class="competitor-section">
+                        <h3>U.S. Market ETFs</h3>
+                        <div class="competitor-list" id="usMarketETFs">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- International Market ETFs -->
+                    <div class="competitor-section">
+                        <h3>International Market ETFs</h3>
+                        <div class="competitor-list" id="internationalETFs">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="applyCompetitorSelection">Apply Selection</button>
+                <button class="btn btn-secondary" id="resetCompetitorSelection">Reset to Default</button>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
