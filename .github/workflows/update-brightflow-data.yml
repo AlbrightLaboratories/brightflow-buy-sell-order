@@ -1,5 +1,19 @@
 name: Update BrightFlow Website Data
 
+# DESCRIPTION:
+# This is the main website update workflow that runs every 15 minutes during market hours.
+# It performs comprehensive data integration from multiple sources:
+# 1. Fetches latest data from brightflow-ML repository (TheChart.md, transactions.json, hourly_market_data.json)
+# 2. Extracts trading signals from brightflow issues repository (GitHub issues and comments)
+# 3. Generates performance data from TheChart.md analysis (BrightFlow vs benchmarks)
+# 4. Generates transaction data from algorithm patterns
+# 5. Updates GitHub Pages website with fresh data
+# 
+# SCHEDULE: Every 15 minutes during market hours (9 AM - 4 PM EST), every 2 hours otherwise
+# TRIGGERS: Manual dispatch, repository dispatch from brightflow-ML, push to main
+# OUTPUTS: Updated website data, performance charts, transaction ledger
+# DATA SOURCES: brightflow-ML repo, brightflow issues, TheChart.md analysis
+
 on:
   # Manual trigger
   workflow_dispatch:

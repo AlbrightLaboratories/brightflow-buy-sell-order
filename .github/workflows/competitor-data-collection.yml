@@ -1,5 +1,16 @@
 name: Competitor Data Collection
 
+# DESCRIPTION:
+# This workflow collects comprehensive competitor data for 28+ ETFs daily after market close.
+# It fetches historical performance data for major U.S. and international ETFs including:
+# - U.S. Market ETFs: SPY, VOO, IVV, VTI, ITOT, SCHB, IWM, IJH, VB, VBR, VTV, VUG, IUSG, IUSV, DIA, QQQ
+# - International ETFs: VXUS, VEU, VEA, VWO, EFA, EEM, IEFA, IEMG, SCHF, SCHE, SPDW, SPEM
+# 
+# SCHEDULE: Daily at 6 PM EST (after market close)
+# TRIGGERS: Manual dispatch
+# OUTPUTS: competitor_performance.json, competitor_performance_comparison.json
+# DATA SOURCES: Yahoo Finance, Alpha Vantage, IEX Cloud
+
 on:
     schedule:
         # Run daily at 6 PM EST (after market close)

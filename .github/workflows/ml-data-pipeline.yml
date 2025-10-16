@@ -1,5 +1,17 @@
 name: ML Data Pipeline
 
+# DESCRIPTION: 
+# This workflow runs the complete ML data pipeline every 2 hours during market hours
+# and every 6 hours outside market hours. It performs:
+# 1. ML Learning System - Creates GitHub issues for algorithm experiments
+# 2. Site Data Reader - Fetches and processes data from the BrightFlow website
+# 3. Competitor Monitor - Tracks SPY, VFIAX, SPDR performance vs BrightFlow
+# 4. Safe Data Updates - Commits all data with merge conflict prevention
+# 
+# SCHEDULE: Every 2 hours during market hours (9 AM - 4 PM EST), every 6 hours otherwise
+# TRIGGERS: Manual dispatch, push to main branch
+# OUTPUTS: Updated performance.json, transactions.json, competitor data
+
 on:
     schedule:
         # Run every 2 hours during market hours (9 AM - 4 PM EST)

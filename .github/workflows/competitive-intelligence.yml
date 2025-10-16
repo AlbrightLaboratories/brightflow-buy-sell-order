@@ -1,5 +1,21 @@
 name: Competitive Intelligence & ML Learning
 
+# DESCRIPTION:
+# This workflow runs competitive intelligence and ML learning tasks every 6 hours.
+# It performs three key functions:
+# 1. Competitor Analysis - Monitors SPY, VFIAX, SPDR performance vs BrightFlow
+# 2. Site Data Reading - Processes website data for ML training
+# 3. ML Learning System - Creates GitHub issues for algorithm experiments
+# 
+# This workflow ensures continuous learning and competitive advantage by:
+# - Tracking competitor performance in real-time
+# - Generating ML training data from website analytics
+# - Creating structured experiments for algorithm improvement
+# 
+# SCHEDULE: Every 6 hours (4 times per day)
+# TRIGGERS: Manual dispatch
+# OUTPUTS: Competitor analysis, ML datapoints, GitHub issues for experiments
+
 on:
   # Run every 6 hours for continuous learning
   schedule:
