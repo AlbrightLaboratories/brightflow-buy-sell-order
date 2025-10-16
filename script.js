@@ -160,25 +160,25 @@ function updateChartTimeRange(range) {
         updatePerformanceForPeriod(range, chartData);
     } else if (historicalData) {
         // Fallback to mock data
-        const chartData = getDataForTimeRange(range);
-        
-        // Update chart data
-        performanceChart.data.labels = chartData.labels;
-        performanceChart.data.datasets[0].data = chartData.brightflow;
-        performanceChart.data.datasets[1].data = chartData.spy;
-        performanceChart.data.datasets[2].data = chartData.vfiax;
-        performanceChart.data.datasets[3].data = chartData.spdr;
-        
-        // Update chart with smooth animation
-        performanceChart.update('active');
+    const chartData = getDataForTimeRange(range);
+    
+    // Update chart data
+    performanceChart.data.labels = chartData.labels;
+    performanceChart.data.datasets[0].data = chartData.brightflow;
+    performanceChart.data.datasets[1].data = chartData.spy;
+    performanceChart.data.datasets[2].data = chartData.vfiax;
+    performanceChart.data.datasets[3].data = chartData.spdr;
+    
+    // Update chart with smooth animation
+    performanceChart.update('active');
         
         // Update mobile chart if it exists
         if (mobileChart) {
             updateMobileChartWithTimeRange(range, chartData);
         }
-        
-        // Update performance display for the selected period
-        updatePerformanceForPeriod(range, chartData);
+    
+    // Update performance display for the selected period
+    updatePerformanceForPeriod(range, chartData);
     }
 }
 
@@ -253,9 +253,62 @@ function getRealDataForTimeRange(range, data) {
     return result;
 }
 
+// Load cached data when data files are locked
+function loadCachedData() {
+    console.log('📦 Loading cached data...');
+    
+    try {
+        // Try to load cached performance data
+        const cachedPerformance = localStorage.getItem('cached_performance.json');
+        const cachedTransactions = localStorage.getItem('cached_transactions.json');
+        
+        if (cachedPerformance && cachedTransactions) {
+            const performanceData = JSON.parse(cachedPerformance);
+            const transactionData = JSON.parse(cachedTransactions);
+            
+            console.log('✅ Using cached data');
+            
+            // Initialize portfolio from cached data
+            initializePortfolioFromData(transactionData);
+            
+            // Update displays with cached data
+            updatePerformanceDisplayWithRealData(performanceData, transactionData);
+            updateChartWithRealData(performanceData);
+            populateTransactionTable();
+            
+            // Update mobile elements
+            if (mobileChart) {
+                updateMobileChartWithRealData(performanceData);
+            }
+            populateMobileTransactionList();
+            
+            return;
+        }
+    } catch (e) {
+        console.error('❌ Error loading cached data:', e);
+    }
+    
+    // Fallback to demo mode if no cached data
+    console.log('⚠️ No cached data available, falling back to demo mode');
+    showDemoMode();
+}
+
 // Load real data from JSON files and initialize portfolio dynamically
 async function loadRealData() {
     console.log('🔄 Loading real data...');
+    
+    // Check for lock files to prevent data collision
+    try {
+        const performanceLock = await fetch('data/.performance_lock').catch(() => null);
+        const transactionLock = await fetch('data/.transactions_lock').catch(() => null);
+        
+        if (performanceLock?.ok || transactionLock?.ok) {
+            console.log('⚠️ Data files are being updated by ML backend, using cached data');
+            return loadCachedData();
+        }
+    } catch (e) {
+        console.log('📊 No lock files found, proceeding with data load');
+    }
     
     try {
         // Load performance data with error handling
@@ -319,6 +372,16 @@ async function loadRealData() {
         localStorage.setItem('lastRealDataUpdate', Date.now().toString());
         localStorage.setItem('lastDataUpdate', performanceData.lastUpdated);
         
+        // Cache the data for future use
+        try {
+            localStorage.setItem('cached_performance.json', JSON.stringify(performanceData));
+            localStorage.setItem('cached_transactions.json', JSON.stringify(transactionData));
+            localStorage.setItem('cached_data_timestamp', Date.now());
+            console.log('💾 Data cached successfully');
+        } catch (e) {
+            console.warn('⚠️ Could not cache data:', e);
+        }
+        
         console.log('✅ Real data loaded successfully');
         showUpdateIndicator('success');
         
@@ -342,7 +405,7 @@ function initializePortfolioFromData(performanceData, transactionData) {
         console.log('💰 Portfolio initialized with transaction balance:', transactionData.currentBalance);
     } else {
         // Fallback to normalized value
-        portfolio.currentValue = performanceData.currentValue;
+    portfolio.currentValue = performanceData.currentValue;
         portfolio.totalValue = performanceData.currentValue;
         console.log('📊 Portfolio initialized with normalized value:', performanceData.currentValue);
     }
@@ -949,6 +1012,19 @@ function updatePerformanceDisplay() {
     // Also show cash vs invested breakdown in console for debugging
     const investedValue = portfolio.totalValue - portfolio.cash;
     console.log(`Portfolio: $${portfolio.totalValue.toFixed(2)} (Cash: $${portfolio.cash.toFixed(2)}, Invested: $${investedValue.toFixed(2)})`);
+    
+    // Update mobile elements if they exist (only for demo mode)
+    const mobileCurrentValueEl = document.getElementById('mobileCurrentValue');
+    const mobileDailyChangeEl = document.getElementById('mobileDailyChange');
+    
+    if (mobileCurrentValueEl) {
+        mobileCurrentValueEl.textContent = '$' + portfolio.totalValue.toFixed(2);
+    }
+    if (mobileDailyChangeEl) {
+        const mobileTotalReturn = ((portfolio.totalValue - portfolio.startValue) / portfolio.startValue) * 100;
+        mobileDailyChangeEl.textContent = `${mobileTotalReturn >= 0 ? '+' : ''}${mobileTotalReturn.toFixed(2)}%`;
+        mobileDailyChangeEl.className = 'mobile-performance-change ' + (mobileTotalReturn >= 0 ? 'positive' : 'negative');
+    }
 }
 
 // Update performance display for specific time period
@@ -1978,9 +2054,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (href === '#competitors') {
                 openCompetitorModal();
             } else {
-                // For now, just show an alert
-                const text = this.textContent;
-                alert(`"${text}" feature coming soon!`);
+            // For now, just show an alert
+            const text = this.textContent;
+            alert(`"${text}" feature coming soon!`);
             }
         });
     });
