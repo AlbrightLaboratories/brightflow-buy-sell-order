@@ -451,10 +451,32 @@ function populateTransactionTable() {
     const tbody = document.getElementById('ledgerBody');
     tbody.innerHTML = '';
     
-    // Show most recent transactions first
-    const recentTransactions = [...transactionData].reverse().slice(0, 50);
+    // Filter transactions from last 24 hours (or today if no time data available)
+    const now = new Date();
+    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     
-    recentTransactions.forEach((transaction, index) => {
+    // Since transactions.json only has dates (no times), show today's transactions
+    const todayStr = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    const yesterdayStr = oneDayAgo.toISOString().split('T')[0];
+    
+    const last24HourTransactions = transactionData.filter(transaction => {
+        const txDateStr = typeof transaction.date === 'string' ? 
+            transaction.date : 
+            transaction.date.toISOString().split('T')[0];
+        
+        // Show transactions from today and yesterday
+        return txDateStr === todayStr || txDateStr === yesterdayStr;
+    }).reverse(); // Most recent first
+    
+    // If no transactions in last 24 hours, show message
+    if (last24HourTransactions.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="8" style="text-align: center; padding: 20px; color: #888;">No transactions in the last 24 hours</td>`;
+        tbody.appendChild(row);
+        return;
+    }
+    
+    last24HourTransactions.forEach((transaction, index) => {
         setTimeout(() => {
             const row = createTransactionRow(transaction);
             tbody.appendChild(row);
@@ -465,29 +487,48 @@ function populateTransactionTable() {
 // Create a transaction row element
 function createTransactionRow(transaction) {
     const row = document.createElement('tr');
-    const isPositive = transaction.amount > 0;
+    
+    // Handle both formats: mock data (has 'action', 'date' as Date) and real data (has 'type', 'date' as string)
+    const action = transaction.action || transaction.type;
+    const txDate = typeof transaction.date === 'string' ? new Date(transaction.date) : transaction.date;
+    const quantity = transaction.quantity || transaction.shares || 0;
+    const amount = transaction.amount || transaction.value || 0;
+    const isPositive = action === 'BUY' || amount > 0;
     
     // Format fractional shares properly
-    const quantityDisplay = transaction.quantity < 1 ? 
-        transaction.quantity.toFixed(4) : 
-        transaction.quantity.toFixed(2);
+    const quantityDisplay = quantity < 1 ? 
+        quantity.toFixed(4) : 
+        quantity.toFixed(2);
+    
+    // Format profit if available (from real data)
+    let profitDisplay = '';
+    if (transaction.profit !== undefined) {
+        const profitSign = transaction.profit >= 0 ? '+' : '';
+        profitDisplay = ` (${profitSign}$${transaction.profit.toFixed(2)})`;
+    }
     
     row.innerHTML = `
-        <td>${transaction.date.toLocaleDateString()}</td>
-        <td>${transaction.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-        <td><span class="${transaction.action.toLowerCase()}">${transaction.action}</span></td>
+        <td>${txDate.toLocaleDateString()}</td>
+        <td>${txDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+        <td><span class="${action.toLowerCase()}">${action}</span></td>
         <td>${transaction.symbol}</td>
         <td>${quantityDisplay}</td>
         <td>$${transaction.price.toFixed(2)}</td>
         <td class="${isPositive ? 'buy' : 'sell'}">
-            ${isPositive ? '+' : ''}$${Math.abs(transaction.amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+            ${isPositive ? '+' : ''}$${Math.abs(amount).toFixed(2)}${profitDisplay}
         </td>
-        <td class="running-balance">$${transaction.runningBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+        <td class="running-balance">${transaction.runningBalance ? '$' + transaction.runningBalance.toFixed(2) : '-'}</td>
     `;
     
     // Add strategy info as tooltip if available
     if (transaction.strategy && transaction.confidence) {
         row.title = `Strategy: ${transaction.strategy} | Confidence: ${(transaction.confidence * 100).toFixed(1)}%`;
+    }
+    
+    // Add profit info as tooltip if available
+    if (transaction.profit_pct !== undefined) {
+        const profitSign = transaction.profit_pct >= 0 ? '+' : '';
+        row.title = `Profit: ${profitSign}${transaction.profit_pct.toFixed(2)}%`;
     }
     
     return row;

@@ -671,35 +671,120 @@ body {
 .menu-overlay.active {
     opacity: 1;
     visibility: visible;
+}
+
+/* Additional mobile responsive adjustments */
+@media (max-width: 480px) {
+    .header {
+        padding: 10px 15px;
+    }
+    
+    .logo h1 {
+        font-size: 1.5rem;
+    }
+    
+    .logo .subtitle {
+        font-size: 0.75rem;
+    }
+    
+    .performance-display {
+        text-align: center;
+        width: 100%;
+    }
+    
+    .performance-label {
+        font-size: 0.75rem;
+    }
+    
+    .performance-value {
+        font-size: 1.5rem;
+    }
+    
+    .performance-change {
+        font-size: 0.9rem;
+    }
+    
+    .bull-search-container {
+        flex-direction: column;
+        align-items: center;
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .bull-image {
+        height: 35px;
+    }
+    
+    .search-container {
+        width: calc(100% - 20px);
+        margin: 10px 0;
+    }
+    
+    .stock-search-input {
+        width: 100%;
+    }
+    
+    .main-content {
+        padding: 15px 10px;
+        gap: 15px;
+    }
+    
+    .chart-section,
+    .ledger-section {
+        padding: 15px;
+    }
+    
+    .chart-header h2,
+    .ledger-header h2 {
+        font-size: 1.3rem;
+    }
     
     .legend {
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
+        font-size: 0.8rem;
     }
     
     .chart-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 15px;
+        gap: 12px;
     }
     
     .time-range-controls {
-        gap: 6px;
+        gap: 5px;
         flex-wrap: wrap;
+        justify-content: space-between;
     }
     
     .time-btn {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-        min-width: 38px;
+        padding: 6px 10px;
+        font-size: 0.75rem;
+        min-width: 35px;
+        flex: 1;
+    }
+    
+    .chart-container canvas {
+        height: 300px !important;
+    }
+    
+    .ledger-container {
+        max-height: 400px;
+        overflow-x: auto;
     }
     
     .ledger-table {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
+        min-width: 600px;
     }
     
     .ledger-table th,
     .ledger-table td {
-        padding: 8px 4px;
+        padding: 6px 4px;
+        white-space: nowrap;
+    }
+    
+    .ledger-info {
+        font-size: 0.75rem;
     }
 }
