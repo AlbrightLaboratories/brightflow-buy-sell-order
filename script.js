@@ -505,20 +505,21 @@ function populateTransactionTable() {
     console.log('📅 Looking for transactions from:', todayStr, 'and', yesterdayStr);
     
     const last24HourTransactions = transactionData.filter(transaction => {
-        // Check if transaction and date exist
-        if (!transaction || !transaction.date) {
-            console.warn('Transaction missing date:', transaction);
+        // Check if transaction and timestamp exist
+        if (!transaction || !transaction.timestamp) {
+            console.warn('Transaction missing timestamp:', transaction);
             return false;
         }
         
         let txDateStr;
-        if (typeof transaction.date === 'string') {
-            txDateStr = transaction.date;
-        } else if (transaction.date instanceof Date) {
-            txDateStr = transaction.date.toISOString().split('T')[0];
+        if (typeof transaction.timestamp === 'string') {
+            // Extract date from timestamp (format: 2025-10-15T09:30:00Z)
+            txDateStr = transaction.timestamp.split('T')[0];
+        } else if (transaction.timestamp instanceof Date) {
+            txDateStr = transaction.timestamp.toISOString().split('T')[0];
         } else {
             // Handle other date formats or invalid dates
-            console.warn('Invalid transaction date format:', transaction.date);
+            console.warn('Invalid transaction timestamp format:', transaction.timestamp);
             return false;
         }
         
@@ -549,9 +550,21 @@ function populateTransactionTable() {
 function createTransactionRow(transaction) {
     const row = document.createElement('tr');
     
-    // Handle both formats: mock data (has 'action', 'date' as Date) and real data (has 'type', 'date' as string)
+    // Handle both formats: mock data and real data
     const action = transaction.action || transaction.type;
-    const txDate = typeof transaction.date === 'string' ? new Date(transaction.date) : transaction.date;
+    let txDate;
+    
+    // Handle different date/timestamp formats
+    if (transaction.timestamp) {
+        // Real data format: timestamp field
+        txDate = new Date(transaction.timestamp);
+    } else if (transaction.date) {
+        // Mock data format: date field
+        txDate = typeof transaction.date === 'string' ? new Date(transaction.date) : transaction.date;
+    } else {
+        txDate = new Date(); // fallback
+    }
+    
     const quantity = transaction.quantity || transaction.shares || 0;
     const amount = transaction.amount || transaction.value || 0;
     const isPositive = action === 'BUY' || amount > 0;
