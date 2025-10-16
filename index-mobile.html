@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles-mobile-minimal.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
-    <script src="stock-search-working.js"></script>
+    <script src="stock-search-fast.js"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0a">
@@ -30,6 +30,20 @@
     <div class="mobile-performance-card">
         <div class="mobile-performance-value" id="mobileCurrentValue">$1.00</div>
         <div class="mobile-performance-change" id="mobileDailyChange">-0.00%</div>
+    </div>
+
+    <!-- Mobile Stock Search -->
+    <div class="mobile-stock-search">
+        <div class="mobile-bull-left">
+            <img src="bull.png" alt="Bull" class="mobile-bull-image">
+        </div>
+        <div class="mobile-search-container">
+            <input type="text" id="mobileStockSearch" placeholder="Search stocks..." class="mobile-search-input">
+            <button id="mobileSearchBtn" class="mobile-search-btn">Search</button>
+        </div>
+        <div class="mobile-bull-right">
+            <img src="bull.png" alt="Bull" class="mobile-bull-image">
+        </div>
     </div>
 
     <!-- Mobile Chart -->
