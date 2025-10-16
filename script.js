@@ -184,8 +184,8 @@ async function loadRealData() {
         // Update performance display
         updatePerformanceDisplayWithRealData(performanceData);
         
-        // Update transaction table
-        transactionData = transactionDataResponse.transactions;
+        // Update transaction data
+        transactionData = transactionDataResponse.transactions || [];
         populateTransactionTable();
         
         // Mark that we have real data loaded to prevent demo mode
@@ -485,6 +485,15 @@ function populateTransactionTable() {
     const tbody = document.getElementById('ledgerBody');
     tbody.innerHTML = '';
     
+    console.log('📋 Populating transaction table with data:', transactionData);
+    console.log('📋 Transaction count:', transactionData ? transactionData.length : 'No data');
+    
+    // Check if we have transaction data
+    if (!transactionData || !Array.isArray(transactionData)) {
+        console.warn('No transaction data available');
+        return;
+    }
+    
     // Filter transactions from last 24 hours (or today if no time data available)
     const now = new Date();
     const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -493,14 +502,32 @@ function populateTransactionTable() {
     const todayStr = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
     const yesterdayStr = oneDayAgo.toISOString().split('T')[0];
     
+    console.log('📅 Looking for transactions from:', todayStr, 'and', yesterdayStr);
+    
     const last24HourTransactions = transactionData.filter(transaction => {
-        const txDateStr = typeof transaction.date === 'string' ? 
-            transaction.date : 
-            transaction.date.toISOString().split('T')[0];
+        // Check if transaction and date exist
+        if (!transaction || !transaction.date) {
+            console.warn('Transaction missing date:', transaction);
+            return false;
+        }
+        
+        let txDateStr;
+        if (typeof transaction.date === 'string') {
+            txDateStr = transaction.date;
+        } else if (transaction.date instanceof Date) {
+            txDateStr = transaction.date.toISOString().split('T')[0];
+        } else {
+            // Handle other date formats or invalid dates
+            console.warn('Invalid transaction date format:', transaction.date);
+            return false;
+        }
         
         // Show transactions from today and yesterday
         return txDateStr === todayStr || txDateStr === yesterdayStr;
     }).reverse(); // Most recent first
+    
+    console.log('📋 Found transactions for display:', last24HourTransactions.length);
+    console.log('📋 Transaction details:', last24HourTransactions);
     
     // If no transactions in last 24 hours, show message
     if (last24HourTransactions.length === 0) {
@@ -699,7 +726,7 @@ function scheduleDataUpdates() {
         
         // Always check for updates - money never sleeps!
         console.log('Checking for data updates - 24/7 money making mode');
-        checkForUpdates();
+            checkForUpdates();
     };
     
     // Check immediately
@@ -1076,8 +1103,8 @@ function updateChartWithRealData(data) {
         console.log(`Processing ${key}:`, performanceArray);
         
         if (performanceArray && Array.isArray(performanceArray)) {
-            // Values are already in the correct format from the JSON
-            performanceChart.data.datasets[index].data = performanceArray.map(item => item.value);
+        // Values are already in the correct format from the JSON
+        performanceChart.data.datasets[index].data = performanceArray.map(item => item.value);
             console.log(`✅ Updated ${key} dataset with ${performanceArray.length} data points`);
         } else {
             console.warn(`⚠️ No data found for ${key}, using empty array`);
@@ -1087,9 +1114,9 @@ function updateChartWithRealData(data) {
     
     // Update labels with dates from brightflow data
     if (data.performance.brightflow && Array.isArray(data.performance.brightflow)) {
-        performanceChart.data.labels = data.performance.brightflow.map(item => 
-            new Date(item.date).toLocaleDateString()
-        );
+    performanceChart.data.labels = data.performance.brightflow.map(item => 
+        new Date(item.date).toLocaleDateString()
+    );
         console.log('✅ Updated chart labels with dates');
     } else {
         console.warn('⚠️ No brightflow data found for labels');
@@ -1141,16 +1168,20 @@ async function checkForUpdates() {
         const lastUpdated = new Date(performanceData.lastUpdated);
         const storedLastUpdate = localStorage.getItem('lastDataUpdate');
         
+        console.log('🔍 Checking data freshness:');
+        console.log('  Current data timestamp:', performanceData.lastUpdated);
+        console.log('  Stored timestamp:', storedLastUpdate);
+        
         if (!storedLastUpdate || new Date(storedLastUpdate) < lastUpdated) {
-            console.log('New data available, updating charts and tables');
+            console.log('✅ New data available, updating charts and tables');
             
             // Update charts and display
             updateChartWithRealData(performanceData);
             updatePerformanceDisplayWithRealData(performanceData);
             
             // Update transaction data
-            transactionData.transactions = transactionData.transactions || [];
-            populateTransactionTableWithRealData(transactionData);
+            transactionData = transactionData.transactions || [];
+            populateTransactionTableWithRealData({ transactions: transactionData });
             
             // Store the update time
             localStorage.setItem('lastDataUpdate', performanceData.lastUpdated);
@@ -1159,7 +1190,7 @@ async function checkForUpdates() {
             // Show success indicator
             showUpdateIndicator('success');
         } else {
-            console.log('No new data available');
+            console.log('ℹ️ No new data available (data is up to date)');
             showUpdateIndicator('no-update');
         }
         
@@ -1197,6 +1228,27 @@ function showUpdateIndicator(status) {
         }
     }, 3000);
 }
+
+// Force refresh data (useful when ML backend sends new data)
+function forceRefreshData() {
+    console.log('🔄 Force refreshing data...');
+    
+    // Clear stored timestamps to force update
+    localStorage.removeItem('lastDataUpdate');
+    localStorage.removeItem('lastRealDataUpdate');
+    
+    // Reload data
+    loadRealData().then(() => {
+        console.log('✅ Force refresh completed');
+        showUpdateIndicator('success');
+    }).catch((error) => {
+        console.error('❌ Force refresh failed:', error);
+        showUpdateIndicator('error');
+    });
+}
+
+// Make forceRefreshData available globally for manual refresh
+window.forceRefreshData = forceRefreshData;
 
 // Populate transaction table with real data
 function populateTransactionTableWithRealData(data) {
