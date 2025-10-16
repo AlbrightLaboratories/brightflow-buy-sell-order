@@ -1618,6 +1618,9 @@ function forceRefreshData() {
     
     // Initialize mobile menu
     initializeMobileMenu();
+    
+    // Initialize mobile stock search
+    initializeMobileStockSearch();
 }
 
 // Competitor data definitions
@@ -1929,6 +1932,41 @@ function initializeMobileMenu() {
     });
     
     console.log('✅ Mobile menu initialized');
+}
+
+// Initialize mobile stock search
+function initializeMobileStockSearch() {
+    const mobileSearchInput = document.getElementById('mobileStockSearch');
+    const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+    
+    if (!mobileSearchInput || !mobileSearchBtn) {
+        console.log('📱 No mobile stock search elements found');
+        return;
+    }
+    
+    console.log('📱 Initializing mobile stock search...');
+    
+    // Search button click handler
+    mobileSearchBtn.addEventListener('click', function() {
+        const query = mobileSearchInput.value.trim();
+        if (query) {
+            console.log('📱 Mobile stock search:', query);
+            performStockSearch(query);
+        }
+    });
+    
+    // Enter key handler
+    mobileSearchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const query = mobileSearchInput.value.trim();
+            if (query) {
+                console.log('📱 Mobile stock search (Enter):', query);
+                performStockSearch(query);
+            }
+        }
+    });
+    
+    console.log('✅ Mobile stock search initialized');
 }
 
 // Make forceRefreshData available globally for manual refresh
