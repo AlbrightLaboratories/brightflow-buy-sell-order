@@ -894,6 +894,12 @@ function shouldShowDemo() {
 
 // Update the performance display with animation
 function updatePerformanceDisplay() {
+    // Don't update if we have real data loaded (it will be handled by updatePerformanceDisplayWithRealData)
+    if (realDataLoaded && realPerformanceData) {
+        console.log('📊 Skipping performance display update - using real transaction data');
+        return;
+    }
+    
     const currentValueEl = document.getElementById('currentValue');
     const dailyChangeEl = document.getElementById('dailyChange');
     
@@ -1115,6 +1121,12 @@ function simulateHourlyMarketActivity() {
 
 // Update portfolio value based on current market prices
 function updatePortfolioValue() {
+    // Don't override portfolio value if we have real transaction data
+    if (realDataLoaded && realPerformanceData) {
+        console.log('📊 Skipping portfolio update - using real transaction data');
+        return;
+    }
+    
     const stockPrices = {
         'AAPL': 178.50,
         'GOOGL': 145.20,
