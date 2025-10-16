@@ -811,7 +811,8 @@ body {
         flex-direction: row;
         justify-content: center;
         align-items: center;
-        gap: var(--spacing-md);
+        gap: var(--spacing-lg);
+        margin: var(--spacing-lg) 0;
     }
     
     .search-container {
@@ -820,8 +821,8 @@ body {
     }
     
     .bull-image {
-        width: 40px;
-        height: 40px;
+        width: 300px;
+        height: 300px;
         object-fit: contain;
     }
     
@@ -868,6 +869,12 @@ body {
     
     .performance-value {
         font-size: 3rem;
+    }
+    
+    .bull-image {
+        width: 400px;
+        height: 400px;
+        object-fit: contain;
     }
 }
 
