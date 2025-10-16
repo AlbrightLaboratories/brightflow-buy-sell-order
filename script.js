@@ -184,8 +184,8 @@ async function loadRealData() {
         // Update performance display
         updatePerformanceDisplayWithRealData(performanceData);
         
-        // Update transaction table
-        transactionData = transactionDataResponse.transactions;
+        // Update transaction data
+        transactionData = transactionDataResponse.transactions || [];
         populateTransactionTable();
         
         // Mark that we have real data loaded to prevent demo mode
@@ -494,9 +494,16 @@ function populateTransactionTable() {
     const yesterdayStr = oneDayAgo.toISOString().split('T')[0];
     
     const last24HourTransactions = transactionData.filter(transaction => {
-        const txDateStr = typeof transaction.date === 'string' ? 
-            transaction.date : 
-            transaction.date.toISOString().split('T')[0];
+        let txDateStr;
+        if (typeof transaction.date === 'string') {
+            txDateStr = transaction.date;
+        } else if (transaction.date instanceof Date) {
+            txDateStr = transaction.date.toISOString().split('T')[0];
+        } else {
+            // Handle other date formats or invalid dates
+            console.warn('Invalid transaction date format:', transaction.date);
+            return false;
+        }
         
         // Show transactions from today and yesterday
         return txDateStr === todayStr || txDateStr === yesterdayStr;
@@ -1141,16 +1148,20 @@ async function checkForUpdates() {
         const lastUpdated = new Date(performanceData.lastUpdated);
         const storedLastUpdate = localStorage.getItem('lastDataUpdate');
         
+        console.log('🔍 Checking data freshness:');
+        console.log('  Current data timestamp:', performanceData.lastUpdated);
+        console.log('  Stored timestamp:', storedLastUpdate);
+        
         if (!storedLastUpdate || new Date(storedLastUpdate) < lastUpdated) {
-            console.log('New data available, updating charts and tables');
+            console.log('✅ New data available, updating charts and tables');
             
             // Update charts and display
             updateChartWithRealData(performanceData);
             updatePerformanceDisplayWithRealData(performanceData);
             
             // Update transaction data
-            transactionData.transactions = transactionData.transactions || [];
-            populateTransactionTableWithRealData(transactionData);
+            transactionData = transactionData.transactions || [];
+            populateTransactionTableWithRealData({ transactions: transactionData });
             
             // Store the update time
             localStorage.setItem('lastDataUpdate', performanceData.lastUpdated);
@@ -1159,7 +1170,7 @@ async function checkForUpdates() {
             // Show success indicator
             showUpdateIndicator('success');
         } else {
-            console.log('No new data available');
+            console.log('ℹ️ No new data available (data is up to date)');
             showUpdateIndicator('no-update');
         }
         
@@ -1197,6 +1208,27 @@ function showUpdateIndicator(status) {
         }
     }, 3000);
 }
+
+// Force refresh data (useful when ML backend sends new data)
+function forceRefreshData() {
+    console.log('🔄 Force refreshing data...');
+    
+    // Clear stored timestamps to force update
+    localStorage.removeItem('lastDataUpdate');
+    localStorage.removeItem('lastRealDataUpdate');
+    
+    // Reload data
+    loadRealData().then(() => {
+        console.log('✅ Force refresh completed');
+        showUpdateIndicator('success');
+    }).catch((error) => {
+        console.error('❌ Force refresh failed:', error);
+        showUpdateIndicator('error');
+    });
+}
+
+// Make forceRefreshData available globally for manual refresh
+window.forceRefreshData = forceRefreshData;
 
 // Populate transaction table with real data
 function populateTransactionTableWithRealData(data) {
