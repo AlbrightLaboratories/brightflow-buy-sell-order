@@ -103,12 +103,23 @@ function getDataForTimeRange(range) {
 
 // Setup time range control buttons
 function setupTimeRangeControls() {
-    const buttons = document.querySelectorAll('.time-btn');
+    // Setup desktop buttons
+    const desktopButtons = document.querySelectorAll('.time-btn');
+    setupTimeRangeButtons(desktopButtons);
     
+    // Setup mobile buttons
+    const mobileButtons = document.querySelectorAll('.mobile-time-btn');
+    setupTimeRangeButtons(mobileButtons);
+}
+
+// Setup time range buttons (works for both desktop and mobile)
+function setupTimeRangeButtons(buttons) {
     buttons.forEach(button => {
         button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            buttons.forEach(btn => btn.classList.remove('active'));
+            // Remove active class from all buttons of the same type
+            const buttonClass = this.classList.contains('mobile-time-btn') ? 'mobile-time-btn' : 'time-btn';
+            const allButtons = document.querySelectorAll('.' + buttonClass);
+            allButtons.forEach(btn => btn.classList.remove('active'));
             
             // Add active class to clicked button
             this.classList.add('active');
@@ -140,6 +151,11 @@ function updateChartTimeRange(range) {
         // Update chart with smooth animation
         performanceChart.update('active');
         
+        // Update mobile chart if it exists
+        if (mobileChart) {
+            updateMobileChartWithTimeRange(range, chartData);
+        }
+        
         // Update performance display for the selected period
         updatePerformanceForPeriod(range, chartData);
     } else if (historicalData) {
@@ -155,6 +171,11 @@ function updateChartTimeRange(range) {
         
         // Update chart with smooth animation
         performanceChart.update('active');
+        
+        // Update mobile chart if it exists
+        if (mobileChart) {
+            updateMobileChartWithTimeRange(range, chartData);
+        }
         
         // Update performance display for the selected period
         updatePerformanceForPeriod(range, chartData);
@@ -1334,6 +1355,20 @@ function updateMobileChartWithRealData(data) {
     }
 }
 
+// Update mobile chart with time range data
+function updateMobileChartWithTimeRange(range, chartData) {
+    if (!mobileChart) return;
+    
+    console.log('📱 Updating mobile chart for time range:', range);
+    
+    if (chartData.brightflow && chartData.brightflow.length > 0) {
+        mobileChart.data.labels = chartData.labels;
+        mobileChart.data.datasets[0].data = chartData.brightflow;
+        mobileChart.update('active');
+        console.log('✅ Mobile chart updated for', range, 'with', chartData.brightflow.length, 'data points');
+    }
+}
+
 // Update performance display with real data
 function updatePerformanceDisplayWithRealData(performanceData, transactionData = null) {
     const currentValueEl = document.getElementById('currentValue');
@@ -1486,6 +1521,9 @@ function forceRefreshData() {
     
     // Initialize competitor modal
     initializeCompetitorModal();
+    
+    // Initialize mobile menu
+    initializeMobileMenu();
 }
 
 // Competitor data definitions
@@ -1751,6 +1789,51 @@ function populateMobileTransactionList() {
     });
     
     console.log('✅ Mobile transaction list populated with', recentTransactions.length, 'transactions');
+}
+
+// Initialize mobile menu
+function initializeMobileMenu() {
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    
+    if (!mobileMenuBtn || !mobileMenuOverlay) {
+        console.log('📱 No mobile menu elements found');
+        return;
+    }
+    
+    console.log('📱 Initializing mobile menu...');
+    
+    // Toggle mobile menu
+    mobileMenuBtn.addEventListener('click', function() {
+        mobileMenuOverlay.classList.toggle('active');
+        console.log('📱 Mobile menu toggled');
+    });
+    
+    // Close mobile menu when clicking overlay
+    mobileMenuOverlay.addEventListener('click', function(e) {
+        if (e.target === mobileMenuOverlay) {
+            mobileMenuOverlay.classList.remove('active');
+            console.log('📱 Mobile menu closed');
+        }
+    });
+    
+    // Close mobile menu when clicking menu links
+    const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+    mobileMenuLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            mobileMenuOverlay.classList.remove('active');
+            
+            const href = this.getAttribute('href');
+            console.log('📱 Mobile menu item clicked:', href);
+            
+            // Show alert for now
+            const text = this.textContent;
+            alert(`"${text}" feature coming soon!`);
+        });
+    });
+    
+    console.log('✅ Mobile menu initialized');
 }
 
 // Make forceRefreshData available globally for manual refresh
