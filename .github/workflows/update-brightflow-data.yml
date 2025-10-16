@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
     inputs:
       force_update:
-        description: 'Force update even if no changes'
+        description: "Force update even if no changes"
         required: false
-        default: 'false'
+        default: "false"
         type: boolean
 
   # Trigger from external repositories (brightflow-ML)
@@ -16,362 +16,362 @@ on:
 
   # Schedule updates every 15 minutes during market hours
   schedule:
-    - cron: '*/15 9-16 * * 1-5'  # Every 15 minutes during US market hours
-    - cron: '0 */2 * * *'         # Every 2 hours outside market hours
-    - cron: '0 0 * * *'           # Daily at midnight
+    - cron: "*/15 9-16 * * 1-5" # Every 15 minutes during US market hours
+    - cron: "0 */2 * * *" # Every 2 hours outside market hours
+    - cron: "0 0 * * *" # Daily at midnight
 
   # Trigger on push to main branch
   push:
     branches: [main]
-    paths: ['data/**', 'TheChart.md']
+    paths: ["data/**", "TheChart.md"]
 
 jobs:
   update-brightflow-data:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout brightflow-buy-sell-order repository
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        fetch-depth: 0
+      - name: Checkout brightflow-buy-sell-order repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
-    - name: Fetch data from brightflow-ML repository
-      run: |
-        echo "🔄 Fetching latest data from brightflow-ML repository..."
-        
-        # Clone the ML repository to get latest data
-        git clone https://github.com/AlbrightLaboratories/brightflow-ML.git temp-ml-repo
-        
-        # Copy latest data files
-        if [ -f "temp-ml-repo/data/transactions.json" ]; then
-          cp temp-ml-repo/data/transactions.json data/
-          echo "✅ Updated transactions.json"
-        fi
-        
-        if [ -f "temp-ml-repo/data/hourly_market_data.json" ]; then
-          cp temp-ml-repo/data/hourly_market_data.json data/
-          echo "✅ Updated hourly_market_data.json"
-        fi
-        
-        if [ -f "temp-ml-repo/TheChart.md" ]; then
-          cp temp-ml-repo/TheChart.md .
-          echo "✅ Updated TheChart.md"
-        fi
-        
-        # Clean up
-        rm -rf temp-ml-repo
+      - name: Fetch data from brightflow-ML repository
+        run: |
+          echo "🔄 Fetching latest data from brightflow-ML repository..."
 
-    - name: Fetch trading signals from brightflow issues
-      run: |
-        echo "📊 Fetching trading signals from brightflow issues repository..."
-        
-        # Fetch issues from brightflow repository
-        python3 -c "
-        import requests
-        import json
-        import datetime
-        import re
-        
-        try:
-            # Fetch issues from brightflow repository
-            url = 'https://api.github.com/repos/AlbrightLaboratories/brightflow/issues'
-            headers = {'Accept': 'application/vnd.github.v3+json'}
-            
-            response = requests.get(url, headers=headers)
-            issues = response.json()
-            
-            print(f'📋 Found {len(issues)} issues in brightflow repository')
-            
-            # Extract trading signals from issues
-            trading_signals = []
-            for issue in issues:
-                title = issue.get('title', '')
-                body = issue.get('body', '')
-                created_at = issue.get('created_at', '')
-                issue_number = issue.get('number', 0)
-                
-                # Look for trading-related keywords in title and body
-                trading_keywords = ['BUY', 'SELL', 'HOLD', 'stock', 'trading', 'algorithm', 'ML', 'recommendation']
-                
-                if any(keyword.lower() in (title + ' ' + body).lower() for keyword in trading_keywords):
-                    # Extract stock symbols (3-5 uppercase letters)
-                    stock_symbols = re.findall(r'\b[A-Z]{3,5}\b', title + ' ' + body)
-                    
-                    # Extract prices (numbers with $ or decimal)
-                    prices = re.findall(r'\$?(\d+\.?\d*)', title + ' ' + body)
-                    
-                    signal = {
-                        'issue_number': issue_number,
-                        'title': title,
-                        'created_at': created_at,
-                        'stock_symbols': list(set(stock_symbols)),
-                        'prices': [float(p) for p in prices if p.replace('.', '').isdigit()],
-                        'body_preview': body[:200] + '...' if len(body) > 200 else body
-                    }
-                    trading_signals.append(signal)
-            
-            # Save trading signals
-            signals_data = {
-                'lastUpdated': datetime.datetime.now().isoformat() + 'Z',
-                'totalSignals': len(trading_signals),
-                'source': 'brightflow issues repository',
-                'signals': trading_signals[-20:]  # Last 20 signals
-            }
-            
-            with open('data/trading_signals.json', 'w') as f:
-                json.dump(signals_data, f, indent=2)
-            
-            print(f'✅ Extracted {len(trading_signals)} trading signals from issues')
-            
-            # Also fetch comments for more detailed analysis
-            detailed_signals = []
-            for signal in trading_signals[-10:]:  # Analyze last 10 signals in detail
-                issue_number = signal['issue_number']
-                comments_url = f'https://api.github.com/repos/AlbrightLaboratories/brightflow/issues/{issue_number}/comments'
-                comments_response = requests.get(comments_url, headers=headers)
-                comments = comments_response.json()
-                
-                for comment in comments:
-                    comment_body = comment.get('body', '')
-                    # Look for specific trading instructions
-                    if any(word in comment_body.upper() for word in ['BUY', 'SELL', 'SHARES', 'PRICE']):
-                        detailed_signals.append({
-                            'issue_number': issue_number,
-                            'comment_id': comment.get('id'),
-                            'author': comment.get('user', {}).get('login', 'unknown'),
-                            'created_at': comment.get('created_at'),
-                            'body': comment_body,
-                            'trading_instructions': re.findall(r'(BUY|SELL|HOLD).*?([A-Z]{3,5}).*?(\$?\d+\.?\d*)', comment_body.upper())
-                        })
-            
-            # Save detailed signals
-            detailed_data = {
-                'lastUpdated': datetime.datetime.now().isoformat() + 'Z',
-                'totalDetailedSignals': len(detailed_signals),
-                'source': 'brightflow issues comments',
-                'detailed_signals': detailed_signals
-            }
-            
-            with open('data/detailed_trading_signals.json', 'w') as f:
-                json.dump(detailed_data, f, indent=2)
-            
-            print(f'✅ Extracted {len(detailed_signals)} detailed trading signals from comments')
-            
-        except Exception as e:
-            print(f'❌ Error fetching trading signals: {e}')
-        "
+          # Clone the ML repository to get latest data
+          git clone https://github.com/AlbrightLaboratories/brightflow-ML.git temp-ml-repo
 
-    - name: Generate performance data from TheChart.md
-      run: |
-        echo "📊 Generating performance data from TheChart.md analysis..."
-        
-        python3 -c "
-        import json
-        import datetime
-        import re
-        
-        # Read TheChart.md
-        try:
-            with open('TheChart.md', 'r') as f:
-                content = f.read()
-            
-            # Extract performance data from TheChart.md
-            # Look for the performance comparison section
-            performance_match = re.search(r'BrightFlow ML Portfolio.*?\+(\d+\.\d+)% return', content)
-            spy_match = re.search(r'SPY.*?\+(\d+\.\d+)% return', content)
-            vfiax_match = re.search(r'VFIAX.*?\+(\d+\.\d+)% return', content)
-            spdr_match = re.search(r'SPDR S&P 500.*?\+(\d+\.\d+)% return', content)
-            
-            if performance_match and spy_match and vfiax_match and spdr_match:
-                brightflow_return = float(performance_match.group(1)) / 100
-                spy_return = float(spy_match.group(1)) / 100
-                vfiax_return = float(vfiax_match.group(1)) / 100
-                spdr_return = float(spdr_match.group(1)) / 100
-                
-                # Generate chart data for the last 30 days
-                import random
-                from datetime import datetime, timedelta
-                
-                dates = []
-                brightflow_values = []
-                spy_values = []
-                vfiax_values = []
-                spdr_values = []
-                
-                start_date = datetime(2024, 9, 25)
-                current_date = datetime.now()
-                
-                # Generate daily data points
-                current = start_date
-                day_count = 0
-                total_days = (current_date - start_date).days
-                
-                while current <= current_date:
-                    dates.append(current.strftime('%Y-%m-%d'))
-                    
-                    # BrightFlow starts at 1.0 and grows to final return
-                    brightflow_progress = day_count / total_days
-                    brightflow_value = 1.0 + (brightflow_return * brightflow_progress)
-                    brightflow_values.append(round(brightflow_value, 4))
-                    
-                    # SPY starts at 1.0 and grows to final return
-                    spy_progress = day_count / total_days
-                    spy_value = 1.0 + (spy_return * spy_progress)
-                    spy_values.append(round(spy_value, 4))
-                    
-                    # VFIAX starts at 1.0 and grows to final return
-                    vfiax_progress = day_count / total_days
-                    vfiax_value = 1.0 + (vfiax_return * vfiax_progress)
-                    vfiax_values.append(round(vfiax_value, 4))
-                    
-                    # SPDR same as SPY
-                    spdr_values.append(round(spy_value, 4))
-                    
-                    current += timedelta(days=1)
-                    day_count += 1
-                
-                # Create performance data
-                performance_data = {
-                    'lastUpdated': datetime.now().isoformat() + 'Z',
-                    'startDate': '2024-09-25',
-                    'currentValue': round(1.0 + brightflow_return, 4),
-                    'dailyChange': round(brightflow_return / total_days, 6),
-                    'performance': {
-                        'brightflow': [{'date': d, 'value': v} for d, v in zip(dates, brightflow_values)],
-                        'spy': [{'date': d, 'value': v} for d, v in zip(dates, spy_values)],
-                        'vfiax': [{'date': d, 'value': v} for d, v in zip(dates, vfiax_values)],
-                        'spdr': [{'date': d, 'value': v} for d, v in zip(dates, spdr_values)]
-                    },
-                    'outperformance': round((brightflow_return - spy_return) * 100, 2),
-                    'totalReturn': round(brightflow_return * 100, 2),
-                    'dataSource': 'TheChart.md analysis'
-                }
-                
-                # Save performance data
-                with open('data/performance.json', 'w') as f:
-                    json.dump(performance_data, f, indent=2)
-                
-                print(f'✅ Generated performance data: {brightflow_return*100:.2f}% return')
-                print(f'📈 Outperformance vs SPY: {(brightflow_return - spy_return)*100:.2f}%')
-                
-            else:
-                print('⚠️ Could not extract performance data from TheChart.md')
-                
-        except Exception as e:
-            print(f'❌ Error generating performance data: {e}')
-        "
+          # Copy latest data files
+          if [ -f "temp-ml-repo/data/transactions.json" ]; then
+            cp temp-ml-repo/data/transactions.json data/
+            echo "✅ Updated transactions.json"
+          fi
 
-    - name: Generate transaction data from TheChart.md
-      run: |
-        echo "📝 Generating transaction data from TheChart.md analysis..."
-        
-        python3 -c "
-        import json
-        import datetime
-        import re
-        
-        try:
-            with open('TheChart.md', 'r') as f:
-                content = f.read()
-            
-            # Extract transactions from TheChart.md
-            transactions = []
-            transaction_id = 1
-            
-            # Look for transaction patterns in the markdown
-            lines = content.split('\n')
-            current_date = None
-            
-            for line in lines:
-                # Look for date headers
-                if '**Date:' in line:
-                    date_match = re.search(r'\*\*Date: ([^*]+)\*\*', line)
-                    if date_match:
-                        current_date = date_match.group(1).strip()
-                
-                # Look for stock purchases
-                elif '- ' in line and ('shares @' in line or 'shares @' in line):
-                    # Extract stock symbol, shares, and price
-                    stock_match = re.search(r'- ([A-Z]+): ([\d.]+) shares @ \$([\d.]+)', line)
-                    if stock_match and current_date:
-                        symbol = stock_match.group(1)
-                        shares = float(stock_match.group(2))
-                        price = float(stock_match.group(3))
-                        amount = shares * price
-                        
-                        transaction = {
-                            'id': f'tx_{transaction_id}',
-                            'timestamp': f'{current_date}T12:00:00Z',
-                            'action': 'BUY',
-                            'symbol': symbol,
-                            'quantity': shares,
-                            'price': price,
-                            'amount': -amount,  # Negative for buy
-                            'runningBalance': 1.0,  # Starting with $1
-                            'confidence': 0.87,
-                            'strategy': 'algorithm_analysis'
-                        }
-                        transactions.append(transaction)
-                        transaction_id += 1
-            
-            # Generate transaction data
-            transaction_data = {
-                'lastUpdated': datetime.datetime.now().isoformat() + 'Z',
-                'totalTransactions': len(transactions),
-                'currentBalance': 1.2847,  # From TheChart.md
-                'transactions': transactions[-50:]  # Last 50 transactions
-            }
-            
-            # Save transaction data
-            with open('data/transactions.json', 'w') as f:
-                json.dump(transaction_data, f, indent=2)
-            
-            print(f'✅ Generated {len(transactions)} transactions')
-            
-        except Exception as e:
-            print(f'❌ Error generating transaction data: {e}')
-        "
+          if [ -f "temp-ml-repo/data/hourly_market_data.json" ]; then
+            cp temp-ml-repo/data/hourly_market_data.json data/
+            echo "✅ Updated hourly_market_data.json"
+          fi
 
-    - name: Check for changes
-      id: changes
-      run: |
-        git add data/*.json TheChart.md
-        if git diff --staged --quiet; then
-          echo "changed=false" >> $GITHUB_OUTPUT
-          echo "No changes detected"
-        else
-          echo "changed=true" >> $GITHUB_OUTPUT
-          echo "Changes detected, will commit and push"
-        fi
+          if [ -f "temp-ml-repo/TheChart.md" ]; then
+            cp temp-ml-repo/TheChart.md .
+            echo "✅ Updated TheChart.md"
+          fi
 
-    - name: Safe commit and push changes
-      if: steps.changes.outputs.changed == 'true' || github.event.inputs.force_update == 'true'
-      run: |
-        # Use safe update script to prevent merge conflicts
-        python ml-safe-update.py
-        
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        
-        git add data/*.json TheChart.md
-        
-        git commit -m "🤖 Auto-update BrightFlow data - $(date '+%Y-%m-%d %H:%M:%S')
-        
-        - Updated performance data from TheChart.md analysis
-        - Generated transaction ledger from algorithm patterns
-        - Fetched trading signals from brightflow issues repository
-        - Extracted detailed trading instructions from issue comments
-        - BrightFlow ML: +28.47% vs SPY: +13.40% (+15.07% outperformance)
-        - Data sources: brightflow-ML repo + brightflow issues + TheChart.md"
-        
-        git push origin main
-        
-        echo "✅ Successfully updated BrightFlow website data"
+          # Clean up
+          rm -rf temp-ml-repo
 
-    - name: Update GitHub Pages
-      if: steps.changes.outputs.changed == 'true' || github.event.inputs.force_update == 'true'
-      run: |
-        echo "🌐 GitHub Pages will automatically deploy the updated data"
-        echo "📊 Live site: https://albright-laboratories.github.io/brightflow-buy-sell-order/"
-        echo "⏰ Last updated: $(date)"
+      - name: Fetch trading signals from brightflow issues
+        run: |
+          echo "📊 Fetching trading signals from brightflow issues repository..."
+
+          # Fetch issues from brightflow repository
+          python3 -c "
+          import requests
+          import json
+          import datetime
+          import re
+
+          try:
+              # Fetch issues from brightflow repository
+              url = 'https://api.github.com/repos/AlbrightLaboratories/brightflow/issues'
+              headers = {'Accept': 'application/vnd.github.v3+json'}
+              
+              response = requests.get(url, headers=headers)
+              issues = response.json()
+              
+              print(f'📋 Found {len(issues)} issues in brightflow repository')
+              
+              # Extract trading signals from issues
+              trading_signals = []
+              for issue in issues:
+                  title = issue.get('title', '')
+                  body = issue.get('body', '')
+                  created_at = issue.get('created_at', '')
+                  issue_number = issue.get('number', 0)
+                  
+                  # Look for trading-related keywords in title and body
+                  trading_keywords = ['BUY', 'SELL', 'HOLD', 'stock', 'trading', 'algorithm', 'ML', 'recommendation']
+                  
+                  if any(keyword.lower() in (title + ' ' + body).lower() for keyword in trading_keywords):
+                      # Extract stock symbols (3-5 uppercase letters)
+                      stock_symbols = re.findall(r'\b[A-Z]{3,5}\b', title + ' ' + body)
+                      
+                      # Extract prices (numbers with $ or decimal)
+                      prices = re.findall(r'\$?(\d+\.?\d*)', title + ' ' + body)
+                      
+                      signal = {
+                          'issue_number': issue_number,
+                          'title': title,
+                          'created_at': created_at,
+                          'stock_symbols': list(set(stock_symbols)),
+                          'prices': [float(p) for p in prices if p.replace('.', '').isdigit()],
+                          'body_preview': body[:200] + '...' if len(body) > 200 else body
+                      }
+                      trading_signals.append(signal)
+              
+              # Save trading signals
+              signals_data = {
+                  'lastUpdated': datetime.datetime.now().isoformat() + 'Z',
+                  'totalSignals': len(trading_signals),
+                  'source': 'brightflow issues repository',
+                  'signals': trading_signals[-20:]  # Last 20 signals
+              }
+              
+              with open('data/trading_signals.json', 'w') as f:
+                  json.dump(signals_data, f, indent=2)
+              
+              print(f'✅ Extracted {len(trading_signals)} trading signals from issues')
+              
+              # Also fetch comments for more detailed analysis
+              detailed_signals = []
+              for signal in trading_signals[-10:]:  # Analyze last 10 signals in detail
+                  issue_number = signal['issue_number']
+                  comments_url = f'https://api.github.com/repos/AlbrightLaboratories/brightflow/issues/{issue_number}/comments'
+                  comments_response = requests.get(comments_url, headers=headers)
+                  comments = comments_response.json()
+                  
+                  for comment in comments:
+                      comment_body = comment.get('body', '')
+                      # Look for specific trading instructions
+                      if any(word in comment_body.upper() for word in ['BUY', 'SELL', 'SHARES', 'PRICE']):
+                          detailed_signals.append({
+                              'issue_number': issue_number,
+                              'comment_id': comment.get('id'),
+                              'author': comment.get('user', {}).get('login', 'unknown'),
+                              'created_at': comment.get('created_at'),
+                              'body': comment_body,
+                              'trading_instructions': re.findall(r'(BUY|SELL|HOLD).*?([A-Z]{3,5}).*?(\$?\d+\.?\d*)', comment_body.upper())
+                          })
+              
+              # Save detailed signals
+              detailed_data = {
+                  'lastUpdated': datetime.datetime.now().isoformat() + 'Z',
+                  'totalDetailedSignals': len(detailed_signals),
+                  'source': 'brightflow issues comments',
+                  'detailed_signals': detailed_signals
+              }
+              
+              with open('data/detailed_trading_signals.json', 'w') as f:
+                  json.dump(detailed_data, f, indent=2)
+              
+              print(f'✅ Extracted {len(detailed_signals)} detailed trading signals from comments')
+              
+          except Exception as e:
+              print(f'❌ Error fetching trading signals: {e}')
+          "
+
+      - name: Generate performance data from TheChart.md
+        run: |
+          echo "📊 Generating performance data from TheChart.md analysis..."
+
+          python3 -c "
+          import json
+          import datetime
+          import re
+
+          # Read TheChart.md
+          try:
+              with open('TheChart.md', 'r') as f:
+                  content = f.read()
+              
+              # Extract performance data from TheChart.md
+              # Look for the performance comparison section
+              performance_match = re.search(r'BrightFlow ML Portfolio.*?\+(\d+\.\d+)% return', content)
+              spy_match = re.search(r'SPY.*?\+(\d+\.\d+)% return', content)
+              vfiax_match = re.search(r'VFIAX.*?\+(\d+\.\d+)% return', content)
+              spdr_match = re.search(r'SPDR S&P 500.*?\+(\d+\.\d+)% return', content)
+              
+              if performance_match and spy_match and vfiax_match and spdr_match:
+                  brightflow_return = float(performance_match.group(1)) / 100
+                  spy_return = float(spy_match.group(1)) / 100
+                  vfiax_return = float(vfiax_match.group(1)) / 100
+                  spdr_return = float(spdr_match.group(1)) / 100
+                  
+                  # Generate chart data for the last 30 days
+                  import random
+                  from datetime import datetime, timedelta
+                  
+                  dates = []
+                  brightflow_values = []
+                  spy_values = []
+                  vfiax_values = []
+                  spdr_values = []
+                  
+                  start_date = datetime(2024, 9, 25)
+                  current_date = datetime.now()
+                  
+                  # Generate daily data points
+                  current = start_date
+                  day_count = 0
+                  total_days = (current_date - start_date).days
+                  
+                  while current <= current_date:
+                      dates.append(current.strftime('%Y-%m-%d'))
+                      
+                      # BrightFlow starts at 1.0 and grows to final return
+                      brightflow_progress = day_count / total_days
+                      brightflow_value = 1.0 + (brightflow_return * brightflow_progress)
+                      brightflow_values.append(round(brightflow_value, 4))
+                      
+                      # SPY starts at 1.0 and grows to final return
+                      spy_progress = day_count / total_days
+                      spy_value = 1.0 + (spy_return * spy_progress)
+                      spy_values.append(round(spy_value, 4))
+                      
+                      # VFIAX starts at 1.0 and grows to final return
+                      vfiax_progress = day_count / total_days
+                      vfiax_value = 1.0 + (vfiax_return * vfiax_progress)
+                      vfiax_values.append(round(vfiax_value, 4))
+                      
+                      # SPDR same as SPY
+                      spdr_values.append(round(spy_value, 4))
+                      
+                      current += timedelta(days=1)
+                      day_count += 1
+                  
+                  # Create performance data
+                  performance_data = {
+                      'lastUpdated': datetime.now().isoformat() + 'Z',
+                      'startDate': '2024-09-25',
+                      'currentValue': round(1.0 + brightflow_return, 4),
+                      'dailyChange': round(brightflow_return / total_days, 6),
+                      'performance': {
+                          'brightflow': [{'date': d, 'value': v} for d, v in zip(dates, brightflow_values)],
+                          'spy': [{'date': d, 'value': v} for d, v in zip(dates, spy_values)],
+                          'vfiax': [{'date': d, 'value': v} for d, v in zip(dates, vfiax_values)],
+                          'spdr': [{'date': d, 'value': v} for d, v in zip(dates, spdr_values)]
+                      },
+                      'outperformance': round((brightflow_return - spy_return) * 100, 2),
+                      'totalReturn': round(brightflow_return * 100, 2),
+                      'dataSource': 'TheChart.md analysis'
+                  }
+                  
+                  # Save performance data
+                  with open('data/performance.json', 'w') as f:
+                      json.dump(performance_data, f, indent=2)
+                  
+                  print(f'✅ Generated performance data: {brightflow_return*100:.2f}% return')
+                  print(f'📈 Outperformance vs SPY: {(brightflow_return - spy_return)*100:.2f}%')
+                  
+              else:
+                  print('⚠️ Could not extract performance data from TheChart.md')
+                  
+          except Exception as e:
+              print(f'❌ Error generating performance data: {e}')
+          "
+
+      - name: Generate transaction data from TheChart.md
+        run: |
+          echo "📝 Generating transaction data from TheChart.md analysis..."
+
+          python3 -c "
+          import json
+          import datetime
+          import re
+
+          try:
+              with open('TheChart.md', 'r') as f:
+                  content = f.read()
+              
+              # Extract transactions from TheChart.md
+              transactions = []
+              transaction_id = 1
+              
+              # Look for transaction patterns in the markdown
+              lines = content.split('\n')
+              current_date = None
+              
+              for line in lines:
+                  # Look for date headers
+                  if '**Date:' in line:
+                      date_match = re.search(r'\*\*Date: ([^*]+)\*\*', line)
+                      if date_match:
+                          current_date = date_match.group(1).strip()
+                  
+                  # Look for stock purchases
+                  elif '- ' in line and ('shares @' in line or 'shares @' in line):
+                      # Extract stock symbol, shares, and price
+                      stock_match = re.search(r'- ([A-Z]+): ([\d.]+) shares @ \$([\d.]+)', line)
+                      if stock_match and current_date:
+                          symbol = stock_match.group(1)
+                          shares = float(stock_match.group(2))
+                          price = float(stock_match.group(3))
+                          amount = shares * price
+                          
+                          transaction = {
+                              'id': f'tx_{transaction_id}',
+                              'timestamp': f'{current_date}T12:00:00Z',
+                              'action': 'BUY',
+                              'symbol': symbol,
+                              'quantity': shares,
+                              'price': price,
+                              'amount': -amount,  # Negative for buy
+                              'runningBalance': 1.0,  # Starting with $1
+                              'confidence': 0.87,
+                              'strategy': 'algorithm_analysis'
+                          }
+                          transactions.append(transaction)
+                          transaction_id += 1
+              
+              # Generate transaction data
+              transaction_data = {
+                  'lastUpdated': datetime.datetime.now().isoformat() + 'Z',
+                  'totalTransactions': len(transactions),
+                  'currentBalance': 1.2847,  # From TheChart.md
+                  'transactions': transactions[-50:]  # Last 50 transactions
+              }
+              
+              # Save transaction data
+              with open('data/transactions.json', 'w') as f:
+                  json.dump(transaction_data, f, indent=2)
+              
+              print(f'✅ Generated {len(transactions)} transactions')
+              
+          except Exception as e:
+              print(f'❌ Error generating transaction data: {e}')
+          "
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git add data/*.json TheChart.md
+          if git diff --staged --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes detected"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Changes detected, will commit and push"
+          fi
+
+      - name: Safe commit and push changes
+        if: steps.changes.outputs.changed == 'true' || github.event.inputs.force_update == 'true'
+        run: |
+          # Use safe update script to prevent merge conflicts
+          python ml-safe-update.py
+
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          git add data/*.json TheChart.md
+
+          git commit -m "🤖 Auto-update BrightFlow data - $(date '+%Y-%m-%d %H:%M:%S')
+
+          - Updated performance data from TheChart.md analysis
+          - Generated transaction ledger from algorithm patterns
+          - Fetched trading signals from brightflow issues repository
+          - Extracted detailed trading instructions from issue comments
+          - BrightFlow ML: +28.47% vs SPY: +13.40% (+15.07% outperformance)
+          - Data sources: brightflow-ML repo + brightflow issues + TheChart.md"
+
+          git push origin main
+
+          echo "✅ Successfully updated BrightFlow website data"
+
+      - name: Update GitHub Pages
+        if: steps.changes.outputs.changed == 'true' || github.event.inputs.force_update == 'true'
+        run: |
+          echo "🌐 GitHub Pages will automatically deploy the updated data"
+          echo "📊 Live site: https://albright-laboratories.github.io/brightflow-buy-sell-order/"
+          echo "⏰ Last updated: $(date)"
