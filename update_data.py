@@ -18,9 +18,9 @@ class BrightFlowUpdater:
         self.base_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/contents"
         
     def update_performance_data(self, brightflow_values, spy_values, vfiax_values, spdr_values, 
-                              current_value, daily_change):
+                              current_value, daily_change, market_focus="all"):
         """
-        Update performance data file
+        Update performance data file - 24/7 money making mode
         
         Args:
             brightflow_values: List of {"date": "2024-10-14", "value": 1.47}
@@ -29,6 +29,7 @@ class BrightFlowUpdater:
             spdr_values: List of {"date": "2024-10-14", "value": 1.19}
             current_value: Current value of $1 invested (float)
             daily_change: Daily change percentage as decimal (0.0234 = 2.34%)
+            market_focus: Which market is active ("us", "asian", "european", "crypto", "forex", "all")
         """
         
         data = {
@@ -36,6 +37,8 @@ class BrightFlowUpdater:
             "startDate": "2024-09-25",
             "currentValue": current_value,
             "dailyChange": daily_change,
+            "marketFocus": market_focus,
+            "updateMode": "24-7-aggressive",
             "performance": {
                 "brightflow": brightflow_values,
                 "spy": spy_values,
