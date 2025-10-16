@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-15T00:45:37Z",
+  "lastUpdated": "2025-10-16T05:29:15.770228+00:00",
   "currentValue": 1.052278201756742,
   "performance": {
     "brightflow": [
@@ -3692,5 +3692,7 @@
         "value": 1.1766698357719756
       }
     ]
-  }
+  },
+  "updateMode": "24-7-aggressive",
+  "marketFocus": "all"
 }
