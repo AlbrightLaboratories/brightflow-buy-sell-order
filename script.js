@@ -13,6 +13,8 @@ let portfolio = {
 };
 let marketHour = 0; // Track simulated market hours since start
 let historicalData = null; // Store complete historical dataset
+let realDataLoaded = false; // Track if real data is loaded
+let realPerformanceData = null; // Store real performance data
 let currentTimeRange = '1d'; // Default view - current day
 
 // Initialize the application
@@ -62,6 +64,9 @@ function getDataForTimeRange(range) {
             break;
         case '1m':
             startIndex = Math.max(0, historicalData.dates.length - 22); // ~1 month trading days
+            break;
+        case '3m':
+            startIndex = Math.max(0, historicalData.dates.length - 66); // ~3 months trading days
             break;
         case '6m':
             startIndex = Math.max(0, historicalData.dates.length - 130); // ~6 months trading days
@@ -115,22 +120,113 @@ function setupTimeRangeControls() {
 
 // Update chart with new time range
 function updateChartTimeRange(range) {
-    if (!performanceChart || !historicalData) return;
+    if (!performanceChart) return;
     
-    const chartData = getDataForTimeRange(range);
+    // Check if we have real data loaded
+    if (realDataLoaded && realPerformanceData) {
+        // Use real data for time range filtering
+        const chartData = getRealDataForTimeRange(range, realPerformanceData);
+        
+        // Update chart data
+        performanceChart.data.labels = chartData.labels;
+        performanceChart.data.datasets[0].data = chartData.brightflow;
+        performanceChart.data.datasets[1].data = chartData.spy;
+        performanceChart.data.datasets[2].data = chartData.vfiax;
+        performanceChart.data.datasets[3].data = chartData.spdr;
+        
+        // Update chart with smooth animation
+        performanceChart.update('active');
+        
+        // Update performance display for the selected period
+        updatePerformanceForPeriod(range, chartData);
+    } else if (historicalData) {
+        // Fallback to mock data
+        const chartData = getDataForTimeRange(range);
+        
+        // Update chart data
+        performanceChart.data.labels = chartData.labels;
+        performanceChart.data.datasets[0].data = chartData.brightflow;
+        performanceChart.data.datasets[1].data = chartData.spy;
+        performanceChart.data.datasets[2].data = chartData.vfiax;
+        performanceChart.data.datasets[3].data = chartData.spdr;
+        
+        // Update chart with smooth animation
+        performanceChart.update('active');
+        
+        // Update performance display for the selected period
+        updatePerformanceForPeriod(range, chartData);
+    }
+}
+
+// Get data for specific time range from real data
+function getRealDataForTimeRange(range, data) {
+    if (!data || !data.performance) {
+        console.warn('No real performance data available');
+        return { labels: [], brightflow: [], spy: [], vfiax: [], spdr: [] };
+    }
     
-    // Update chart data
-    performanceChart.data.labels = chartData.labels;
-    performanceChart.data.datasets[0].data = chartData.brightflow;
-    performanceChart.data.datasets[1].data = chartData.spy;
-    performanceChart.data.datasets[2].data = chartData.vfiax;
-    performanceChart.data.datasets[3].data = chartData.spdr;
+    const brightflowData = data.performance.brightflow || [];
+    const now = new Date();
+    let startIndex = 0;
     
-    // Update chart with smooth animation
-    performanceChart.update('active');
+    switch (range) {
+        case '1d':
+            startIndex = Math.max(0, brightflowData.length - 1);
+            break;
+        case '7d':
+            startIndex = Math.max(0, brightflowData.length - 7);
+            break;
+        case '14d':
+            startIndex = Math.max(0, brightflowData.length - 14);
+            break;
+        case '1m':
+            startIndex = Math.max(0, brightflowData.length - 22); // ~1 month trading days
+            break;
+        case '3m':
+            startIndex = Math.max(0, brightflowData.length - 66); // ~3 months trading days
+            break;
+        case '6m':
+            startIndex = Math.max(0, brightflowData.length - 130); // ~6 months trading days
+            break;
+        case '1y':
+            startIndex = Math.max(0, brightflowData.length - 252); // ~1 year trading days
+            break;
+        case '5y':
+            startIndex = 0; // All data
+            break;
+        default:
+            startIndex = 0;
+    }
     
-    // Update performance display for the selected period
-    updatePerformanceForPeriod(range, chartData);
+    // Extract data for all competitors
+    const datasets = ['brightflow', 'spy', 'vfiax', 'spdr'];
+    const result = { labels: [], brightflow: [], spy: [], vfiax: [], spdr: [] };
+    
+    datasets.forEach(key => {
+        const performanceArray = data.performance[key];
+        if (performanceArray && Array.isArray(performanceArray)) {
+            const slicedData = performanceArray.slice(startIndex);
+            result[key] = slicedData.map(item => item.value);
+            
+            // Use brightflow data for labels (they should all have the same dates)
+            if (key === 'brightflow') {
+                result.labels = slicedData.map(item => 
+                    new Date(item.date).toLocaleDateString()
+                );
+            }
+        } else {
+            result[key] = [];
+        }
+    });
+    
+    console.log(`📊 Real data for ${range}:`, {
+        totalPoints: brightflowData.length,
+        startIndex: startIndex,
+        pointsInRange: result.brightflow.length,
+        competitors: datasets.map(key => `${key}: ${result[key].length} points`)
+    });
+    
+    return result;
 }
 
 // Load real data from JSON files and initialize portfolio dynamically
@@ -177,6 +273,10 @@ async function loadRealData() {
         
         // Set historical data from performance file
         historicalData = convertPerformanceDataToHistorical(performanceData);
+        
+        // Store real data globally for time range filtering
+        realPerformanceData = performanceData;
+        realDataLoaded = true;
         
         // Update chart with real data
         updateChartWithRealData(performanceData);
@@ -1144,17 +1244,27 @@ function updatePerformanceDisplayWithRealData(data) {
     const currentValueEl = document.getElementById('currentValue');
     const dailyChangeEl = document.getElementById('dailyChange');
     
-    // Show the normalized value directly (what $1.00 is worth now)
-    const normalizedValue = data.currentValue;
-    currentValueEl.textContent = '$' + normalizedValue.toFixed(2);
+    // Use actual running balance from transactions if available, otherwise use normalized value
+    let displayValue;
+    let totalReturn;
     
-    // Calculate total return percentage from normalized baseline (1.00)
-    const totalReturn = ((normalizedValue - portfolio.startValue) / portfolio.startValue) * 100;
+    if (data.currentBalance && data.currentBalance > 0) {
+        // Use actual running balance from transactions
+        displayValue = data.currentBalance;
+        // Calculate return from $1.00 starting amount
+        totalReturn = ((displayValue - 1.00) / 1.00) * 100;
+    } else {
+        // Fallback to normalized value
+        displayValue = data.currentValue;
+        totalReturn = ((displayValue - portfolio.startValue) / portfolio.startValue) * 100;
+    }
+    
+    currentValueEl.textContent = '$' + displayValue.toFixed(2);
     dailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}% total return`;
     dailyChangeEl.className = 'performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
     
     console.log('Performance Display Updated:', {
-        normalizedValue: normalizedValue,
+        displayValue: displayValue,
         startValue: portfolio.startValue,
         totalReturn: totalReturn.toFixed(2) + '%'
     });
