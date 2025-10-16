@@ -310,9 +310,17 @@ async function loadRealData() {
 
 // Initialize portfolio values from actual data files
 function initializePortfolioFromData(performanceData, transactionData) {
-    // Set current value from performance data (this is the normalized value)
-    portfolio.currentValue = performanceData.currentValue;
-    portfolio.totalValue = performanceData.currentValue; // Keep it as normalized value
+    // Use actual running balance from transactions if available, otherwise use normalized value
+    if (transactionData && transactionData.currentBalance && transactionData.currentBalance > 0) {
+        portfolio.currentValue = transactionData.currentBalance;
+        portfolio.totalValue = transactionData.currentBalance;
+        console.log('💰 Portfolio initialized with transaction balance:', transactionData.currentBalance);
+    } else {
+        // Fallback to normalized value
+        portfolio.currentValue = performanceData.currentValue;
+        portfolio.totalValue = performanceData.currentValue;
+        console.log('📊 Portfolio initialized with normalized value:', performanceData.currentValue);
+    }
     
     // Set cash based on current total value (assuming all cash for now, until we add position tracking)
     portfolio.cash = portfolio.totalValue;
