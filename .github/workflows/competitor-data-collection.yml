@@ -28,12 +28,33 @@ jobs:
 
             - name: Safe commit and push competitor data
                 run: |
-                    # Use safe update script to prevent merge conflicts
-                    python ml-safe-update.py
-                    
                     git config --local user.email "action@github.com"
                     git config --local user.name "GitHub Action"
 
+                    # Use safe update script to prevent merge conflicts
+                    echo "🔒 Using safe update mechanism to prevent merge conflicts..."
+                    
+                    # Create a simple lock file to prevent concurrent updates
+                    LOCK_FILE="data/.update_lock"
+                    MAX_WAIT=30
+                    WAIT_TIME=0
+                    
+                    # Wait for lock to be released
+                    while [ -f "$LOCK_FILE" ] && [ $WAIT_TIME -lt $MAX_WAIT ]; do
+                        echo "⏳ Waiting for lock to be released... (${WAIT_TIME}s)"
+                        sleep 1
+                        WAIT_TIME=$((WAIT_TIME + 1))
+                    done
+                    
+                    if [ -f "$LOCK_FILE" ]; then
+                        echo "❌ Could not acquire lock after $MAX_WAIT seconds"
+                        exit 1
+                    fi
+                    
+                    # Create lock file
+                    echo "Locked by competitor data collection at $(date)" > "$LOCK_FILE"
+                    echo "🔒 Lock acquired for competitor data updates"
+                    
                     # Add competitor data files
                     git add data/competitor_performance.json data/competitor_performance_comparison.json
 
@@ -44,3 +65,7 @@ jobs:
                         git commit -m "📊 Update competitor data - $(date)"
                         git push
                     fi
+                    
+                    # Remove lock file
+                    rm -f "$LOCK_FILE"
+                    echo "🔓 Lock released for competitor data updates"
