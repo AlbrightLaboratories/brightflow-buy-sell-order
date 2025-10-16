@@ -282,11 +282,12 @@ async function loadRealData() {
         // Update chart with real data
         updateChartWithRealData(performanceData);
         
-        // Update performance display
-        updatePerformanceDisplayWithRealData(performanceData);
-        
-        // Update transaction data
+        // Update transaction data first
         transactionData = transactionDataResponse.transactions || [];
+        
+        // Update performance display with transaction data (contains currentBalance)
+        updatePerformanceDisplayWithRealData(performanceData, transactionDataResponse);
+        
         populateTransactionTable();
         
         // Mark that we have real data loaded to prevent demo mode
@@ -1241,7 +1242,7 @@ function updateChartWithRealData(data) {
 }
 
 // Update performance display with real data
-function updatePerformanceDisplayWithRealData(data) {
+function updatePerformanceDisplayWithRealData(performanceData, transactionData = null) {
     const currentValueEl = document.getElementById('currentValue');
     const dailyChangeEl = document.getElementById('dailyChange');
     
@@ -1249,15 +1250,21 @@ function updatePerformanceDisplayWithRealData(data) {
     let displayValue;
     let totalReturn;
     
-    if (data.currentBalance && data.currentBalance > 0) {
+    // Check for currentBalance in transaction data first, then performance data
+    const currentBalance = (transactionData && transactionData.currentBalance) || 
+                          (performanceData && performanceData.currentBalance);
+    
+    if (currentBalance && currentBalance > 0) {
         // Use actual running balance from transactions
-        displayValue = data.currentBalance;
+        displayValue = currentBalance;
         // Calculate return from $1.00 starting amount
         totalReturn = ((displayValue - 1.00) / 1.00) * 100;
+        console.log('💰 Using transaction balance:', displayValue, 'Return:', totalReturn.toFixed(2) + '%');
     } else {
         // Fallback to normalized value
-        displayValue = data.currentValue;
+        displayValue = performanceData.currentValue;
         totalReturn = ((displayValue - portfolio.startValue) / portfolio.startValue) * 100;
+        console.log('📊 Using normalized value:', displayValue, 'Return:', totalReturn.toFixed(2) + '%');
     }
     
     currentValueEl.textContent = '$' + displayValue.toFixed(2);
@@ -1301,11 +1308,13 @@ async function checkForUpdates() {
             
             // Update charts and display
             updateChartWithRealData(performanceData);
-            updatePerformanceDisplayWithRealData(performanceData);
             
-            // Update transaction data
-            transactionData = transactionData.transactions || [];
-            populateTransactionTableWithRealData({ transactions: transactionData });
+            // Update transaction data first
+            const transactionDataArray = transactionData.transactions || [];
+            
+            // Update performance display with transaction data
+            updatePerformanceDisplayWithRealData(performanceData, transactionData);
+            populateTransactionTableWithRealData({ transactions: transactionDataArray });
             
             // Store the update time
             localStorage.setItem('lastDataUpdate', performanceData.lastUpdated);
