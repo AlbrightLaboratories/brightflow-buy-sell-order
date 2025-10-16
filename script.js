@@ -16,6 +16,7 @@ let historicalData = null; // Store complete historical dataset
 let realDataLoaded = false; // Track if real data is loaded
 let realPerformanceData = null; // Store real performance data
 let currentTimeRange = '1d'; // Default view - current day
+let selectedCompetitors = ['spy', 'vfiax', 'spdr']; // Default competitors
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -1368,6 +1369,189 @@ function forceRefreshData() {
         console.error('❌ Force refresh failed:', error);
         showUpdateIndicator('error');
     });
+    
+    // Initialize competitor modal
+    initializeCompetitorModal();
+}
+
+// Competitor data definitions
+const competitorData = {
+    usMarket: [
+        { symbol: 'SPY', description: 'SPDR S&P 500 ETF Trust - Tracks S&P 500 index' },
+        { symbol: 'VOO', description: 'Vanguard S&P 500 ETF - Low-cost S&P 500 tracking' },
+        { symbol: 'IVV', description: 'iShares Core S&P 500 ETF - S&P 500 index fund' },
+        { symbol: 'VTI', description: 'Vanguard Total Stock Market ETF - Broad market exposure' },
+        { symbol: 'ITOT', description: 'iShares Core S&P Total U.S. Stock Market ETF' },
+        { symbol: 'SCHB', description: 'Schwab U.S. Broad Market ETF - Total market index' },
+        { symbol: 'IWM', description: 'iShares Russell 2000 ETF - Small-cap stocks' },
+        { symbol: 'IJH', description: 'iShares Core S&P Mid-Cap ETF - Mid-cap exposure' },
+        { symbol: 'VB', description: 'Vanguard Small-Cap ETF - Small-cap value stocks' },
+        { symbol: 'VBR', description: 'Vanguard Small-Cap Value ETF - Small-cap value' },
+        { symbol: 'VTV', description: 'Vanguard Value ETF - Large-cap value stocks' },
+        { symbol: 'VUG', description: 'Vanguard Growth ETF - Large-cap growth stocks' },
+        { symbol: 'IUSG', description: 'iShares Core S&P U.S. Growth ETF - Growth stocks' },
+        { symbol: 'IUSV', description: 'iShares Core S&P U.S. Value ETF - Value stocks' },
+        { symbol: 'DIA', description: 'SPDR Dow Jones Industrial Average ETF - Dow 30' },
+        { symbol: 'QQQ', description: 'Invesco QQQ Trust - NASDAQ-100 index' }
+    ],
+    international: [
+        { symbol: 'VXUS', description: 'Vanguard Total International Stock ETF - Global ex-US' },
+        { symbol: 'VEU', description: 'Vanguard FTSE All-World ex-US ETF - International' },
+        { symbol: 'VEA', description: 'Vanguard FTSE Developed Markets ETF - Developed markets' },
+        { symbol: 'VWO', description: 'Vanguard FTSE Emerging Markets ETF - Emerging markets' },
+        { symbol: 'EFA', description: 'iShares MSCI EAFE ETF - Developed international' },
+        { symbol: 'EEM', description: 'iShares MSCI Emerging Markets ETF - Emerging markets' },
+        { symbol: 'IEFA', description: 'iShares Core MSCI EAFE IMI Index ETF - International' },
+        { symbol: 'IEMG', description: 'iShares Core MSCI Emerging Markets IMI Index ETF' },
+        { symbol: 'SCHF', description: 'Schwab International Equity ETF - International' },
+        { symbol: 'SCHE', description: 'Schwab Emerging Markets Equity ETF - Emerging markets' },
+        { symbol: 'SPDW', description: 'SPDR Portfolio World ex-US ETF - International' },
+        { symbol: 'SPEM', description: 'SPDR Portfolio Emerging Markets ETF - Emerging markets' }
+    ]
+};
+
+// Initialize competitor modal
+function initializeCompetitorModal() {
+    const modal = document.getElementById('competitorModal');
+    const closeBtn = document.getElementById('competitorModalClose');
+    const applyBtn = document.getElementById('applyCompetitorSelection');
+    const resetBtn = document.getElementById('resetCompetitorSelection');
+    
+    // Populate competitor lists
+    populateCompetitorLists();
+    
+    // Event listeners
+    closeBtn.addEventListener('click', closeCompetitorModal);
+    applyBtn.addEventListener('click', applyCompetitorSelection);
+    resetBtn.addEventListener('click', resetCompetitorSelection);
+    
+    // Close modal when clicking overlay
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeCompetitorModal();
+        }
+    });
+}
+
+// Populate competitor lists
+function populateCompetitorLists() {
+    const usContainer = document.getElementById('usMarketETFs');
+    const intContainer = document.getElementById('internationalETFs');
+    
+    // Populate US Market ETFs
+    competitorData.usMarket.forEach(competitor => {
+        const item = createCompetitorItem(competitor);
+        usContainer.appendChild(item);
+    });
+    
+    // Populate International ETFs
+    competitorData.international.forEach(competitor => {
+        const item = createCompetitorItem(competitor);
+        intContainer.appendChild(item);
+    });
+}
+
+// Create competitor item element
+function createCompetitorItem(competitor) {
+    const item = document.createElement('div');
+    item.className = 'competitor-item';
+    
+    const isSelected = selectedCompetitors.includes(competitor.symbol.toLowerCase());
+    
+    item.innerHTML = `
+        <input type="checkbox" id="comp_${competitor.symbol}" value="${competitor.symbol.toLowerCase()}" ${isSelected ? 'checked' : ''}>
+        <div class="competitor-info">
+            <div class="competitor-symbol">${competitor.symbol}</div>
+            <div class="competitor-description">${competitor.description}</div>
+        </div>
+    `;
+    
+    // Add click handler for the entire item
+    item.addEventListener('click', function(e) {
+        if (e.target.type !== 'checkbox') {
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+        }
+    });
+    
+    return item;
+}
+
+// Open competitor modal
+function openCompetitorModal() {
+    const modal = document.getElementById('competitorModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// Close competitor modal
+function closeCompetitorModal() {
+    const modal = document.getElementById('competitorModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Apply competitor selection
+function applyCompetitorSelection() {
+    const checkboxes = document.querySelectorAll('#competitorModal input[type="checkbox"]:checked');
+    selectedCompetitors = Array.from(checkboxes).map(cb => cb.value);
+    
+    console.log('Selected competitors:', selectedCompetitors);
+    
+    // Update chart with new competitors
+    updateChartWithSelectedCompetitors();
+    
+    // Close modal
+    closeCompetitorModal();
+    
+    // Show success message
+    showUpdateIndicator('success');
+}
+
+// Reset competitor selection to default
+function resetCompetitorSelection() {
+    selectedCompetitors = ['spy', 'vfiax', 'spdr'];
+    
+    // Update checkboxes
+    const checkboxes = document.querySelectorAll('#competitorModal input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+        cb.checked = selectedCompetitors.includes(cb.value);
+    });
+    
+    console.log('Reset competitors to default:', selectedCompetitors);
+}
+
+// Update chart with selected competitors
+function updateChartWithSelectedCompetitors() {
+    if (!performanceChart || !realPerformanceData) return;
+    
+    // Update chart datasets based on selected competitors
+    const datasets = ['brightflow', 'spy', 'vfiax', 'spdr'];
+    const allCompetitors = ['spy', 'voo', 'ivv', 'vti', 'itot', 'schb', 'iwm', 'ijh', 'vb', 'vbr', 'vtv', 'vug', 'iusg', 'iusv', 'dia', 'qqq', 'vxus', 'veu', 'vea', 'vwo', 'efa', 'eem', 'iefa', 'iemg', 'schf', 'sche', 'spdw', 'spem'];
+    
+    // Hide all competitor datasets first
+    datasets.forEach((dataset, index) => {
+        if (index > 0) { // Skip brightflow (index 0)
+            performanceChart.data.datasets[index].hidden = true;
+        }
+    });
+    
+    // Show selected competitors
+    selectedCompetitors.forEach(competitor => {
+        const competitorIndex = allCompetitors.indexOf(competitor);
+        if (competitorIndex !== -1) {
+            // Map to chart dataset index (1=spy, 2=vfiax, 3=spdr)
+            const chartIndex = ['spy', 'vfiax', 'spdr'].indexOf(competitor);
+            if (chartIndex !== -1) {
+                performanceChart.data.datasets[chartIndex + 1].hidden = false;
+            }
+        }
+    });
+    
+    // Update chart
+    performanceChart.update('active');
+    
+    console.log('Chart updated with selected competitors:', selectedCompetitors);
 }
 
 // Make forceRefreshData available globally for manual refresh
@@ -1508,9 +1692,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const href = this.getAttribute('href');
             console.log('Menu item clicked:', href);
             
-            // For now, just show an alert
-            const text = this.textContent;
-            alert(`"${text}" feature coming soon!`);
+            // Handle competitor menu
+            if (href === '#competitors') {
+                openCompetitorModal();
+            } else {
+                // For now, just show an alert
+                const text = this.textContent;
+                alert(`"${text}" feature coming soon!`);
+            }
         });
     });
 

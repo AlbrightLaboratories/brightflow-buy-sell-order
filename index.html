@@ -54,13 +54,14 @@
 
     <!-- Navigation Menu -->
     <nav class="nav-menu" id="navMenu">
-        <ul class="menu-items">
-            <li><a href="#invest" class="menu-link">Start Investing with us today</a></li>
-            <li><a href="#loans" class="menu-link">Loans</a></li>
-            <li><a href="#why" class="menu-link">Why we Exist</a></li>
-            <li><a href="#help" class="menu-link">Help</a></li>
-            <li><a href="#deposit" class="menu-link">Deposit / Withdraw / Transfer</a></li>
-        </ul>
+            <ul class="menu-items">
+                <li><a href="#invest" class="menu-link">Start Investing with us today</a></li>
+                <li><a href="#loans" class="menu-link">Loans</a></li>
+                <li><a href="#competitors" class="menu-link" id="competitorMenuToggle">Compare with Competitors</a></li>
+                <li><a href="#why" class="menu-link">Why we Exist</a></li>
+                <li><a href="#help" class="menu-link">Help</a></li>
+                <li><a href="#deposit" class="menu-link">Deposit / Withdraw / Transfer</a></li>
+            </ul>
     </nav>
 
     <!-- Main Content Area -->
@@ -130,6 +131,39 @@
             </div>
         </section>
     </main>
+
+    <!-- Competitor Selection Modal -->
+    <div class="modal-overlay" id="competitorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Compare with Competitors</h2>
+                <button class="modal-close" id="competitorModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="competitor-sections">
+                    <!-- U.S. Market ETFs -->
+                    <div class="competitor-section">
+                        <h3>U.S. Market ETFs</h3>
+                        <div class="competitor-list" id="usMarketETFs">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- International Market ETFs -->
+                    <div class="competitor-section">
+                        <h3>International Market ETFs</h3>
+                        <div class="competitor-list" id="internationalETFs">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="applyCompetitorSelection">Apply Selection</button>
+                <button class="btn btn-secondary" id="resetCompetitorSelection">Reset to Default</button>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
