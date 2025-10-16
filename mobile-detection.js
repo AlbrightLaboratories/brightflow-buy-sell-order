@@ -43,8 +43,10 @@ window.addEventListener('resize', function() {
 });
 
 // Add mobile detection class to body
-if (isMobileDevice()) {
-    document.body.classList.add('mobile-device');
-} else {
-    document.body.classList.add('desktop-device');
-}
+document.addEventListener('DOMContentLoaded', function() {
+    if (isMobileDevice()) {
+        document.body.classList.add('mobile-device');
+    } else {
+        document.body.classList.add('desktop-device');
+    }
+});
