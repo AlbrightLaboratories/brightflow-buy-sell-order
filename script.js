@@ -1371,6 +1371,7 @@ function initializeMobileChart() {
     }
     
     console.log('📱 Initializing mobile chart...');
+    console.log('📱 Mobile chart canvas found:', mobileChartCanvas);
     
     mobileChart = new Chart(mobileChartCanvas, {
         type: 'line',
@@ -1415,9 +1416,18 @@ function initializeMobileChart() {
 
 // Update mobile chart with real data
 function updateMobileChartWithRealData(data) {
-    if (!mobileChart) return;
+    if (!mobileChart) {
+        console.log('📱 No mobile chart available for update, trying to initialize...');
+        initializeMobileChart();
+        if (!mobileChart) {
+            console.log('📱 Failed to initialize mobile chart');
+            return;
+        }
+    }
     
     console.log('📱 Updating mobile chart with real data');
+    console.log('📱 Mobile chart exists:', !!mobileChart);
+    console.log('📱 Data received:', data);
     
     const brightflowData = data.performance.brightflow || [];
     
@@ -1475,17 +1485,25 @@ function updatePerformanceDisplayWithRealData(performanceData, transactionData =
     dailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}% total return`;
     dailyChangeEl.className = 'performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
     
-    // Update mobile elements if they exist
-    const mobileCurrentValueEl = document.getElementById('mobileCurrentValue');
-    const mobileDailyChangeEl = document.getElementById('mobileDailyChange');
-    
-    if (mobileCurrentValueEl) {
-        mobileCurrentValueEl.textContent = '$' + displayValue.toFixed(2);
-    }
-    if (mobileDailyChangeEl) {
-        mobileDailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%`;
-        mobileDailyChangeEl.className = 'mobile-performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
-    }
+        // Update mobile elements if they exist
+        const mobileCurrentValueEl = document.getElementById('mobileCurrentValue');
+        const mobileDailyChangeEl = document.getElementById('mobileDailyChange');
+        
+        console.log('📱 Mobile elements found:', {
+            currentValue: !!mobileCurrentValueEl,
+            dailyChange: !!mobileDailyChangeEl,
+            displayValue: displayValue
+        });
+        
+        if (mobileCurrentValueEl) {
+            mobileCurrentValueEl.textContent = '$' + displayValue.toFixed(2);
+            console.log('📱 Updated mobile current value to:', mobileCurrentValueEl.textContent);
+        }
+        if (mobileDailyChangeEl) {
+            mobileDailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%`;
+            mobileDailyChangeEl.className = 'mobile-performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
+            console.log('📱 Updated mobile daily change to:', mobileDailyChangeEl.textContent);
+        }
     
     console.log('Performance Display Updated:', {
         displayValue: displayValue,
@@ -1791,6 +1809,7 @@ function populateMobileTransactionList() {
     }
     
     console.log('📱 Populating mobile transaction list with data:', transactionData);
+    console.log('📱 Mobile transaction list element found:', !!mobileTransactionList);
     
     // Clear existing content
     mobileTransactionList.innerHTML = '';
