@@ -13,7 +13,7 @@ let portfolio = {
 };
 let marketHour = 0; // Track simulated market hours since start
 let historicalData = null; // Store complete historical dataset
-let currentTimeRange = '14d'; // Default view
+let currentTimeRange = '1d'; // Default view - current day
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
