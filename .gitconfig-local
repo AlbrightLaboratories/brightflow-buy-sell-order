@@ -1,0 +1,15 @@
+[alias]
+    # Safe push - avoids merge conflicts
+    spush = "!f() { ./safe-push.sh \"$1\"; }; f"
+    
+    # Quick add, commit, and push
+    qpush = "!f() { git add . && git commit -m \"$1\" && git push origin main; }; f"
+    
+    # Pull and push safely
+    ppush = "!f() { git pull origin main && git push origin main; }; f"
+    
+    # Check status and show recent commits
+    status = "!git status && echo '--- Recent commits ---' && git log --oneline -5"
+    
+    # Show what would be pushed
+    whatpush = "!git log origin/main..HEAD --oneline"
