@@ -1,0 +1,257 @@
+/* Minimal Mobile Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #000;
+    color: #fff;
+    line-height: 1.4;
+    overflow-x: hidden;
+}
+
+/* Mobile Header */
+.mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.mobile-logo h1 {
+    font-size: 24px;
+    color: #ffd700;
+    margin: 0;
+}
+
+.mobile-subtitle {
+    font-size: 12px;
+    color: #ccc;
+    display: block;
+    margin-top: -2px;
+}
+
+.mobile-menu-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.mobile-menu-btn span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: #fff;
+    margin: 3px 0;
+    transition: 0.3s;
+}
+
+/* Mobile Performance Card */
+.mobile-performance-card {
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+    margin: 15px 20px;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid #333;
+}
+
+.mobile-performance-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #ffd700;
+    margin-bottom: 5px;
+}
+
+.mobile-performance-change {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.mobile-performance-change.positive {
+    color: #00ff88;
+}
+
+.mobile-performance-change.negative {
+    color: #ff4444;
+}
+
+/* Mobile Chart */
+.mobile-chart-container {
+    margin: 15px 20px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid #333;
+}
+
+.mobile-chart-container canvas {
+    width: 100% !important;
+    height: 250px !important;
+}
+
+/* Mobile Time Controls */
+.mobile-time-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 20px;
+    padding: 10px 0;
+}
+
+.mobile-time-btn {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #ccc;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mobile-time-btn.active {
+    background: #ffd700;
+    color: #000;
+    border-color: #ffd700;
+}
+
+.mobile-time-btn:hover {
+    background: #333;
+    color: #fff;
+}
+
+/* Mobile Transactions */
+.mobile-transactions {
+    margin: 15px 20px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid #333;
+}
+
+.mobile-transactions h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #ffd700;
+}
+
+.mobile-transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #333;
+}
+
+.mobile-transaction-item:last-child {
+    border-bottom: none;
+}
+
+.mobile-transaction-symbol {
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.mobile-transaction-action {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.mobile-transaction-action.buy {
+    background: #00ff88;
+    color: #000;
+}
+
+.mobile-transaction-action.sell {
+    background: #ff4444;
+    color: #fff;
+}
+
+.mobile-transaction-amount {
+    font-weight: bold;
+    color: #fff;
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    display: none;
+}
+
+.mobile-menu-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-menu {
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 30px;
+    border: 1px solid #333;
+    min-width: 250px;
+}
+
+.mobile-menu-link {
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    padding: 15px 0;
+    font-size: 18px;
+    border-bottom: 1px solid #333;
+    transition: color 0.2s;
+}
+
+.mobile-menu-link:hover {
+    color: #ffd700;
+}
+
+.mobile-menu-link:last-child {
+    border-bottom: none;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+    .mobile-header,
+    .mobile-performance-card,
+    .mobile-chart-container,
+    .mobile-time-controls,
+    .mobile-transactions {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 600px;
+    }
+}
+
+/* Touch interactions */
+@media (hover: none) and (pointer: coarse) {
+    .mobile-time-btn:hover,
+    .mobile-menu-link:hover {
+        transform: none;
+    }
+    
+    .mobile-time-btn:active,
+    .mobile-menu-link:active {
+        transform: scale(0.95);
+    }
+}
