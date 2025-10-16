@@ -655,7 +655,7 @@ function startRealTimeUpdates() {
     }, 5000); // Every 5 seconds
 }
 
-// Schedule data updates based on market hours (4:30 AM - 8:00 PM EST)
+// Schedule data updates 24/7 for maximum money-making opportunities
 function scheduleDataUpdates() {
     const checkDataUpdate = () => {
         const now = new Date();
@@ -663,45 +663,49 @@ function scheduleDataUpdates() {
         const hour = est.getHours();
         const minute = est.getMinutes();
         
-        // Check if we're in active hours (4:30 AM - 8:00 PM EST)
-        const isActiveHours = (hour > 4 || (hour === 4 && minute >= 30)) && hour < 20;
-        
-        if (isActiveHours) {
-            console.log('Active trading hours - checking for data updates');
-            checkForUpdates();
-        } else {
-            console.log('Outside trading hours - using demo mode');
-        }
+        // Always check for updates - money never sleeps!
+        console.log('Checking for data updates - 24/7 money making mode');
+        checkForUpdates();
     };
     
     // Check immediately
     checkDataUpdate();
     
-    // Then check every hour
-    setInterval(checkDataUpdate, 60 * 60 * 1000); // 1 hour
+    // Check every 2 minutes for maximum responsiveness
+    setInterval(checkDataUpdate, 2 * 60 * 1000); // 2 minutes
     
-    // Also check every 5 minutes during active hours for more frequent updates
+    // More frequent checks during high-activity periods
     setInterval(() => {
         const now = new Date();
         const est = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
         const hour = est.getHours();
-        const minute = est.getMinutes();
+        const day = now.getDay(); // 0 = Sunday, 6 = Saturday
         
-        const isActiveHours = (hour > 4 || (hour === 4 && minute >= 30)) && hour < 20;
-        if (isActiveHours) {
+        // US market hours (9 AM - 4 PM EST, Monday-Friday)
+        const isUSMarketHours = day >= 1 && day <= 5 && hour >= 9 && hour < 16;
+        
+        // Asian market hours (7 PM - 4 AM EST, Monday-Friday)
+        const isAsianMarketHours = day >= 1 && day <= 5 && (hour >= 19 || hour < 4);
+        
+        // European market hours (3 AM - 11 AM EST, Monday-Friday)
+        const isEuropeanMarketHours = day >= 1 && day <= 5 && hour >= 3 && hour < 11;
+        
+        if (isUSMarketHours || isAsianMarketHours || isEuropeanMarketHours) {
+            console.log('High-activity trading hours - checking for updates every 30 seconds');
             checkForUpdates();
         }
-    }, 5 * 60 * 1000); // 5 minutes
+    }, 30 * 1000); // 30 seconds during active periods
 }
 
 // Check if we should show demo data (no real data available)
 function shouldShowDemo() {
-    // If we haven't received real data in the last 2 hours, show demo
+    // If we haven't received real data in the last 30 minutes, show demo
+    // This is much more aggressive for money-making operations
     const lastRealDataUpdate = localStorage.getItem('lastRealDataUpdate');
     if (!lastRealDataUpdate) return true;
     
     const timeSinceLastUpdate = Date.now() - parseInt(lastRealDataUpdate);
-    return timeSinceLastUpdate > 2 * 60 * 60 * 1000; // 2 hours
+    return timeSinceLastUpdate > 30 * 60 * 1000; // 30 minutes instead of 2 hours
 }
 
 // Update the performance display with animation
@@ -1297,95 +1301,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Stock Search Functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('stockSearch');
-    const searchButton = document.getElementById('searchButton');
-    const priceDisplay = document.getElementById('stockPriceDisplay');
-    const stockSymbol = document.getElementById('stockSymbol');
-    const stockPrice = document.getElementById('stockPrice');
-    const priceChange = document.getElementById('priceChange');
-
-    // Mock stock data for demo (replace with real API later)
-    const mockStockData = {
-        'AAPL': { price: 175.43, change: 2.34, changePercent: 1.35 },
-        'MSFT': { price: 332.89, change: -1.23, changePercent: -0.37 },
-        'GOOGL': { price: 138.21, change: 0.87, changePercent: 0.63 },
-        'TSLA': { price: 248.50, change: -4.12, changePercent: -1.63 },
-        'AMZN': { price: 127.74, change: 3.21, changePercent: 2.58 },
-        'NVDA': { price: 118.32, change: 5.67, changePercent: 5.03 },
-        'META': { price: 501.25, change: -2.10, changePercent: -0.42 },
-        'NFLX': { price: 485.73, change: 8.45, changePercent: 1.77 },
-        'SPY': { price: 428.67, change: 1.23, changePercent: 0.29 },
-        'QQQ': { price: 372.14, change: 2.87, changePercent: 0.78 }
-    };
-
-    function searchStock() {
-        const symbol = searchInput.value.trim().toUpperCase();
-        
-        if (!symbol) {
-            alert('Please enter a stock symbol');
-            return;
-        }
-
-        // Show loading state
-        stockSymbol.textContent = symbol;
-        stockPrice.textContent = 'Loading...';
-        priceChange.textContent = '';
-        priceDisplay.classList.add('active');
-
-        // Simulate API delay
-        setTimeout(() => {
-            if (mockStockData[symbol]) {
-                const data = mockStockData[symbol];
-                displayStockData(symbol, data);
-            } else {
-                displayError(symbol);
-            }
-        }, 500);
-    }
-
-    function displayStockData(symbol, data) {
-        stockSymbol.textContent = symbol;
-        stockPrice.textContent = `$${data.price.toFixed(2)}`;
-        
-        const changeClass = data.change >= 0 ? 'positive' : 'negative';
-        const changeSign = data.change >= 0 ? '+' : '';
-        priceChange.textContent = `${changeSign}$${data.change.toFixed(2)} (${changeSign}${data.changePercent.toFixed(2)}%)`;
-        priceChange.className = `price-change ${changeClass}`;
-    }
-
-    function displayError(symbol) {
-        stockSymbol.textContent = symbol;
-        stockPrice.textContent = 'Not Found';
-        priceChange.textContent = 'Symbol not available';
-        priceChange.className = 'price-change negative';
-    }
-
-    // Event listeners
-    searchButton.addEventListener('click', searchStock);
-    
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            searchStock();
-        }
-    });
-
-    searchInput.addEventListener('input', function() {
-        // Auto-uppercase and limit to 10 characters
-        this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '').substring(0, 10);
-    });
-
-    // Hide price display when clicking elsewhere
-    document.addEventListener('click', function(e) {
-        if (!priceDisplay.contains(e.target) && 
-            !searchInput.contains(e.target) && 
-            !searchButton.contains(e.target)) {
-            if (priceDisplay.classList.contains('active')) {
-                setTimeout(() => {
-                    priceDisplay.classList.remove('active');
-                }, 3000); // Hide after 3 seconds
-            }
-        }
-    });
-});
+// Stock Search Functionality - Now handled by stock-search.js
+// The real stock search with API integration is in stock-search.js
