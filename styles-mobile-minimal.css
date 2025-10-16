@@ -168,6 +168,11 @@ body {
 .mobile-chart-container canvas {
     width: 100% !important;
     height: 250px !important;
+    /* Safari-specific fixes */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 /* Mobile Time Controls */
@@ -322,5 +327,23 @@ body {
     .mobile-time-btn:active,
     .mobile-menu-link:active {
         transform: scale(0.95);
+    }
+}
+
+/* Safari-specific fixes */
+@supports (-webkit-touch-callout: none) {
+    .mobile-chart-container {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+    
+    .mobile-chart-container canvas {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        will-change: transform;
     }
 }

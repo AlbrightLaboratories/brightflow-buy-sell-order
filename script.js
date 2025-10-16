@@ -1372,6 +1372,11 @@ function initializeMobileChart() {
     
     console.log('📱 Initializing mobile chart...');
     console.log('📱 Mobile chart canvas found:', mobileChartCanvas);
+    console.log('📱 User agent:', navigator.userAgent);
+    console.log('📱 Is Safari:', /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent));
+    
+    // Safari-specific fixes
+    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
     
     mobileChart = new Chart(mobileChartCanvas, {
         type: 'line',
@@ -1390,6 +1395,7 @@ function initializeMobileChart() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: isSafari ? false : true, // Disable animation on Safari
             plugins: {
                 legend: {
                     display: false
@@ -1405,11 +1411,66 @@ function initializeMobileChart() {
             },
             elements: {
                 point: {
-                    radius: 0
+                    radius: isSafari ? 0 : 3 // Hide points on Safari
                 }
+            },
+            // Safari-specific interaction settings
+            interaction: {
+                intersect: false,
+                mode: 'index'
             }
         }
     });
+    
+    // Safari-specific retry mechanism
+    if (isSafari) {
+        console.log('📱 Safari detected, adding retry mechanism...');
+        
+        // Retry chart initialization after a short delay
+        setTimeout(() => {
+            if (!mobileChart || !mobileChart.data) {
+                console.log('📱 Retrying mobile chart initialization for Safari...');
+                try {
+                    mobileChart.destroy();
+                } catch (e) {
+                    console.log('📱 No chart to destroy');
+                }
+                
+                // Recreate chart with simpler configuration
+                mobileChart = new Chart(mobileChartCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'BrightFlow',
+                            data: [],
+                            borderColor: '#ffd700',
+                            backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: { display: false },
+                            y: { display: false }
+                        },
+                        elements: {
+                            point: { radius: 0 }
+                        }
+                    }
+                });
+                console.log('📱 Safari mobile chart retry completed');
+            }
+        }, 1000);
+    }
     
     console.log('✅ Mobile chart initialized');
 }
