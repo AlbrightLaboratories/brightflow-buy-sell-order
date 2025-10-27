@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2025-10-27T11:10:36.672606",
-  "totalTransactions": 95,
-  "currentBalance": 330116.44,
+  "lastUpdated": "2025-10-27T11:15:32.979250",
+  "totalTransactions": 99,
+  "currentBalance": 400490.68,
   "transactions": [
     {
       "timestamp": "2025-10-27T09:12:43.324413",
@@ -857,6 +857,42 @@
       "price": 472.18,
       "amount": 15581.94,
       "balance": 330116.44
+    },
+    {
+      "timestamp": "2025-10-27T11:10:44.252819",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 24.0,
+      "price": 677.11,
+      "amount": 16250.64,
+      "balance": 346367.08
+    },
+    {
+      "timestamp": "2025-10-27T11:10:45.013717",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 28.0,
+      "price": 617.0,
+      "amount": 17276.0,
+      "balance": 363643.08
+    },
+    {
+      "timestamp": "2025-10-27T11:10:45.404022",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 72.0,
+      "price": 249.45,
+      "amount": 17960.4,
+      "balance": 381603.48
+    },
+    {
+      "timestamp": "2025-10-27T11:10:45.803861",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 40.0,
+      "price": 472.18,
+      "amount": 18887.2,
+      "balance": 400490.68
     }
   ]
 }
