@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeChart();
     initializeMobileChart();
     setupTimeRangeControls();
+    setupTransactionFilter();
     loadRealData().then(() => {
         // Start real-time updates only after data is loaded
         startRealTimeUpdates();
@@ -32,6 +33,22 @@ document.addEventListener('DOMContentLoaded', function() {
         startRealTimeUpdates();
     });
 });
+
+// Setup transaction filter dropdown
+function setupTransactionFilter() {
+    const filterDropdown = document.getElementById('transactionFilter');
+    if (filterDropdown) {
+        filterDropdown.addEventListener('change', function() {
+            console.log('🔄 Transaction filter changed to:', this.value);
+            populateTransactionTable();
+            // Also update mobile transaction list if it exists
+            if (typeof populateMobileTransactionList === 'function') {
+                populateMobileTransactionList();
+            }
+        });
+        console.log('✅ Transaction filter setup complete');
+    }
+}
 
 // Generate complete historical data from performance.json data
 function generateCompleteHistoricalData() {
@@ -678,6 +695,52 @@ function generateMockData() {
     console.log('Current positions:', portfolio.positions);
 }
 
+// Filter transactions by timeframe
+function filterTransactionsByTimeframe(transactions, timeframe) {
+    if (!transactions || !Array.isArray(transactions)) {
+        return [];
+    }
+
+    // If 'all', return all transactions (most recent first)
+    if (timeframe === 'all') {
+        return [...transactions].reverse();
+    }
+
+    const now = new Date();
+    let cutoffDate;
+
+    // Calculate cutoff date based on timeframe
+    switch(timeframe) {
+        case '24h':
+            cutoffDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+            break;
+        case '7d':
+            cutoffDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            break;
+        case '30d':
+            cutoffDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            break;
+        default:
+            // Default to all
+            return [...transactions].reverse();
+    }
+
+    console.log(`📅 Filtering transactions since: ${cutoffDate.toISOString()}`);
+
+    // Filter transactions based on cutoff date
+    const filtered = transactions.filter(transaction => {
+        if (!transaction || !transaction.timestamp) {
+            return false;
+        }
+
+        const txDate = new Date(transaction.timestamp);
+        return txDate >= cutoffDate;
+    });
+
+    // Return most recent first
+    return filtered.reverse();
+}
+
 // Populate transaction table with animation
 function populateTransactionTable() {
     const tbody = document.getElementById('ledgerBody');
@@ -692,51 +755,30 @@ function populateTransactionTable() {
         return;
     }
     
-    // Filter transactions from last 24 hours (or today if no time data available)
-    const now = new Date();
-    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    
-    // Since transactions.json only has dates (no times), show today's transactions
-    const todayStr = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-    const yesterdayStr = oneDayAgo.toISOString().split('T')[0];
-    
-    console.log('📅 Looking for transactions from:', todayStr, 'and', yesterdayStr);
-    
-    const last24HourTransactions = transactionData.filter(transaction => {
-        // Check if transaction and timestamp exist
-        if (!transaction || !transaction.timestamp) {
-            console.warn('Transaction missing timestamp:', transaction);
-            return false;
-        }
-        
-        let txDateStr;
-        if (typeof transaction.timestamp === 'string') {
-            // Extract date from timestamp (format: 2025-10-15T09:30:00Z)
-            txDateStr = transaction.timestamp.split('T')[0];
-        } else if (transaction.timestamp instanceof Date) {
-            txDateStr = transaction.timestamp.toISOString().split('T')[0];
-        } else {
-            // Handle other date formats or invalid dates
-            console.warn('Invalid transaction timestamp format:', transaction.timestamp);
-            return false;
-        }
-        
-        // Show transactions from today and yesterday
-        return txDateStr === todayStr || txDateStr === yesterdayStr;
-    }).reverse(); // Most recent first
-    
-    console.log('📋 Found transactions for display:', last24HourTransactions.length);
-    console.log('📋 Transaction details:', last24HourTransactions);
-    
-    // If no transactions in last 24 hours, show message
-    if (last24HourTransactions.length === 0) {
+    // Get the selected filter from dropdown (default to 'all' if not found)
+    const filterDropdown = document.getElementById('transactionFilter');
+    const filterValue = filterDropdown ? filterDropdown.value : 'all';
+
+    // Filter transactions based on selected timeframe
+    const filteredTransactions = filterTransactionsByTimeframe(transactionData, filterValue);
+
+    console.log(`📋 Found ${filteredTransactions.length} transactions for filter: ${filterValue}`);
+
+    // If no transactions found, show message
+    if (filteredTransactions.length === 0) {
         const row = document.createElement('tr');
-        row.innerHTML = `<td colspan="8" style="text-align: center; padding: 20px; color: #888;">No transactions in the last 24 hours</td>`;
+        const filterLabel = {
+            '24h': 'last 24 hours',
+            '7d': 'last 7 days',
+            '30d': 'last 30 days',
+            'all': 'available'
+        }[filterValue] || 'selected period';
+        row.innerHTML = `<td colspan="8" style="text-align: center; padding: 20px; color: #888;">No transactions in the ${filterLabel}</td>`;
         tbody.appendChild(row);
         return;
     }
-    
-    last24HourTransactions.forEach((transaction, index) => {
+
+    filteredTransactions.forEach((transaction, index) => {
         setTimeout(() => {
             const row = createTransactionRow(transaction);
             tbody.appendChild(row);
@@ -1885,44 +1927,29 @@ function populateMobileTransactionList() {
         return;
     }
     
-    // Filter transactions from last 24 hours (or today if no time data available)
-    const now = new Date();
-    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    
-    // Since transactions.json only has dates (no times), show today's transactions
-    const todayStr = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-    const yesterdayStr = oneDayAgo.toISOString().split('T')[0];
-    
-    const last24HourTransactions = transactionData.filter(transaction => {
-        // Check if transaction and timestamp exist
-        if (!transaction || !transaction.timestamp) {
-            return false;
-        }
-        
-        let txDateStr;
-        if (typeof transaction.timestamp === 'string') {
-            // Extract date from timestamp (format: 2025-10-15T09:30:00Z)
-            txDateStr = transaction.timestamp.split('T')[0];
-        } else if (transaction.timestamp instanceof Date) {
-            txDateStr = transaction.timestamp.toISOString().split('T')[0];
-        } else {
-            return false;
-        }
-        
-        // Show transactions from today and yesterday
-        return txDateStr === todayStr || txDateStr === yesterdayStr;
-    }).reverse(); // Most recent first
-    
-    console.log('📱 Found transactions for mobile display:', last24HourTransactions.length);
-    
-    // If no transactions in last 24 hours, show message
-    if (last24HourTransactions.length === 0) {
-        mobileTransactionList.innerHTML = '<div class="mobile-no-transactions">No recent trades</div>';
+    // Get the selected filter from dropdown (default to 'all' if not found)
+    const filterDropdown = document.getElementById('transactionFilter');
+    const filterValue = filterDropdown ? filterDropdown.value : 'all';
+
+    // Filter transactions based on selected timeframe
+    const filteredTransactions = filterTransactionsByTimeframe(transactionData, filterValue);
+
+    console.log(`📱 Found ${filteredTransactions.length} transactions for mobile display (filter: ${filterValue})`);
+
+    // If no transactions found, show message
+    if (filteredTransactions.length === 0) {
+        const filterLabel = {
+            '24h': 'last 24 hours',
+            '7d': 'last 7 days',
+            '30d': 'last 30 days',
+            'all': 'available'
+        }[filterValue] || 'selected period';
+        mobileTransactionList.innerHTML = `<div class="mobile-no-transactions">No trades in the ${filterLabel}</div>`;
         return;
     }
-    
+
     // Show only the last 5 transactions for mobile
-    const recentTransactions = last24HourTransactions.slice(0, 5);
+    const recentTransactions = filteredTransactions.slice(0, 5);
     
     recentTransactions.forEach((transaction, index) => {
         const transactionDiv = document.createElement('div');

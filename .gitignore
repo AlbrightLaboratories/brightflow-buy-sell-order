@@ -45,5 +45,3 @@ Thumbs.db
 
 # MCP Server Cache
 mcp-stock-server/data/prices/*.parquet
-
-
