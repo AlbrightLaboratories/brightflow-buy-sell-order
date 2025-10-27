@@ -1,44 +1,8 @@
 {
-  "lastUpdated": "2025-10-27T11:35:32.446980",
+  "lastUpdated": "2025-10-27T11:40:31.862139",
   "totalTransactions": 100,
-  "currentBalance": 868852.58,
+  "currentBalance": 1054924.65,
   "transactions": [
-    {
-      "timestamp": "2025-10-27T09:20:48.436490",
-      "symbol": "DIA",
-      "action": "SELL",
-      "shares": 1.0,
-      "price": 472.18,
-      "amount": 472.18,
-      "balance": 10062.96
-    },
-    {
-      "timestamp": "2025-10-27T09:25:45.334913",
-      "symbol": "SPY",
-      "action": "SELL",
-      "shares": 1.0,
-      "price": 677.11,
-      "amount": 677.11,
-      "balance": 10740.07
-    },
-    {
-      "timestamp": "2025-10-27T09:25:46.048356",
-      "symbol": "QQQ",
-      "action": "SELL",
-      "shares": 1.0,
-      "price": 617.0,
-      "amount": 617.0,
-      "balance": 11357.07
-    },
-    {
-      "timestamp": "2025-10-27T09:25:46.389645",
-      "symbol": "IWM",
-      "action": "SELL",
-      "shares": 2.0,
-      "price": 249.45,
-      "amount": 498.9,
-      "balance": 11855.97
-    },
     {
       "timestamp": "2025-10-27T09:25:46.766460",
       "symbol": "DIA",
@@ -902,6 +866,42 @@
       "price": 472.18,
       "amount": 41079.66,
       "balance": 868852.58
+    },
+    {
+      "timestamp": "2025-10-27T11:35:48.548343",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 64.0,
+      "price": 677.11,
+      "amount": 43335.04,
+      "balance": 912187.62
+    },
+    {
+      "timestamp": "2025-10-27T11:35:49.319885",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 73.0,
+      "price": 617.0,
+      "amount": 45041.0,
+      "balance": 957228.62
+    },
+    {
+      "timestamp": "2025-10-27T11:35:49.726041",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 191.0,
+      "price": 249.45,
+      "amount": 47644.95,
+      "balance": 1004873.57
+    },
+    {
+      "timestamp": "2025-10-27T11:35:50.271597",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 106.0,
+      "price": 472.18,
+      "amount": 50051.08,
+      "balance": 1054924.65
     }
   ]
 }
