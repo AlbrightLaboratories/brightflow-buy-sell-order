@@ -65,11 +65,11 @@ class SimpleStockSearch {
             return cached;
         }
 
-        // Try multiple free APIs
+        // Try multiple free APIs - NO FALLBACK DATA, ONLY REAL DATA
         const apis = [
             () => this.fetchFromYahooFinance(symbol),
-            () => this.fetchFromAlphaVantage(symbol),
-            () => this.getFallbackData(symbol)
+            () => this.fetchFromAlphaVantage(symbol)
+            // REMOVED: getFallbackData() - we only want real, up-to-date data
         ];
 
         for (const api of apis) {
@@ -160,6 +160,9 @@ class SimpleStockSearch {
         return null;
     }
 
+    // DISABLED: Fallback mock data - ONLY USE REAL API DATA
+    // We do not want outdated mock data showing instead of real market prices
+    /*
     getFallbackData(symbol) {
         // Fallback data for popular stocks when APIs fail
         const fallbackData = {
@@ -192,6 +195,7 @@ class SimpleStockSearch {
         }
         return null;
     }
+    */
 
     displayStockData(stockData) {
         const stockSymbol = document.getElementById('stockSymbol');
@@ -362,7 +366,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Load last searched stock
     window.stockSearch.loadLastSearchedStock();
-    
+
+    // DISABLED: Pre-populating watchlist with fake stock data
+    // Users should search and add real stocks themselves
+    /*
     // Add some popular stocks to watchlist on first visit
     if (window.stockSearch.getWatchlist().length === 0) {
         const popularStocks = [
@@ -371,11 +378,12 @@ document.addEventListener('DOMContentLoaded', function() {
             { symbol: 'GOOGL', price: 138.21, change: 0.87, changePercent: 0.63 },
             { symbol: 'TSLA', price: 248.50, change: -4.12, changePercent: -1.63 }
         ];
-        
+
         popularStocks.forEach(stock => {
             window.stockSearch.addToWatchlist(stock);
         });
     }
+    */
 });
 
 // Export for use in other scripts

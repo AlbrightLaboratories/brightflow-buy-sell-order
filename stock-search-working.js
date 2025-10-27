@@ -68,11 +68,11 @@ class WorkingStockSearch {
 
         console.log('Fetching data for', symbol);
 
-        // Try multiple APIs
+        // Try multiple APIs - NO FALLBACK DATA, ONLY REAL DATA
         const apis = [
             () => this.fetchFromAlphaVantage(symbol),
-            () => this.fetchFromFinancialModelingPrep(symbol),
-            () => this.getFallbackData(symbol)
+            () => this.fetchFromFinancialModelingPrep(symbol)
+            // REMOVED: getFallbackData() - we only want real, up-to-date data
         ];
 
         for (const api of apis) {
@@ -153,6 +153,9 @@ class WorkingStockSearch {
         return null;
     }
 
+    // DISABLED: Fallback mock data - ONLY USE REAL API DATA
+    // We do not want outdated mock data showing instead of real market prices
+    /*
     getFallbackData(symbol) {
         // Fallback data for popular stocks when APIs fail
         const fallbackData = {
@@ -186,6 +189,7 @@ class WorkingStockSearch {
         }
         return null;
     }
+    */
 
     displayStockData(stockData) {
         const stockSymbol = document.getElementById('stockSymbol');

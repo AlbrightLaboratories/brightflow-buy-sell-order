@@ -334,7 +334,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Load last searched stock
     window.stockSearch.loadLastSearchedStock();
-    
+
+    // DISABLED: Pre-populating watchlist with fake stock data
+    // Users should search and add real stocks themselves
+    /*
     // Add some popular stocks to watchlist on first visit
     if (window.stockSearch.getWatchlist().length === 0) {
         const popularStocks = [
@@ -343,11 +346,12 @@ document.addEventListener('DOMContentLoaded', function() {
             { symbol: 'GOOGL', price: 138.21, change: 0.87, changePercent: 0.63 },
             { symbol: 'TSLA', price: 248.50, change: -4.12, changePercent: -1.63 }
         ];
-        
+
         popularStocks.forEach(stock => {
             window.stockSearch.addToWatchlist(stock);
         });
     }
+    */
 });
 
 // Export for use in other scripts
