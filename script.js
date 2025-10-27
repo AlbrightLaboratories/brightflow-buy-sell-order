@@ -304,10 +304,9 @@ function loadCachedData() {
     } catch (e) {
         console.error('❌ Error loading cached data:', e);
     }
-    
-    // Fallback to demo mode if no cached data
-    console.log('⚠️ No cached data available, falling back to demo mode');
-    showDemoMode();
+
+    // No cached data available - wait for real data to load
+    console.log('⚠️ No cached data available, waiting for real data from server...');
 }
 
 // Load real data from JSON files and initialize portfolio dynamically
@@ -405,11 +404,13 @@ async function loadRealData() {
     } catch (error) {
         console.error('❌ Could not load real data:', error);
         showUpdateIndicator('error');
-        
-        // Fallback to mock data if files don't exist yet
-        console.log('🔄 Falling back to mock data...');
-        generateMockData();
-        populateTransactionTable();
+
+        // Show error message - NO MOCK DATA
+        console.error('⚠️ Real data files not available. Please ensure ML repo is pushing data.');
+        const tbody = document.getElementById('ledgerBody');
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px; color: #ff4757;">⚠️ Unable to load transaction data. Waiting for ML data...</td></tr>';
+        }
     }
 }
 
@@ -610,90 +611,16 @@ function initializeChart() {
 }
 
 // Initialize realistic portfolio with actual stock prices
+// DISABLED: Mock data generation - ONLY USE REAL ML DATA
+// This function has been disabled to prevent fake/historical data from appearing.
+// All transaction data must come from the ML repo via data/transactions.json
+/*
 function generateMockData() {
-    console.log('Initializing realistic BrightFlow portfolio...');
-    
-    // Realistic stock prices (approximate Oct 2024 prices)
-    const stockPrices = {
-        'AAPL': 178.50,
-        'GOOGL': 145.20,
-        'MSFT': 412.80,
-        'TSLA': 219.30,
-        'AMZN': 142.65,
-        'NVDA': 889.45,
-        'META': 484.20,
-        'SPY': 420.15
-    };
-    
-    // Generate realistic trading history over past weeks
-    const symbols = Object.keys(stockPrices);
-    let currentDate = new Date('2024-09-25T09:30:00'); // Market open Sept 25
-    const endDate = new Date();
-    
-    // Start with initial cash
-    let runningCash = portfolio.cash;
-    let runningTotalValue = portfolio.startValue;
-    
-    // Generate 40-50 realistic transactions
-    let transactionCount = 0;
-    
-    while (currentDate < endDate && transactionCount < 45) {
-        // Only trade during market hours (9:30 AM - 4 PM EST, weekdays)
-        if (isMarketHours(currentDate)) {
-            // Simulate ML algorithm making a decision every few hours
-            if (Math.random() < 0.15) { // 15% chance each market hour
-                const trade = generateRealisticTrade(stockPrices, runningCash, currentDate);
-                
-                if (trade) {
-                    // Update portfolio
-                    if (trade.action === 'BUY') {
-                        runningCash -= trade.amount;
-                        // Update positions
-                        if (!portfolio.positions[trade.symbol]) {
-                            portfolio.positions[trade.symbol] = { shares: 0, avgPrice: 0 };
-                        }
-                        
-                        const currentShares = portfolio.positions[trade.symbol].shares;
-                        const currentAvg = portfolio.positions[trade.symbol].avgPrice;
-                        const newShares = currentShares + trade.quantity;
-                        const newAvg = ((currentShares * currentAvg) + (trade.quantity * trade.price)) / newShares;
-                        
-                        portfolio.positions[trade.symbol].shares = newShares;
-                        portfolio.positions[trade.symbol].avgPrice = newAvg;
-                        
-                    } else if (trade.action === 'SELL') {
-                        runningCash += trade.amount;
-                        // Reduce position
-                        if (portfolio.positions[trade.symbol]) {
-                            portfolio.positions[trade.symbol].shares -= trade.quantity;
-                            if (portfolio.positions[trade.symbol].shares <= 0) {
-                                delete portfolio.positions[trade.symbol];
-                            }
-                        }
-                    }
-                    
-                    // Calculate portfolio value after trade
-                    runningTotalValue = calculatePortfolioValue(runningCash, portfolio.positions, stockPrices, currentDate);
-                    
-                    trade.runningBalance = runningTotalValue;
-                    transactionData.push(trade);
-                    transactionCount++;
-                }
-            }
-        }
-        
-        // Advance time by 1 hour
-        currentDate.setHours(currentDate.getHours() + 1);
-    }
-    
-    // Update current portfolio state
-    portfolio.cash = runningCash;
-    portfolio.totalValue = runningTotalValue;
-    
-    console.log(`Generated ${transactionCount} realistic trades`);
-    console.log(`Portfolio value: $${runningTotalValue.toFixed(2)}`);
-    console.log('Current positions:', portfolio.positions);
+    // This function is intentionally disabled
+    console.error('⚠️ Mock data generation is disabled. Use real ML data only.');
+    return;
 }
+*/
 
 // Filter transactions by timeframe
 function filterTransactionsByTimeframe(transactions, timeframe) {
@@ -1709,13 +1636,9 @@ async function checkForUpdates() {
     } catch (error) {
         console.warn('Could not check for updates:', error);
         showUpdateIndicator('error');
-        
-        // If this is the first load and no real data, fall back to demo
-        if (!localStorage.getItem('lastRealDataUpdate')) {
-            console.log('No real data available, using demo mode');
-            generateMockData();
-            populateTransactionTable();
-        }
+
+        // Show error - NO MOCK DATA FALLBACK
+        console.error('⚠️ Unable to fetch data updates. Check data file availability.');
     }
 }
 
