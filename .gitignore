@@ -47,5 +47,3 @@ Thumbs.db
 mcp-stock-server/data/prices/*.parquet
 
 
-# Data director
-data/   
