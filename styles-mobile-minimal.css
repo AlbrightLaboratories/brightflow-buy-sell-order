@@ -57,6 +57,99 @@ body {
     transition: 0.3s;
 }
 
+/* Order Streaming Ticker - Mobile */
+.order-ticker-container {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    border-bottom: 2px solid #ffd700;
+    border-top: 1px solid #333;
+    overflow: hidden;
+    margin: 0;
+}
+
+.order-ticker-wrapper {
+    width: 100%;
+    overflow: hidden;
+    padding: 10px 0;
+}
+
+.order-ticker {
+    display: flex;
+    animation: scroll-left 45s linear infinite;
+    white-space: nowrap;
+}
+
+.order-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    margin: 0 8px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+    border: 1px solid #444;
+    font-size: 0.8rem;
+}
+
+.order-item.buy {
+    border-left: 3px solid #00ff88;
+}
+
+.order-item.sell {
+    border-left: 3px solid #ff4757;
+}
+
+.order-item.watching {
+    border-left: 3px solid #ffd700;
+}
+
+.order-action {
+    font-weight: bold;
+    margin-right: 6px;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+.order-action.buy {
+    background: #00ff88;
+    color: #000;
+}
+
+.order-action.sell {
+    background: #ff4757;
+    color: #fff;
+}
+
+.order-action.watching {
+    background: #ffd700;
+    color: #000;
+}
+
+.order-symbol {
+    font-weight: bold;
+    color: #ffd700;
+    margin-right: 6px;
+}
+
+.order-details {
+    color: #ccc;
+    font-size: 0.75rem;
+}
+
+.order-price {
+    color: #fff;
+    font-weight: 600;
+}
+
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
 /* Mobile Performance Card */
 .mobile-performance-card {
     background: linear-gradient(135deg, #1a1a1a, #2a2a2a);

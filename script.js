@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeMobileChart();
     setupTimeRangeControls();
     setupTransactionFilter();
+    loadOrderTicker(); // Load streaming order ticker
     loadRealData().then(() => {
         // Start real-time updates only after data is loaded
         startRealTimeUpdates();
@@ -48,6 +49,70 @@ function setupTransactionFilter() {
         });
         console.log('✅ Transaction filter setup complete');
     }
+}
+
+// Load and populate order streaming ticker
+async function loadOrderTicker() {
+    try {
+        const response = await fetch('./data/recommendations.json');
+        if (!response.ok) {
+            console.log('⚠️ No recommendations data available yet');
+            return;
+        }
+
+        const data = await response.json();
+        populateOrderTicker(data);
+    } catch (error) {
+        console.log('⚠️ Could not load recommendations:', error.message);
+    }
+}
+
+// Populate the order ticker with recommendations and positions
+function populateOrderTicker(data) {
+    const ticker = document.getElementById('orderTicker');
+    if (!ticker) return;
+
+    const items = [];
+
+    // Add current positions (HELD stocks)
+    if (data.positions && data.positions.length > 0) {
+        data.positions.forEach(position => {
+            items.push(`
+                <div class="order-item buy">
+                    <span class="order-action buy">HELD</span>
+                    <span class="order-symbol">${position.symbol}</span>
+                    <span class="order-details">${position.shares.toFixed(4)} shares @ $${position.entry.toFixed(2)}</span>
+                </div>
+            `);
+        });
+    }
+
+    // Add recommendations (WATCHING stocks)
+    if (data.recommendations && data.recommendations.length > 0) {
+        data.recommendations.forEach(rec => {
+            const priceDistance = ((rec.currentPrice - rec.gtcBuy) / rec.gtcBuy * 100).toFixed(1);
+            items.push(`
+                <div class="order-item watching">
+                    <span class="order-action watching">WATCH</span>
+                    <span class="order-symbol">${rec.symbol}</span>
+                    <span class="order-details">Will buy @ $${rec.gtcBuy.toFixed(2)} | Now: $${rec.currentPrice.toFixed(2)} (${priceDistance}% away)</span>
+                    <span class="order-price">Conf: ${rec.confidence}%</span>
+                </div>
+            `);
+        });
+    }
+
+    // If no items, show a message
+    if (items.length === 0) {
+        ticker.innerHTML = '<div class="order-item watching"><span class="order-details">Waiting for ML recommendations...</span></div>';
+        return;
+    }
+
+    // Duplicate items for seamless infinite scroll
+    const duplicatedItems = items.concat(items);
+    ticker.innerHTML = duplicatedItems.join('');
+
+    console.log('✅ Order ticker populated with', items.length, 'items');
 }
 
 // Generate complete historical data from performance.json data
