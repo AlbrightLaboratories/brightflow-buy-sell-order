@@ -802,7 +802,7 @@ function updateMobileSummary() {
         // Get the last transaction's running balance
         if (transactionData && transactionData.length > 0) {
             const lastTransaction = transactionData[transactionData.length - 1];
-            const balance = lastTransaction.runningBalance || 0;
+            const balance = lastTransaction.runningBalance || lastTransaction.balance || 0;
             currentBalanceEl.textContent = `$${balance.toFixed(2)}`;
         }
     }
@@ -829,6 +829,8 @@ function createTransactionRow(transaction) {
 
     const quantity = transaction.quantity || transaction.shares || 0;
     const amount = transaction.amount || transaction.value || 0;
+    const price = transaction.price || 0;
+    const runningBalance = transaction.runningBalance || transaction.balance || 0;
     const isPositive = amount > 0;
 
     // Format fractional shares properly
@@ -853,7 +855,7 @@ function createTransactionRow(transaction) {
             <td><span class="action-${action.toLowerCase()}">${action}</span></td>
             <td style="font-weight: bold; color: #ffd700;">${transaction.symbol}</td>
             <td>${quantityDisplay}</td>
-            <td>$${transaction.price.toFixed(2)}</td>
+            <td>$${price.toFixed(2)}</td>
             <td class="amount-${isPositive ? 'positive' : 'negative'}">
                 ${isPositive ? '+' : ''}$${Math.abs(amount).toFixed(2)}
             </td>
@@ -866,11 +868,11 @@ function createTransactionRow(transaction) {
             <td><span class="${action.toLowerCase()}">${action}</span></td>
             <td>${transaction.symbol}</td>
             <td>${quantityDisplay}</td>
-            <td>$${transaction.price.toFixed(2)}</td>
+            <td>$${price.toFixed(2)}</td>
             <td class="${isPositive ? 'buy' : 'sell'}">
                 ${isPositive ? '+' : ''}$${Math.abs(amount).toFixed(2)}${profitDisplay}
             </td>
-            <td class="running-balance">${transaction.runningBalance ? '$' + transaction.runningBalance.toFixed(2) : '-'}</td>
+            <td class="running-balance">${runningBalance ? '$' + runningBalance.toFixed(2) : '-'}</td>
         `;
     }
 
