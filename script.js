@@ -53,10 +53,15 @@ function setupTransactionFilter() {
 
 // Load and populate order streaming ticker
 async function loadOrderTicker() {
+    const ticker = document.getElementById('orderTicker');
+    if (!ticker) return;
+
     try {
         const response = await fetch('./data/recommendations.json');
         if (!response.ok) {
             console.log('⚠️ No recommendations data available yet');
+            // Show waiting message when file doesn't exist
+            ticker.innerHTML = '<div class="order-item watching"><span class="order-details">⏳ Waiting for ML recommendations... (data/recommendations.json not found)</span></div>';
             return;
         }
 
@@ -64,6 +69,8 @@ async function loadOrderTicker() {
         populateOrderTicker(data);
     } catch (error) {
         console.log('⚠️ Could not load recommendations:', error.message);
+        // Show error message
+        ticker.innerHTML = '<div class="order-item watching"><span class="order-details">⏳ Waiting for ML recommendations... (data/recommendations.json not found)</span></div>';
     }
 }
 
