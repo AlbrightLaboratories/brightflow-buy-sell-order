@@ -68,12 +68,12 @@ class FastStockSearch {
 
         console.log('Fetching fresh data for', symbol);
 
-        // Try multiple fast APIs
+        // Try multiple fast APIs - NO FALLBACK DATA, ONLY REAL DATA
         const apis = [
             () => this.fetchFromYahooFinanceFast(symbol),
             () => this.fetchFromAlphaVantageFast(symbol),
-            () => this.fetchFromIEXCloudFast(symbol),
-            () => this.getFallbackData(symbol)
+            () => this.fetchFromIEXCloudFast(symbol)
+            // REMOVED: getFallbackData() - we only want real, up-to-date data
         ];
 
         for (const api of apis) {
@@ -225,6 +225,9 @@ class FastStockSearch {
         return null;
     }
 
+    // DISABLED: Fallback mock data - ONLY USE REAL API DATA
+    // We do not want outdated mock data showing instead of real market prices
+    /*
     getFallbackData(symbol) {
         // Enhanced fallback data with more realistic values
         const fallbackData = {
@@ -263,6 +266,7 @@ class FastStockSearch {
         }
         return null;
     }
+    */
 
     displayStockData(stockData) {
         const stockSymbol = document.getElementById('stockSymbol');
