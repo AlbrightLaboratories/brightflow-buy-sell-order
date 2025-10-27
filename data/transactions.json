@@ -1,0 +1,862 @@
+{
+  "lastUpdated": "2025-10-27T11:09:38.173399",
+  "totalTransactions": 95,
+  "currentBalance": 330116.44,
+  "transactions": [
+    {
+      "timestamp": "2025-10-27T09:12:43.324413",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 677.11,
+      "amount": 677.11,
+      "balance": 2677.11
+    },
+    {
+      "timestamp": "2025-10-27T09:12:44.204750",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 617.0,
+      "amount": 617.0,
+      "balance": 3294.11
+    },
+    {
+      "timestamp": "2025-10-27T09:12:44.582462",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 249.45,
+      "amount": 249.45,
+      "balance": 3543.56
+    },
+    {
+      "timestamp": "2025-10-27T09:12:47.356032",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 472.18,
+      "amount": 472.18,
+      "balance": 4015.74
+    },
+    {
+      "timestamp": "2025-10-27T09:14:41.665473",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 677.11,
+      "amount": 677.11,
+      "balance": 4692.85
+    },
+    {
+      "timestamp": "2025-10-27T09:14:42.418810",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 617.0,
+      "amount": 617.0,
+      "balance": 5309.85
+    },
+    {
+      "timestamp": "2025-10-27T09:14:44.682850",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 249.45,
+      "amount": 249.45,
+      "balance": 5559.3
+    },
+    {
+      "timestamp": "2025-10-27T09:14:45.152979",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 472.18,
+      "amount": 472.18,
+      "balance": 6031.48
+    },
+    {
+      "timestamp": "2025-10-27T09:16:02.586494",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 677.11,
+      "amount": 677.11,
+      "balance": 6708.59
+    },
+    {
+      "timestamp": "2025-10-27T09:16:03.318044",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 617.0,
+      "amount": 617.0,
+      "balance": 7325.59
+    },
+    {
+      "timestamp": "2025-10-27T09:16:03.697307",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 249.45,
+      "amount": 249.45,
+      "balance": 7575.04
+    },
+    {
+      "timestamp": "2025-10-27T09:16:04.054675",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 472.18,
+      "amount": 472.18,
+      "balance": 8047.22
+    },
+    {
+      "timestamp": "2025-10-27T09:20:46.903171",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 677.11,
+      "amount": 677.11,
+      "balance": 8724.33
+    },
+    {
+      "timestamp": "2025-10-27T09:20:47.612220",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 617.0,
+      "amount": 617.0,
+      "balance": 9341.33
+    },
+    {
+      "timestamp": "2025-10-27T09:20:48.052338",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 249.45,
+      "amount": 249.45,
+      "balance": 9590.78
+    },
+    {
+      "timestamp": "2025-10-27T09:20:48.436490",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 472.18,
+      "amount": 472.18,
+      "balance": 10062.96
+    },
+    {
+      "timestamp": "2025-10-27T09:25:45.334913",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 677.11,
+      "amount": 677.11,
+      "balance": 10740.07
+    },
+    {
+      "timestamp": "2025-10-27T09:25:46.048356",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 617.0,
+      "amount": 617.0,
+      "balance": 11357.07
+    },
+    {
+      "timestamp": "2025-10-27T09:25:46.389645",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 2.0,
+      "price": 249.45,
+      "amount": 498.9,
+      "balance": 11855.97
+    },
+    {
+      "timestamp": "2025-10-27T09:25:46.766460",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 472.18,
+      "amount": 472.18,
+      "balance": 12328.15
+    },
+    {
+      "timestamp": "2025-10-27T09:30:52.201414",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 677.11,
+      "amount": 677.11,
+      "balance": 13005.26
+    },
+    {
+      "timestamp": "2025-10-27T09:30:52.960248",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 617.0,
+      "amount": 617.0,
+      "balance": 13622.26
+    },
+    {
+      "timestamp": "2025-10-27T09:30:53.357497",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 2.0,
+      "price": 249.45,
+      "amount": 498.9,
+      "balance": 14121.16
+    },
+    {
+      "timestamp": "2025-10-27T09:30:53.748072",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 472.18,
+      "amount": 472.18,
+      "balance": 14593.34
+    },
+    {
+      "timestamp": "2025-10-27T09:35:48.643966",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 677.11,
+      "amount": 677.11,
+      "balance": 15270.45
+    },
+    {
+      "timestamp": "2025-10-27T09:35:49.458440",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 617.0,
+      "amount": 617.0,
+      "balance": 15887.45
+    },
+    {
+      "timestamp": "2025-10-27T09:35:49.819947",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 3.0,
+      "price": 249.45,
+      "amount": 748.35,
+      "balance": 16635.8
+    },
+    {
+      "timestamp": "2025-10-27T09:35:50.214793",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 472.18,
+      "amount": 472.18,
+      "balance": 17107.98
+    },
+    {
+      "timestamp": "2025-10-27T09:40:49.114560",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 677.11,
+      "amount": 677.11,
+      "balance": 17785.09
+    },
+    {
+      "timestamp": "2025-10-27T09:40:50.003314",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 617.0,
+      "amount": 617.0,
+      "balance": 18402.09
+    },
+    {
+      "timestamp": "2025-10-27T09:40:50.382767",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 3.0,
+      "price": 249.45,
+      "amount": 748.35,
+      "balance": 19150.44
+    },
+    {
+      "timestamp": "2025-10-27T09:40:50.758087",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 2.0,
+      "price": 472.18,
+      "amount": 944.36,
+      "balance": 20094.8
+    },
+    {
+      "timestamp": "2025-10-27T09:45:49.229342",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 677.11,
+      "amount": 677.11,
+      "balance": 20771.91
+    },
+    {
+      "timestamp": "2025-10-27T09:45:50.017184",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 617.0,
+      "amount": 617.0,
+      "balance": 21388.91
+    },
+    {
+      "timestamp": "2025-10-27T09:45:50.463988",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 4.0,
+      "price": 249.45,
+      "amount": 997.8,
+      "balance": 22386.71
+    },
+    {
+      "timestamp": "2025-10-27T09:45:50.876680",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 2.0,
+      "price": 472.18,
+      "amount": 944.36,
+      "balance": 23331.07
+    },
+    {
+      "timestamp": "2025-10-27T09:50:49.348164",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 617.0,
+      "amount": 617.0,
+      "balance": 23948.07
+    },
+    {
+      "timestamp": "2025-10-27T09:50:49.752971",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 4.0,
+      "price": 249.45,
+      "amount": 997.8,
+      "balance": 24945.87
+    },
+    {
+      "timestamp": "2025-10-27T09:50:50.175326",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 2.0,
+      "price": 472.18,
+      "amount": 944.36,
+      "balance": 25890.23
+    },
+    {
+      "timestamp": "2025-10-27T09:55:54.583600",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 1.0,
+      "price": 677.11,
+      "amount": 677.11,
+      "balance": 26567.34
+    },
+    {
+      "timestamp": "2025-10-27T09:55:55.358450",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 2.0,
+      "price": 617.0,
+      "amount": 1234.0,
+      "balance": 27801.34
+    },
+    {
+      "timestamp": "2025-10-27T09:55:55.741246",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 5.0,
+      "price": 249.45,
+      "amount": 1247.25,
+      "balance": 29048.59
+    },
+    {
+      "timestamp": "2025-10-27T09:55:56.120833",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 3.0,
+      "price": 472.18,
+      "amount": 1416.54,
+      "balance": 30465.13
+    },
+    {
+      "timestamp": "2025-10-27T10:00:45.234193",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 2.0,
+      "price": 617.0,
+      "amount": 1234.0,
+      "balance": 31699.13
+    },
+    {
+      "timestamp": "2025-10-27T10:00:45.706062",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 6.0,
+      "price": 249.45,
+      "amount": 1496.7,
+      "balance": 33195.83
+    },
+    {
+      "timestamp": "2025-10-27T10:00:46.081546",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 3.0,
+      "price": 472.18,
+      "amount": 1416.54,
+      "balance": 34612.37
+    },
+    {
+      "timestamp": "2025-10-27T10:05:46.244208",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 2.0,
+      "price": 617.0,
+      "amount": 1234.0,
+      "balance": 35846.37
+    },
+    {
+      "timestamp": "2025-10-27T10:05:46.734022",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 7.0,
+      "price": 249.45,
+      "amount": 1746.15,
+      "balance": 37592.52
+    },
+    {
+      "timestamp": "2025-10-27T10:05:49.499682",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 3.0,
+      "price": 472.18,
+      "amount": 1416.54,
+      "balance": 39009.06
+    },
+    {
+      "timestamp": "2025-10-27T10:10:44.681306",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 3.0,
+      "price": 617.0,
+      "amount": 1851.0,
+      "balance": 40860.06
+    },
+    {
+      "timestamp": "2025-10-27T10:10:45.063977",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 8.0,
+      "price": 249.45,
+      "amount": 1995.6,
+      "balance": 42855.66
+    },
+    {
+      "timestamp": "2025-10-27T10:10:45.557490",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 4.0,
+      "price": 472.18,
+      "amount": 1888.72,
+      "balance": 44744.38
+    },
+    {
+      "timestamp": "2025-10-27T10:15:49.857767",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 3.0,
+      "price": 617.0,
+      "amount": 1851.0,
+      "balance": 46595.38
+    },
+    {
+      "timestamp": "2025-10-27T10:15:50.242993",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 9.0,
+      "price": 249.45,
+      "amount": 2245.05,
+      "balance": 48840.43
+    },
+    {
+      "timestamp": "2025-10-27T10:15:50.657725",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 5.0,
+      "price": 472.18,
+      "amount": 2360.9,
+      "balance": 51201.33
+    },
+    {
+      "timestamp": "2025-10-27T10:20:46.854606",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 3.0,
+      "price": 677.11,
+      "amount": 2031.33,
+      "balance": 53232.66
+    },
+    {
+      "timestamp": "2025-10-27T10:20:47.648378",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 4.0,
+      "price": 617.0,
+      "amount": 2468.0,
+      "balance": 55700.66
+    },
+    {
+      "timestamp": "2025-10-27T10:20:48.007110",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 11.0,
+      "price": 249.45,
+      "amount": 2743.95,
+      "balance": 58444.61
+    },
+    {
+      "timestamp": "2025-10-27T10:20:48.476475",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 6.0,
+      "price": 472.18,
+      "amount": 2833.08,
+      "balance": 61277.69
+    },
+    {
+      "timestamp": "2025-10-27T10:25:45.746248",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 4.0,
+      "price": 677.11,
+      "amount": 2708.44,
+      "balance": 63986.13
+    },
+    {
+      "timestamp": "2025-10-27T10:25:46.559404",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 5.0,
+      "price": 617.0,
+      "amount": 3085.0,
+      "balance": 67071.13
+    },
+    {
+      "timestamp": "2025-10-27T10:25:46.956213",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 13.0,
+      "price": 249.45,
+      "amount": 3242.85,
+      "balance": 70313.98
+    },
+    {
+      "timestamp": "2025-10-27T10:25:47.348014",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 7.0,
+      "price": 472.18,
+      "amount": 3305.26,
+      "balance": 73619.24
+    },
+    {
+      "timestamp": "2025-10-27T10:30:44.923536",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 5.0,
+      "price": 677.11,
+      "amount": 3385.55,
+      "balance": 77004.79
+    },
+    {
+      "timestamp": "2025-10-27T10:30:45.640899",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 6.0,
+      "price": 617.0,
+      "amount": 3702.0,
+      "balance": 80706.79
+    },
+    {
+      "timestamp": "2025-10-27T10:30:46.025884",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 16.0,
+      "price": 249.45,
+      "amount": 3991.2,
+      "balance": 84697.99
+    },
+    {
+      "timestamp": "2025-10-27T10:30:46.394039",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 8.0,
+      "price": 472.18,
+      "amount": 3777.44,
+      "balance": 88475.43
+    },
+    {
+      "timestamp": "2025-10-27T10:31:42.828060",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 6.0,
+      "price": 677.11,
+      "amount": 4062.66,
+      "balance": 92538.09
+    },
+    {
+      "timestamp": "2025-10-27T10:31:43.749950",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 7.0,
+      "price": 617.0,
+      "amount": 4319.0,
+      "balance": 96857.09
+    },
+    {
+      "timestamp": "2025-10-27T10:31:44.918968",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 19.0,
+      "price": 249.45,
+      "amount": 4739.55,
+      "balance": 101596.64
+    },
+    {
+      "timestamp": "2025-10-27T10:31:45.566721",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 10.0,
+      "price": 472.18,
+      "amount": 4721.8,
+      "balance": 106318.44
+    },
+    {
+      "timestamp": "2025-10-27T10:35:46.354325",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 7.0,
+      "price": 677.11,
+      "amount": 4739.77,
+      "balance": 111058.21
+    },
+    {
+      "timestamp": "2025-10-27T10:35:47.293862",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 8.0,
+      "price": 617.0,
+      "amount": 4936.0,
+      "balance": 115994.21
+    },
+    {
+      "timestamp": "2025-10-27T10:35:47.662123",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 23.0,
+      "price": 249.45,
+      "amount": 5737.35,
+      "balance": 121731.56
+    },
+    {
+      "timestamp": "2025-10-27T10:35:50.506168",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 12.0,
+      "price": 472.18,
+      "amount": 5666.16,
+      "balance": 127397.72
+    },
+    {
+      "timestamp": "2025-10-27T10:40:51.597539",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 10.0,
+      "price": 617.0,
+      "amount": 6170.0,
+      "balance": 133567.72
+    },
+    {
+      "timestamp": "2025-10-27T10:40:52.023976",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 26.0,
+      "price": 249.45,
+      "amount": 6485.7,
+      "balance": 140053.42
+    },
+    {
+      "timestamp": "2025-10-27T10:40:52.402770",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 14.0,
+      "price": 472.18,
+      "amount": 6610.52,
+      "balance": 146663.94
+    },
+    {
+      "timestamp": "2025-10-27T10:45:52.267288",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 11.0,
+      "price": 617.0,
+      "amount": 6787.0,
+      "balance": 153450.94
+    },
+    {
+      "timestamp": "2025-10-27T10:45:52.633104",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 30.0,
+      "price": 249.45,
+      "amount": 7483.5,
+      "balance": 160934.44
+    },
+    {
+      "timestamp": "2025-10-27T10:45:53.087443",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 17.0,
+      "price": 472.18,
+      "amount": 8027.06,
+      "balance": 168961.5
+    },
+    {
+      "timestamp": "2025-10-27T10:50:48.290834",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 13.0,
+      "price": 617.0,
+      "amount": 8021.0,
+      "balance": 176982.5
+    },
+    {
+      "timestamp": "2025-10-27T10:50:48.859553",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 35.0,
+      "price": 249.45,
+      "amount": 8730.75,
+      "balance": 185713.25
+    },
+    {
+      "timestamp": "2025-10-27T10:50:49.277242",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 19.0,
+      "price": 472.18,
+      "amount": 8971.42,
+      "balance": 194684.67
+    },
+    {
+      "timestamp": "2025-10-27T10:55:47.734033",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 15.0,
+      "price": 617.0,
+      "amount": 9255.0,
+      "balance": 203939.67
+    },
+    {
+      "timestamp": "2025-10-27T10:55:48.204643",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 40.0,
+      "price": 249.45,
+      "amount": 9978.0,
+      "balance": 213917.67
+    },
+    {
+      "timestamp": "2025-10-27T10:55:48.567088",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 22.0,
+      "price": 472.18,
+      "amount": 10387.96,
+      "balance": 224305.63
+    },
+    {
+      "timestamp": "2025-10-27T11:00:47.683786",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 16.0,
+      "price": 677.11,
+      "amount": 10833.76,
+      "balance": 235139.39
+    },
+    {
+      "timestamp": "2025-10-27T11:00:48.421621",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 19.0,
+      "price": 617.0,
+      "amount": 11723.0,
+      "balance": 246862.39
+    },
+    {
+      "timestamp": "2025-10-27T11:00:48.793259",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 49.0,
+      "price": 249.45,
+      "amount": 12223.05,
+      "balance": 259085.44
+    },
+    {
+      "timestamp": "2025-10-27T11:00:50.275469",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 27.0,
+      "price": 472.18,
+      "amount": 12748.86,
+      "balance": 271834.3
+    },
+    {
+      "timestamp": "2025-10-27T11:06:03.123109",
+      "symbol": "SPY",
+      "action": "SELL",
+      "shares": 20.0,
+      "price": 677.11,
+      "amount": 13542.2,
+      "balance": 285376.5
+    },
+    {
+      "timestamp": "2025-10-27T11:06:03.892138",
+      "symbol": "QQQ",
+      "action": "SELL",
+      "shares": 23.0,
+      "price": 617.0,
+      "amount": 14191.0,
+      "balance": 299567.5
+    },
+    {
+      "timestamp": "2025-10-27T11:06:05.849056",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 60.0,
+      "price": 249.45,
+      "amount": 14967.0,
+      "balance": 314534.5
+    },
+    {
+      "timestamp": "2025-10-27T11:06:08.294729",
+      "symbol": "DIA",
+      "action": "SELL",
+      "shares": 33.0,
+      "price": 472.18,
+      "amount": 15581.94,
+      "balance": 330116.44
+    }
+  ]
+}
