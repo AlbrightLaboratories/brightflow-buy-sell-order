@@ -36,31 +36,25 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
 
-    - name: Fetch data from brightflow-ML repository
+    # Note: Data is pushed directly from brightflow-ML repo using GitHub API
+    # This workflow just processes and commits data that's already in the repo
+    - name: Verify data files exist
       run: |
-        echo "🔄 Fetching latest data from brightflow-ML repository..."
-        
-        # Clone the ML repository to get latest data
-        git clone https://github.com/AlbrightLaboratories/brightflow-ML.git temp-ml-repo
-        
-        # Copy latest data files
-        if [ -f "temp-ml-repo/data/transactions.json" ]; then
-          cp temp-ml-repo/data/transactions.json data/
-          echo "✅ Updated transactions.json"
+        echo "📊 Checking for data files..."
+
+        if [ -f "data/transactions.json" ]; then
+          echo "✅ Found transactions.json"
+        else
+          echo "⚠️ transactions.json not found - will be generated from TheChart.md"
         fi
-        
-        if [ -f "temp-ml-repo/data/hourly_market_data.json" ]; then
-          cp temp-ml-repo/data/hourly_market_data.json data/
-          echo "✅ Updated hourly_market_data.json"
+
+        if [ -f "data/performance.json" ]; then
+          echo "✅ Found performance.json"
+        else
+          echo "⚠️ performance.json not found - will be generated from TheChart.md"
         fi
-        
-        if [ -f "temp-ml-repo/TheChart.md" ]; then
-          cp temp-ml-repo/TheChart.md .
-          echo "✅ Updated TheChart.md"
-        fi
-        
-        # Clean up
-        rm -rf temp-ml-repo
+
+        echo "📝 Data files are managed by ML repo pushing via GitHub API"
 
     - name: Fetch trading signals from brightflow issues
       run: |
