@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Start real-time updates only after data is loaded
         startRealTimeUpdates();
     }).catch(() => {
-        // If loading fails, still start updates for demo mode
+        // If loading fails, still start updates (will show error messages, NOT mock data)
         startRealTimeUpdates();
     });
 });
@@ -51,13 +51,41 @@ function setupTransactionFilter() {
     }
 }
 
+// Validate data freshness - REJECT DATA OLDER THAN 30 MINUTES
+function isDataFresh(timestamp, maxAgeMinutes = 30) {
+    if (!timestamp) {
+        console.error('❌ No timestamp provided for freshness check');
+        return false;
+    }
+
+    const dataTime = new Date(timestamp);
+    const now = new Date();
+    const ageMinutes = (now - dataTime) / (1000 * 60);
+
+    console.log(`⏰ Data age: ${ageMinutes.toFixed(1)} minutes (max: ${maxAgeMinutes} minutes)`);
+
+    if (ageMinutes > maxAgeMinutes) {
+        console.error(`❌ DATA TOO OLD: ${ageMinutes.toFixed(1)} minutes > ${maxAgeMinutes} minutes`);
+        return false;
+    }
+
+    console.log(`✅ Data is fresh (${ageMinutes.toFixed(1)} minutes old)`);
+    return true;
+}
+
 // Load and populate order streaming ticker
 async function loadOrderTicker() {
     const ticker = document.getElementById('orderTicker');
     if (!ticker) return;
 
     try {
-        const response = await fetch('./data/recommendations.json');
+        const response = await fetch('./data/recommendations.json', {
+            method: 'GET',
+            headers: {
+                'Cache-Control': 'no-cache'
+            }
+        });
+
         if (!response.ok) {
             console.log('⚠️ No recommendations data available yet');
             // Show waiting message when file doesn't exist
@@ -66,6 +94,21 @@ async function loadOrderTicker() {
         }
 
         const data = await response.json();
+
+        // VALIDATE DATA FRESHNESS - REJECT IF OLDER THAN 30 MINUTES
+        if (!data.date && !data.timestamp) {
+            console.error('❌ No timestamp in recommendations data - rejecting');
+            ticker.innerHTML = '<div class="order-item watching"><span class="order-details">❌ Recommendations data has no timestamp - cannot validate freshness</span></div>';
+            return;
+        }
+
+        const dataTimestamp = data.timestamp || data.date;
+        if (!isDataFresh(dataTimestamp, 30)) {
+            const dataAge = Math.round((new Date() - new Date(dataTimestamp)) / (1000 * 60));
+            ticker.innerHTML = `<div class="order-item watching"><span class="order-details">❌ Recommendations data is ${dataAge} minutes old (max: 30 min) - waiting for fresh data...</span></div>`;
+            return;
+        }
+
         populateOrderTicker(data);
     } catch (error) {
         console.log('⚠️ Could not load recommendations:', error.message);
@@ -248,7 +291,7 @@ function updateChartTimeRange(range) {
         // Update performance display for the selected period
         updatePerformanceForPeriod(range, chartData);
     } else if (historicalData) {
-        // Fallback to mock data
+        // Fallback to historical data from performance.json (NOT mock data)
     const chartData = getDataForTimeRange(range);
     
     // Update chart data
@@ -415,7 +458,13 @@ async function loadRealData() {
         
         const performanceData = await performanceResponse.json();
         console.log('✅ Performance data loaded:', performanceData);
-        
+
+        // VALIDATE PERFORMANCE DATA FRESHNESS - REJECT IF OLDER THAN 30 MINUTES
+        if (performanceData.lastUpdated && !isDataFresh(performanceData.lastUpdated, 30)) {
+            const dataAge = Math.round((new Date() - new Date(performanceData.lastUpdated)) / (1000 * 60));
+            throw new Error(`Performance data is ${dataAge} minutes old (max: 30 min) - waiting for fresh data`);
+        }
+
         // Load transaction data with error handling
         console.log('📋 Fetching transaction data...');
         const transactionResponse = await fetch('./data/transactions.json', {
@@ -996,13 +1045,17 @@ function startRealTimeUpdates() {
     
     // Set up intelligent polling based on time
     scheduleDataUpdates();
-    
+
+    // DISABLED: Demo mode simulation - ONLY USE REAL ML DATA
+    // We rely on Kubernetes data-exporter CronJob (every 5 minutes) for fresh data
+    /*
     // Simulate hourly market progression for demo
     setInterval(() => {
         if (shouldShowDemo()) {
             simulateHourlyMarketActivity();
         }
     }, 10000); // Every 10 seconds = 1 simulated hour for demo
+    */
     
     // Update performance display frequently
     setInterval(() => {
@@ -1052,16 +1105,20 @@ function scheduleDataUpdates() {
     }, 30 * 1000); // 30 seconds during active periods
 }
 
+// DISABLED: Demo mode check - ONLY USE REAL ML DATA
+// All data comes from Kubernetes data-exporter CronJob (every 5 minutes)
+/*
 // Check if we should show demo data (no real data available)
 function shouldShowDemo() {
     // If we haven't received real data in the last 30 minutes, show demo
     // This is much more aggressive for money-making operations
     const lastRealDataUpdate = localStorage.getItem('lastRealDataUpdate');
     if (!lastRealDataUpdate) return true;
-    
+
     const timeSinceLastUpdate = Date.now() - parseInt(lastRealDataUpdate);
     return timeSinceLastUpdate > 30 * 60 * 1000; // 30 minutes instead of 2 hours
 }
+*/
 
 // Update the performance display with animation
 function updatePerformanceDisplay() {
@@ -1281,24 +1338,27 @@ function calculatePortfolioValue(cash, positions, stockPrices, date) {
     return totalValue;
 }
 
+// DISABLED: Demo mode simulation functions - ONLY USE REAL ML DATA
+// All data comes from Kubernetes data-exporter CronJob (every 5 minutes)
+/*
 // Simulate hourly market activity for the demo
 function simulateHourlyMarketActivity() {
     marketHour++;
-    
+
     // Only simulate during market hours
     const now = new Date();
     if (!isMarketHours(now)) {
         return;
     }
-    
+
     // Update portfolio value based on market movements
     updatePortfolioValue();
-    
+
     // Occasionally make a new trade (10% chance per hour)
     if (Math.random() < 0.1) {
         executeNewTrade();
     }
-    
+
     // Update chart with new portfolio value
     updateChartWithCurrentValue();
 }
@@ -1310,7 +1370,7 @@ function updatePortfolioValue() {
         console.log('📊 Skipping portfolio update - using real transaction data');
         return;
     }
-    
+
     const stockPrices = {
         'AAPL': 178.50,
         'GOOGL': 145.20,
@@ -1321,7 +1381,7 @@ function updatePortfolioValue() {
         'META': 484.20,
         'SPY': 420.15
     };
-    
+
     const now = new Date();
     portfolio.totalValue = calculatePortfolioValue(portfolio.cash, portfolio.positions, stockPrices, now);
 }
@@ -1338,32 +1398,32 @@ function executeNewTrade() {
         'META': 484.20,
         'SPY': 420.15
     };
-    
+
     const trade = generateRealisticTrade(stockPrices, portfolio.cash, new Date());
-    
+
     if (!trade) return; // No valid trade generated
-    
+
     // Execute the trade
     if (trade.action === 'BUY') {
         portfolio.cash -= Math.abs(trade.amount);
-        
+
         // Update positions
         if (!portfolio.positions[trade.symbol]) {
             portfolio.positions[trade.symbol] = { shares: 0, avgPrice: 0 };
         }
-        
+
         const currentShares = portfolio.positions[trade.symbol].shares;
         const currentAvg = portfolio.positions[trade.symbol].avgPrice;
         const newShares = currentShares + trade.quantity;
-        const newAvg = newShares > 0 ? 
+        const newAvg = newShares > 0 ?
             ((currentShares * currentAvg) + (trade.quantity * trade.price)) / newShares : 0;
-        
+
         portfolio.positions[trade.symbol].shares = newShares;
         portfolio.positions[trade.symbol].avgPrice = newAvg;
-        
+
     } else if (trade.action === 'SELL') {
         portfolio.cash += trade.amount;
-        
+
         // Reduce position
         if (portfolio.positions[trade.symbol]) {
             portfolio.positions[trade.symbol].shares -= trade.quantity;
@@ -1372,38 +1432,39 @@ function executeNewTrade() {
             }
         }
     }
-    
+
     // Update portfolio total value
     updatePortfolioValue();
     trade.runningBalance = portfolio.totalValue;
-    
+
     // Add to transaction history
     transactionData.push(trade);
-    
+
     // Add to table with animation
     const tbody = document.getElementById('ledgerBody');
     const newRow = createTransactionRow(trade);
     newRow.style.backgroundColor = '#ffd700';
     newRow.style.color = '#000';
-    
+
     // Insert at top
     tbody.insertBefore(newRow, tbody.firstChild);
-    
+
     // Animate back to normal colors
     setTimeout(() => {
         newRow.style.backgroundColor = '';
         newRow.style.color = '';
         newRow.style.transition = 'all 1s ease';
     }, 1000);
-    
+
     // Remove oldest transaction if more than 50
     if (tbody.children.length > 50) {
         tbody.removeChild(tbody.lastChild);
     }
-    
+
     console.log(`${trade.action} ${trade.quantity.toFixed(4)} shares of ${trade.symbol} at $${trade.price.toFixed(2)}`);
     console.log(`Portfolio value: $${portfolio.totalValue.toFixed(2)}`);
 }
+*/
 
 // Update chart with real data
 function updateChartWithRealData(data) {
