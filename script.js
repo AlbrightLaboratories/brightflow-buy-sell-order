@@ -784,16 +784,38 @@ function populateTransactionTable() {
             tbody.appendChild(row);
         }, index * 50); // Stagger the animations
     });
+
+    // Update mobile summary cards
+    updateMobileSummary();
+}
+
+// Update mobile summary cards
+function updateMobileSummary() {
+    const totalTransactionsEl = document.getElementById('mobileTotalTransactions');
+    const currentBalanceEl = document.getElementById('mobileCurrentBalance');
+
+    if (totalTransactionsEl && transactionData) {
+        totalTransactionsEl.textContent = transactionData.length;
+    }
+
+    if (currentBalanceEl) {
+        // Get the last transaction's running balance
+        if (transactionData && transactionData.length > 0) {
+            const lastTransaction = transactionData[transactionData.length - 1];
+            const balance = lastTransaction.runningBalance || 0;
+            currentBalanceEl.textContent = `$${balance.toFixed(2)}`;
+        }
+    }
 }
 
 // Create a transaction row element
 function createTransactionRow(transaction) {
     const row = document.createElement('tr');
-    
+
     // Handle both formats: mock data and real data
     const action = transaction.action || transaction.type;
     let txDate;
-    
+
     // Handle different date/timestamp formats
     if (transaction.timestamp) {
         // Real data format: timestamp field
@@ -804,47 +826,65 @@ function createTransactionRow(transaction) {
     } else {
         txDate = new Date(); // fallback
     }
-    
+
     const quantity = transaction.quantity || transaction.shares || 0;
     const amount = transaction.amount || transaction.value || 0;
-    const isPositive = action === 'BUY' || amount > 0;
-    
+    const isPositive = amount > 0;
+
     // Format fractional shares properly
-    const quantityDisplay = quantity < 1 ? 
-        quantity.toFixed(4) : 
+    const quantityDisplay = quantity < 1 ?
+        quantity.toFixed(4) :
         quantity.toFixed(2);
-    
+
     // Format profit if available (from real data)
     let profitDisplay = '';
     if (transaction.profit !== undefined) {
         const profitSign = transaction.profit >= 0 ? '+' : '';
         profitDisplay = ` (${profitSign}$${transaction.profit.toFixed(2)})`;
     }
-    
-    row.innerHTML = `
-        <td>${txDate.toLocaleDateString()}</td>
-        <td>${txDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-        <td><span class="${action.toLowerCase()}">${action}</span></td>
-        <td>${transaction.symbol}</td>
-        <td>${quantityDisplay}</td>
-        <td>$${transaction.price.toFixed(2)}</td>
-        <td class="${isPositive ? 'buy' : 'sell'}">
-            ${isPositive ? '+' : ''}$${Math.abs(amount).toFixed(2)}${profitDisplay}
-        </td>
-        <td class="running-balance">${transaction.runningBalance ? '$' + transaction.runningBalance.toFixed(2) : '-'}</td>
-    `;
-    
+
+    // Check if we're on mobile page (has mobileLedgerTable)
+    const isMobilePage = document.getElementById('mobileLedgerTable') !== null;
+
+    if (isMobilePage) {
+        // Mobile format: 6 columns (Date, Action, Symbol, Qty, Price, Amount)
+        row.innerHTML = `
+            <td>${txDate.toLocaleDateString()}</td>
+            <td><span class="action-${action.toLowerCase()}">${action}</span></td>
+            <td style="font-weight: bold; color: #ffd700;">${transaction.symbol}</td>
+            <td>${quantityDisplay}</td>
+            <td>$${transaction.price.toFixed(2)}</td>
+            <td class="amount-${isPositive ? 'positive' : 'negative'}">
+                ${isPositive ? '+' : ''}$${Math.abs(amount).toFixed(2)}
+            </td>
+        `;
+    } else {
+        // Desktop format: 8 columns (Date, Time, Action, Symbol, Qty, Price, Amount, Balance)
+        row.innerHTML = `
+            <td>${txDate.toLocaleDateString()}</td>
+            <td>${txDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+            <td><span class="${action.toLowerCase()}">${action}</span></td>
+            <td>${transaction.symbol}</td>
+            <td>${quantityDisplay}</td>
+            <td>$${transaction.price.toFixed(2)}</td>
+            <td class="${isPositive ? 'buy' : 'sell'}">
+                ${isPositive ? '+' : ''}$${Math.abs(amount).toFixed(2)}${profitDisplay}
+            </td>
+            <td class="running-balance">${transaction.runningBalance ? '$' + transaction.runningBalance.toFixed(2) : '-'}</td>
+        `;
+    }
+
     // Add strategy info as tooltip if available
     if (transaction.strategy && transaction.confidence) {
         row.title = `Strategy: ${transaction.strategy} | Confidence: ${(transaction.confidence * 100).toFixed(1)}%`;
     }
-    
+
     // Add profit info as tooltip if available
     if (transaction.profit_pct !== undefined) {
         const profitSign = transaction.profit_pct >= 0 ? '+' : '';
         row.title = `Profit: ${profitSign}${transaction.profit_pct.toFixed(2)}%`;
     }
-    
+
     return row;
 }
 

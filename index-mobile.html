@@ -60,9 +60,47 @@
 
     <!-- Mobile Transactions -->
     <div class="mobile-transactions">
-        <h3>Recent Trades</h3>
-        <div class="mobile-transaction-list" id="mobileTransactionList">
-            <!-- Transactions will be populated by JavaScript -->
+        <div class="mobile-transaction-header">
+            <h3>Transactions</h3>
+            <div class="mobile-filter-controls">
+                <select id="transactionFilter" class="mobile-transaction-filter">
+                    <option value="24h">24 Hours</option>
+                    <option value="7d">7 Days</option>
+                    <option value="30d">30 Days</option>
+                    <option value="all" selected>All Time</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Full Transaction Table for Mobile -->
+        <div class="mobile-ledger-container">
+            <table class="mobile-ledger-table" id="mobileLedgerTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>Symbol</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="ledgerBody">
+                    <!-- Transactions will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Quick Summary Cards -->
+        <div class="mobile-transaction-summary">
+            <div class="mobile-summary-card">
+                <span class="mobile-summary-label">Total Transactions</span>
+                <span class="mobile-summary-value" id="mobileTotalTransactions">0</span>
+            </div>
+            <div class="mobile-summary-card">
+                <span class="mobile-summary-label">Current Balance</span>
+                <span class="mobile-summary-value" id="mobileCurrentBalance">$0.00</span>
+            </div>
         </div>
     </div>
 
