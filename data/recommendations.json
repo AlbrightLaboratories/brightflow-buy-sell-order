@@ -1,6 +1,6 @@
 {
   "date": "2025-10-28",
-  "lastUpdated": "2025-10-28T03:58:50.337952",
+  "lastUpdated": "2025-10-28T04:03:12.517271",
   "totalRecommendations": 0,
   "openPositions": 5,
   "recommendations": [],
@@ -9,10 +9,10 @@
       "symbol": "PG",
       "shares": 0.16,
       "entryPrice": 152.49,
-      "currentPrice": 151.73,
-      "profitPct": -0.5,
-      "profitAmount": -0.12,
-      "positionValue": 24.28,
+      "currentPrice": 152.49,
+      "profitPct": 0.0,
+      "profitAmount": 0.0,
+      "positionValue": 24.4,
       "entryDate": "2025-10-27",
       "status": "HELD"
     },
