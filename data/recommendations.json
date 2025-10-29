@@ -1,6 +1,6 @@
 {
   "date": "2025-10-29",
-  "lastUpdated": "2025-10-29T02:58:45.390994",
+  "lastUpdated": "2025-10-29T03:02:48.828172",
   "totalRecommendations": 0,
   "openPositions": 5,
   "recommendations": [],
@@ -20,10 +20,10 @@
       "symbol": "TSLA",
       "shares": 0.1,
       "entryPrice": 433.72,
-      "currentPrice": 433.72,
-      "profitPct": 0.0,
-      "profitAmount": 0.0,
-      "positionValue": 43.37,
+      "currentPrice": 460.54,
+      "profitPct": 6.18,
+      "profitAmount": 2.68,
+      "positionValue": 46.05,
       "entryDate": "2025-10-27",
       "status": "HELD"
     },
