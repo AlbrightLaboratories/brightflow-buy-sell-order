@@ -1,64 +1,9 @@
 {
   "date": "2025-10-30",
-  "lastUpdated": "2025-10-30T14:03:08.601930",
+  "lastUpdated": "2025-10-30T14:07:59.505586",
   "totalRecommendations": 0,
-  "openPositions": 5,
+  "openPositions": 0,
   "recommendations": [],
-  "positions": [
-    {
-      "symbol": "COIN",
-      "shares": 0.1,
-      "entryPrice": 348.36,
-      "currentPrice": 335.66,
-      "profitPct": -3.65,
-      "profitAmount": -1.27,
-      "positionValue": 33.57,
-      "entryDate": "2025-10-29",
-      "status": "HELD"
-    },
-    {
-      "symbol": "NVDA",
-      "shares": 0.1422,
-      "entryPrice": 207.3,
-      "currentPrice": 204.34,
-      "profitPct": -1.43,
-      "profitAmount": -0.42,
-      "positionValue": 29.06,
-      "entryDate": "2025-10-29",
-      "status": "HELD"
-    },
-    {
-      "symbol": "PG",
-      "shares": 0.16,
-      "entryPrice": 152.49,
-      "currentPrice": 150.12,
-      "profitPct": -1.55,
-      "profitAmount": -0.38,
-      "positionValue": 24.02,
-      "entryDate": "2025-10-27",
-      "status": "HELD"
-    },
-    {
-      "symbol": "HON",
-      "shares": 0.1129,
-      "entryPrice": 216.14,
-      "currentPrice": 204.08,
-      "profitPct": -5.58,
-      "profitAmount": -1.36,
-      "positionValue": 23.04,
-      "entryDate": "2025-10-27",
-      "status": "HELD"
-    },
-    {
-      "symbol": "MMM",
-      "shares": 0.1448,
-      "entryPrice": 168.5,
-      "currentPrice": 167.55,
-      "profitPct": -0.56,
-      "profitAmount": -0.14,
-      "positionValue": 24.26,
-      "entryDate": "2025-10-27",
-      "status": "HELD"
-    }
-  ]
+  "positions": [],
+  "error": "HTTPSConnectionPool(host='api.github.com', port=443): Max retries exceeded with url: /repos/AlbrightLaboratories/brightflow/issues?state=open&per_page=10 (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x7f8bdc7d3550>: Failed to resolve 'api.github.com' ([Errno -3] Temporary failure in name resolution)\"))"
 }
