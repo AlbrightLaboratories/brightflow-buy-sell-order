@@ -1,6 +1,6 @@
 {
   "date": "2025-10-30",
-  "lastUpdated": "2025-10-30T09:08:13.495580",
+  "lastUpdated": "2025-10-30T09:13:35.027433",
   "totalRecommendations": 0,
   "openPositions": 5,
   "recommendations": [],
@@ -9,10 +9,10 @@
       "symbol": "COIN",
       "shares": 0.1,
       "entryPrice": 348.36,
-      "currentPrice": 348.56,
-      "profitPct": 0.06,
-      "profitAmount": 0.02,
-      "positionValue": 34.86,
+      "currentPrice": 348.36,
+      "profitPct": 0.0,
+      "profitAmount": 0.0,
+      "positionValue": 34.84,
       "entryDate": "2025-10-29",
       "status": "HELD"
     },
