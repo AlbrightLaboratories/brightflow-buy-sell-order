@@ -5,7 +5,14 @@ All notable changes to the BrightFlow Trading Platform will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - 2025-10-31
+
+### MAJOR ARCHITECTURAL REFACTOR
+
+- **Switched to an External API-Driven Architecture:** The project has been fundamentally refactored to decouple the frontend from the data source. This resolves issues with data staleness and eliminates git merge conflicts caused by automated data pushes.
+- **Deprecated File-Based Updates:** The entire GitHub Actions workflow and associated scripts that pushed data files directly to the repository have been removed.
+- **Introduced a Live Backend API:** The project now relies on a dedicated backend API (to be deployed separately) to hold and serve live data. The frontend fetches data from this API at runtime.
+- **New Architectural Documentation:** Added `the-external-API-approach.md` to document the new, modern architecture.
 
 ## [1.2.0] - 2025-10-27
 
