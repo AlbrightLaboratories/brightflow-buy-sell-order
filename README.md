@@ -37,6 +37,14 @@ For a detailed explanation of this new architecture, please see the document: **
 - **ML Pipeline:** Python (Scikit-learn, Pandas) - *Managed in a separate repository*
 - **Hosting:** GitHub Pages (Frontend), Render/Fly.io (Backend API)
 
+## Project Status
+
+**Current Version:** 2.0.0
+
+This project has recently undergone a major architectural refactoring. The old, file-based data update workflow has been deprecated and removed in favor of a modern, decoupled, API-driven architecture. All obsolete scripts and documentation have been pruned from the repository.
+
+For more details, see the [Changelog](./CHANGELOG.md).
+
  
 
 
