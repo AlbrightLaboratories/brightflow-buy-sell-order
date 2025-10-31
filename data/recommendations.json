@@ -1,9 +1,64 @@
 {
   "date": "2025-10-31",
-  "lastUpdated": "2025-10-31T13:15:01.406821",
+  "lastUpdated": "2025-10-31T13:19:09.926846",
   "totalRecommendations": 0,
-  "openPositions": 0,
+  "openPositions": 5,
   "recommendations": [],
-  "positions": [],
-  "error": "HTTPSConnectionPool(host='api.github.com', port=443): Max retries exceeded with url: /repos/AlbrightLaboratories/brightflow/issues?state=open&per_page=10 (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7fb23bcf63d0>, 'Connection to api.github.com timed out. (connect timeout=None)'))"
+  "positions": [
+    {
+      "symbol": "COIN",
+      "shares": 0.1,
+      "entryPrice": 348.36,
+      "currentPrice": 328.79,
+      "profitPct": -5.62,
+      "profitAmount": -1.96,
+      "positionValue": 32.88,
+      "entryDate": "2025-10-29",
+      "status": "HELD"
+    },
+    {
+      "symbol": "NVDA",
+      "shares": 0.1422,
+      "entryPrice": 207.3,
+      "currentPrice": 202.8,
+      "profitPct": -2.17,
+      "profitAmount": -0.64,
+      "positionValue": 28.84,
+      "entryDate": "2025-10-29",
+      "status": "HELD"
+    },
+    {
+      "symbol": "PG",
+      "shares": 0.16,
+      "entryPrice": 152.49,
+      "currentPrice": 149.56,
+      "profitPct": -1.92,
+      "profitAmount": -0.47,
+      "positionValue": 23.93,
+      "entryDate": "2025-10-27",
+      "status": "HELD"
+    },
+    {
+      "symbol": "HON",
+      "shares": 0.1129,
+      "entryPrice": 216.14,
+      "currentPrice": 200.06,
+      "profitPct": -7.44,
+      "profitAmount": -1.82,
+      "positionValue": 22.59,
+      "entryDate": "2025-10-27",
+      "status": "HELD"
+    },
+    {
+      "symbol": "MMM",
+      "shares": 0.1448,
+      "entryPrice": 168.5,
+      "currentPrice": 166.44,
+      "profitPct": -1.22,
+      "profitAmount": -0.3,
+      "positionValue": 24.1,
+      "entryDate": "2025-10-27",
+      "status": "HELD"
+    }
+  ]
 }
