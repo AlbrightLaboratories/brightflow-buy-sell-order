@@ -85,10 +85,6 @@ class SafeDataUpdater:
         """Update transaction data safely"""
         return self.safe_update_data("transactions", transaction_data)
     
-    def update_recommendations_data(self, recommendations_data):
-        """Update recommendations data safely"""
-        return self.safe_update_data("recommendations", recommendations_data)
-    
     def update_both(self, performance_data, transaction_data):
         """Update both performance and transaction data safely"""
         try:

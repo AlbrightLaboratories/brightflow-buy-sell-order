@@ -72,7 +72,7 @@ def generate_brightflow_predictions():
         ]
     }
     
-    with open("output/recommendations.json", "w") as f:
+    with open("output/brightflow_predictions.json", "w") as f:
         json.dump(predictions_data, f, indent=2)
     
     print(f"✅ Generated {len(brightflow_performance)} prediction data points")
