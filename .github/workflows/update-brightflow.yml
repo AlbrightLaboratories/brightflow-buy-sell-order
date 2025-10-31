@@ -81,19 +81,19 @@ jobs:
         # Add other market data API keys as needed
       run: |
         echo "Starting ML pipeline at $(date)"
-        python generate_brightflow_predictions.py
+        python ml-repo-templates/generate_brightflow_predictions.py
         
     - name: Calculate Performance vs Benchmarks
       if: steps.check_hours.outputs.should_run == 'true'
       run: |
         echo "Calculating performance vs benchmarks"
-        python calculate_performance_vs_benchmarks.py
+        python ml-repo-templates/calculate_performance_vs_benchmarks.py
         
     - name: Generate Website Data Files
       if: steps.check_hours.outputs.should_run == 'true'
       run: |
         echo "Generating JSON files for website"
-        python prepare_website_data.py
+        python ml-repo-templates/prepare_website_data.py
         
     - name: Update Website Repository
       if: steps.check_hours.outputs.should_run == 'true'
@@ -101,13 +101,13 @@ jobs:
         BRIGHTFLOW_WEBSITE_TOKEN: ${{ secrets.BRIGHTFLOW_WEBSITE_TOKEN }}
       run: |
         echo "Updating website data files"
-        python update_brightflow_website.py
+        python ml-repo-templates/update_brightflow_website.py
         
     - name: Verify Website Update
       if: steps.check_hours.outputs.should_run == 'true'
       run: |
         echo "Verifying website update was successful"
-        python verify_website_update.py
+        python ml-repo-templates/verify_website_update.py
         
     - name: Log Successful Update
       if: steps.check_hours.outputs.should_run == 'true' && success()
