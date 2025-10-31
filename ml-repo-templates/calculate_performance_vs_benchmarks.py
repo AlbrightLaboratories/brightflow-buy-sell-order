@@ -117,7 +117,7 @@ def calculate_performance_metrics():
     
     # Load BrightFlow predictions
     try:
-        with open("output/brightflow_predictions.json", "r") as f:
+        with open("output/recommendations.json", "r") as f:
             brightflow_data = json.load(f)
     except FileNotFoundError:
         print("❌ BrightFlow predictions not found. Run generate_brightflow_predictions.py first")
