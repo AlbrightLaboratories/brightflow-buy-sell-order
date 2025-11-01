@@ -1,6 +1,66 @@
 # The External API Approach: A Modern Architecture for BrightFlow
 
-This document outlines a modern, robust, and scalable architecture for the BrightFlow project. It addresses the core problems of merge conflicts and stale data caused by the previous file-based update system.
+This document outlines modern, robust, and scalable architectures for the BrightFlow project. It addresses the core problems of merge conflicts and stale data caused by the previous file-based update system by decoupling the data from the application code.
+
+## Architectural Goal: Decouple Data from Code
+
+The core problem with the original file-based system was its brittleness. Pushing data files directly into the frontend's source code repository created merge conflicts and led to stale data on the live site.
+
+The solution is to adopt a three-tier architecture where the frontend application is a separate entity from the backend data service. This document presents two excellent, industry-standard ways to achieve this goal.
+
+---
+
+## Option 1: The Hybrid "Serverless" Model (Recommended for Simplicity & Cost)
+
+This model leverages best-in-class, free, managed services for each part of the task, providing a "serverless" experience with minimal maintenance.
+
+*   **Frontend:** Hosted on **GitHub Pages**.
+*   **Backend:** A lightweight API server is deployed to a managed application platform like **Render** or **Fly.io**.
+
+### Communication Flow:
+
+1.  **ML Process:** Your private Kubernetes cluster runs its ML pipeline.
+2.  **Push to API:** At the end of the run, the cluster makes a secure, outbound `HTTPS` call to the public API on Render, pushing the latest data.
+3.  **User Visit:** A user's browser loads the static frontend (HTML/CSS/JS) from GitHub Pages' global CDN.
+4.  **Fetch from API:** The JavaScript on the user's machine then makes a `fetch` call to the live API on Render to get the latest data and populate the dashboard.
+
+### Trade-offs:
+
+*   **Pros:**
+    *   **Extremely Low Maintenance:** No servers, networks, or operating systems to manage.
+    *   **Almost Always Free:** The free tiers of GitHub Pages and Render are perfectly suited for this.
+    *   **Excellent Frontend Performance:** Leverages GitHub's global CDN for fast load times.
+*   **Cons:**
+    *   **Less Direct Data Path:** Involves two separate cloud services.
+
+---
+
+## Option 2: The Consolidated Cloud Server Model (Recommended for Control)
+
+This model, which you proposed, consolidates both the frontend and backend onto a single, powerful cloud server that you control.
+
+*   **Frontend & Backend:** Hosted together on a single **Virtual Machine (VM) or container** on a major cloud provider like **AWS, GCP, or Azure**.
+
+### Communication Flow:
+
+1.  **ML Process:** Your private Kubernetes cluster runs its ML pipeline.
+2.  **Push to API:** The cluster makes a secure, outbound `HTTPS` call to your API running on the cloud VM.
+3.  **User Visit:** A user's browser loads the static frontend (HTML/CSS/JS) *directly from your VM*.
+4.  **Fetch from API:** The JavaScript then makes a `fetch` call to the API *on that same VM* to get the data.
+
+### Trade-offs:
+
+*   **Pros:**
+    *   **Total Control:** You have full control over the server environment, OS, and network configuration.
+    *   **Direct Data Path:** Data flows from your cluster to your server, and then from your server to the user.
+*   **Cons:**
+    *   **Higher Maintenance:** You are responsible for server setup, OS updates, security patches, and web server configuration (e.g., Nginx, SSL certificates).
+    *   **Potential Cost:** May require a paid tier for a persistent, small VM, whereas Option A is generally free.
+    *   **More Complex Deployments:** Requires setting up a CI/CD pipeline (e.g., using GitHub Actions) to deploy code changes to your VM.
+
+---
+
+*The rest of this document will focus on the implementation details of the Hybrid Model, as it is often the more pragmatic and popular starting point for projects of this scale.*
 
 ## The Core Problem: A Brittle, File-Based System
 
