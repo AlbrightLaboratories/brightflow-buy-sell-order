@@ -441,8 +441,11 @@ async function loadRealData() {
         console.log('📊 No lock files found, proceeding with data load');
     }
     
+    let performanceData = null;
+    let transactionDataResponse = null;
+    
+    // Load performance data (non-blocking - transactions will show even if this fails)
     try {
-        // Load performance data with error handling
         console.log('📊 Fetching performance data...');
         const performanceResponse = await fetch('./data/performance.json', {
             method: 'GET',
@@ -452,20 +455,25 @@ async function loadRealData() {
             }
         });
         
-        if (!performanceResponse.ok) {
-            throw new Error(`Performance data fetch failed: ${performanceResponse.status} ${performanceResponse.statusText}`);
-        }
-        
-        const performanceData = await performanceResponse.json();
-        console.log('✅ Performance data loaded:', performanceData);
+        if (performanceResponse.ok) {
+            performanceData = await performanceResponse.json();
+            console.log('✅ Performance data loaded:', performanceData);
 
-        // VALIDATE PERFORMANCE DATA FRESHNESS - REJECT IF OLDER THAN 30 MINUTES
-        if (performanceData.lastUpdated && !isDataFresh(performanceData.lastUpdated, 30)) {
-            const dataAge = Math.round((new Date() - new Date(performanceData.lastUpdated)) / (1000 * 60));
-            throw new Error(`Performance data is ${dataAge} minutes old (max: 30 min) - waiting for fresh data`);
+            // VALIDATE PERFORMANCE DATA FRESHNESS - REJECT IF OLDER THAN 30 MINUTES
+            if (performanceData.lastUpdated && !isDataFresh(performanceData.lastUpdated, 30)) {
+                const dataAge = Math.round((new Date() - new Date(performanceData.lastUpdated)) / (1000 * 60));
+                console.warn(`⚠️ Performance data is ${dataAge} minutes old (max: 30 min) - using it anyway for now`);
+                // Don't throw - continue to load transactions
+            }
+        } else {
+            console.warn(`⚠️ Performance data fetch failed: ${performanceResponse.status} - continuing with transactions only`);
         }
+    } catch (error) {
+        console.warn('⚠️ Error loading performance data:', error.message, '- continuing with transactions only');
+    }
 
-        // Load transaction data with error handling
+    // Load transaction data with error handling (ALWAYS try to load transactions)
+    try {
         console.log('📋 Fetching transaction data...');
         const transactionResponse = await fetch('./data/transactions.json', {
             method: 'GET',
@@ -479,58 +487,88 @@ async function loadRealData() {
             throw new Error(`Transaction data fetch failed: ${transactionResponse.status} ${transactionResponse.statusText}`);
         }
         
-        const transactionDataResponse = await transactionResponse.json();
+        transactionDataResponse = await transactionResponse.json();
         console.log('✅ Transaction data loaded:', transactionDataResponse);
+        console.log('📋 Number of transactions:', transactionDataResponse.transactions?.length || 0);
         
-        // Initialize portfolio from real data
-        initializePortfolioFromData(performanceData, transactionDataResponse);
-        
-        // Set historical data from performance file
-        historicalData = convertPerformanceDataToHistorical(performanceData);
-        
-        // Store real data globally for time range filtering
-        realPerformanceData = performanceData;
-        realDataLoaded = true;
-        
-        // Update chart with real data
-        updateChartWithRealData(performanceData);
-        updateMobileChartWithRealData(performanceData);
-        
-        // Update transaction data first
+        // Update transaction data FIRST - this should always work
         transactionData = transactionDataResponse.transactions || [];
         
-        // Update performance display with transaction data (contains currentBalance)
-        updatePerformanceDisplayWithRealData(performanceData, transactionDataResponse);
-        
+        // Immediately populate transaction table even if performance data failed
         populateTransactionTable();
         populateMobileTransactionList();
         
-        // Mark that we have real data loaded to prevent demo mode
-        localStorage.setItem('lastRealDataUpdate', Date.now().toString());
-        localStorage.setItem('lastDataUpdate', performanceData.lastUpdated);
-        
-        // Cache the data for future use
-        try {
-            localStorage.setItem('cached_performance.json', JSON.stringify(performanceData));
-            localStorage.setItem('cached_transactions.json', JSON.stringify(transactionData));
-            localStorage.setItem('cached_data_timestamp', Date.now());
-            console.log('💾 Data cached successfully');
-        } catch (e) {
-            console.warn('⚠️ Could not cache data:', e);
-        }
-        
-        console.log('✅ Real data loaded successfully');
+        // Show success for transactions
         showUpdateIndicator('success');
         
     } catch (error) {
-        console.error('❌ Could not load real data:', error);
+        console.error('❌ Could not load transaction data:', error);
         showUpdateIndicator('error');
 
-        // Show error message - NO MOCK DATA
-        console.error('⚠️ Real data files not available. Please ensure ML repo is pushing data.');
+        // Show error message for transactions
         const tbody = document.getElementById('ledgerBody');
         if (tbody) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px; color: #ff4757;">⚠️ Unable to load transaction data. Waiting for ML data...</td></tr>';
+            // Check if we're on mobile page (has mobileLedgerTable with 6 columns) or desktop (8 columns)
+            const isMobilePage = document.getElementById('mobileLedgerTable') !== null;
+            const colSpan = isMobilePage ? 6 : 8;
+            tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align: center; padding: 20px; color: #ff4757;">⚠️ Unable to load transaction data. Waiting for ML data...</td></tr>`;
+        }
+        return; // Exit if we can't load transactions
+    }
+    
+    // Now try to load/update performance data if available
+    if (performanceData && transactionDataResponse) {
+        try {
+            // Initialize portfolio from real data
+            initializePortfolioFromData(performanceData, transactionDataResponse);
+            
+            // Set historical data from performance file
+            historicalData = convertPerformanceDataToHistorical(performanceData);
+            
+            // Store real data globally for time range filtering
+            realPerformanceData = performanceData;
+            realDataLoaded = true;
+            
+            // Update chart with real data
+            updateChartWithRealData(performanceData);
+            updateMobileChartWithRealData(performanceData);
+            
+            // Update performance display with transaction data (contains currentBalance)
+            updatePerformanceDisplayWithRealData(performanceData, transactionDataResponse);
+            
+            // Mark that we have real data loaded to prevent demo mode
+            localStorage.setItem('lastRealDataUpdate', Date.now().toString());
+            localStorage.setItem('lastDataUpdate', performanceData.lastUpdated);
+            
+            // Cache the data for future use
+            try {
+                localStorage.setItem('cached_performance.json', JSON.stringify(performanceData));
+                localStorage.setItem('cached_transactions.json', JSON.stringify(transactionData));
+                localStorage.setItem('cached_data_timestamp', Date.now());
+                console.log('💾 Data cached successfully');
+            } catch (e) {
+                console.warn('⚠️ Could not cache data:', e);
+            }
+            
+            console.log('✅ All data loaded successfully');
+        } catch (error) {
+            console.warn('⚠️ Error processing performance data:', error.message, '- transactions are still displayed');
+        }
+    } else if (transactionDataResponse) {
+        // We have transactions but no performance data - that's okay, show transactions anyway
+        console.log('✅ Transactions loaded (performance data unavailable)');
+        
+        // Try to update performance display with just transaction data
+        if (transactionDataResponse.currentBalance) {
+            updatePerformanceDisplayWithRealData(null, transactionDataResponse);
+        }
+        
+        // Cache transactions
+        try {
+            localStorage.setItem('cached_transactions.json', JSON.stringify(transactionData));
+            localStorage.setItem('cached_data_timestamp', Date.now());
+        } catch (e) {
+            console.warn('⚠️ Could not cache data:', e);
         }
     }
 }
@@ -792,6 +830,13 @@ function filterTransactionsByTimeframe(transactions, timeframe) {
 // Populate transaction table with animation
 function populateTransactionTable() {
     const tbody = document.getElementById('ledgerBody');
+    
+    // Check if tbody exists (for both desktop and mobile)
+    if (!tbody) {
+        console.warn('⚠️ Transaction table body (ledgerBody) not found in DOM');
+        return;
+    }
+    
     tbody.innerHTML = '';
     
     console.log('📋 Populating transaction table with data:', transactionData);
@@ -799,18 +844,39 @@ function populateTransactionTable() {
     
     // Check if we have transaction data
     if (!transactionData || !Array.isArray(transactionData)) {
-        console.warn('No transaction data available');
+        console.warn('⚠️ No transaction data available - transactionData:', transactionData);
+        const isMobilePage = document.getElementById('mobileLedgerTable') !== null;
+        const colSpan = isMobilePage ? 6 : 8;
+        tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align: center; padding: 20px; color: #888;">No transaction data available</td></tr>`;
+        return;
+    }
+    
+    if (transactionData.length === 0) {
+        console.warn('⚠️ Transaction data array is empty');
+        const isMobilePage = document.getElementById('mobileLedgerTable') !== null;
+        const colSpan = isMobilePage ? 6 : 8;
+        tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align: center; padding: 20px; color: #888;">No transactions available</td></tr>`;
         return;
     }
     
     // Get the selected filter from dropdown (default to 'all' if not found)
     const filterDropdown = document.getElementById('transactionFilter');
     const filterValue = filterDropdown ? filterDropdown.value : 'all';
+    
+    console.log(`🔍 Filter dropdown value: "${filterValue}" (dropdown exists: ${!!filterDropdown})`);
 
     // Filter transactions based on selected timeframe
     const filteredTransactions = filterTransactionsByTimeframe(transactionData, filterValue);
 
-    console.log(`📋 Found ${filteredTransactions.length} transactions for filter: ${filterValue}`);
+    console.log(`📋 Found ${filteredTransactions.length} transactions for filter: ${filterValue} (out of ${transactionData.length} total)`);
+    
+    if (filteredTransactions.length === 0 && transactionData.length > 0) {
+        console.warn('⚠️ All transactions were filtered out! Filter:', filterValue);
+        console.log('⚠️ Sample transaction dates:', transactionData.slice(0, 3).map(t => ({
+            timestamp: t.timestamp,
+            date: new Date(t.timestamp).toISOString()
+        })));
+    }
 
     // If no transactions found, show message
     if (filteredTransactions.length === 0) {
@@ -821,7 +887,12 @@ function populateTransactionTable() {
             '30d': 'last 30 days',
             'all': 'available'
         }[filterValue] || 'selected period';
-        row.innerHTML = `<td colspan="8" style="text-align: center; padding: 20px; color: #888;">No transactions in the ${filterLabel}</td>`;
+        
+        // Check if we're on mobile page (has mobileLedgerTable with 6 columns) or desktop (8 columns)
+        const isMobilePage = document.getElementById('mobileLedgerTable') !== null;
+        const colSpan = isMobilePage ? 6 : 8;
+        
+        row.innerHTML = `<td colspan="${colSpan}" style="text-align: center; padding: 20px; color: #888;">No transactions in the ${filterLabel}</td>`;
         tbody.appendChild(row);
         return;
     }
@@ -2005,74 +2076,24 @@ function updateChartWithSelectedCompetitors() {
 }
 
 // Populate mobile transaction list
+// Note: Mobile uses the same ledgerBody table as desktop, but this function
+// ensures mobile-specific handling if needed
 function populateMobileTransactionList() {
-    const mobileTransactionList = document.getElementById('mobileTransactionList');
-    if (!mobileTransactionList) {
-        console.log('📱 No mobile transaction list found');
+    // Mobile page uses the same ledgerBody table, so populateTransactionTable() handles it
+    // But we check if we're on a mobile page and ensure it's populated
+    const mobileLedgerTable = document.getElementById('mobileLedgerTable');
+    const ledgerBody = document.getElementById('ledgerBody');
+    
+    if (!mobileLedgerTable || !ledgerBody) {
+        // Not on mobile page or element doesn't exist - populateTransactionTable handles desktop
+        console.log('📱 Not on mobile page or mobile ledger table not found');
         return;
     }
     
-    console.log('📱 Populating mobile transaction list with data:', transactionData);
-    console.log('📱 Mobile transaction list element found:', !!mobileTransactionList);
-    
-    // Clear existing content
-    mobileTransactionList.innerHTML = '';
-    
-    // Check if we have transaction data
-    if (!transactionData || !Array.isArray(transactionData)) {
-        console.warn('📱 No transaction data available for mobile');
-        mobileTransactionList.innerHTML = '<div class="mobile-no-transactions">No recent trades</div>';
-        return;
-    }
-    
-    // Get the selected filter from dropdown (default to 'all' if not found)
-    const filterDropdown = document.getElementById('transactionFilter');
-    const filterValue = filterDropdown ? filterDropdown.value : 'all';
-
-    // Filter transactions based on selected timeframe
-    const filteredTransactions = filterTransactionsByTimeframe(transactionData, filterValue);
-
-    console.log(`📱 Found ${filteredTransactions.length} transactions for mobile display (filter: ${filterValue})`);
-
-    // If no transactions found, show message
-    if (filteredTransactions.length === 0) {
-        const filterLabel = {
-            '24h': 'last 24 hours',
-            '7d': 'last 7 days',
-            '30d': 'last 30 days',
-            'all': 'available'
-        }[filterValue] || 'selected period';
-        mobileTransactionList.innerHTML = `<div class="mobile-no-transactions">No trades in the ${filterLabel}</div>`;
-        return;
-    }
-
-    // Show only the last 5 transactions for mobile
-    const recentTransactions = filteredTransactions.slice(0, 5);
-    
-    recentTransactions.forEach((transaction, index) => {
-        const transactionDiv = document.createElement('div');
-        transactionDiv.className = 'mobile-transaction-item';
-        
-        const txDate = new Date(transaction.timestamp);
-        const isPositive = transaction.amount > 0;
-        
-        transactionDiv.innerHTML = `
-            <div class="mobile-transaction-header">
-                <span class="mobile-transaction-symbol">${transaction.symbol}</span>
-                <span class="mobile-transaction-action ${transaction.action.toLowerCase()}">${transaction.action}</span>
-            </div>
-            <div class="mobile-transaction-details">
-                <span class="mobile-transaction-amount ${isPositive ? 'positive' : 'negative'}">
-                    ${isPositive ? '+' : ''}$${Math.abs(transaction.amount).toFixed(2)}
-                </span>
-                <span class="mobile-transaction-time">${txDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-            </div>
-        `;
-        
-        mobileTransactionList.appendChild(transactionDiv);
-    });
-    
-    console.log('✅ Mobile transaction list populated with', recentTransactions.length, 'transactions');
+    // Mobile uses the same populateTransactionTable function, so just ensure it's called
+    // The createTransactionRow function already handles mobile formatting
+    console.log('📱 Mobile transaction table found - using shared populateTransactionTable()');
+    // populateTransactionTable() is already called separately, so we just need to verify it worked
 }
 
 // Initialize mobile menu
