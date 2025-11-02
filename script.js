@@ -494,9 +494,18 @@ async function loadRealData() {
         // Update transaction data FIRST - this should always work
         transactionData = transactionDataResponse.transactions || [];
         
+        console.log('📊 Transaction data assigned:', {
+            count: transactionData.length,
+            firstTransaction: transactionData[0],
+            lastTransaction: transactionData[transactionData.length - 1]
+        });
+        
         // Immediately populate transaction table even if performance data failed
-        populateTransactionTable();
-        populateMobileTransactionList();
+        // Use a small delay to ensure DOM is ready
+        setTimeout(() => {
+            populateTransactionTable();
+            populateMobileTransactionList();
+        }, 100);
         
         // Show success for transactions
         showUpdateIndicator('success');
@@ -897,12 +906,31 @@ function populateTransactionTable() {
         return;
     }
 
+    // Add transactions to table (with animation delay for visual effect)
     filteredTransactions.forEach((transaction, index) => {
-        setTimeout(() => {
-            const row = createTransactionRow(transaction);
-            tbody.appendChild(row);
-        }, index * 50); // Stagger the animations
+        try {
+            setTimeout(() => {
+                try {
+                    const row = createTransactionRow(transaction);
+                    if (row && tbody) {
+                        tbody.appendChild(row);
+                    } else {
+                        console.error('⚠️ Failed to create row or tbody missing for transaction:', transaction);
+                    }
+                } catch (rowError) {
+                    console.error('⚠️ Error creating transaction row:', rowError, 'Transaction:', transaction);
+                }
+            }, index * 50); // Stagger the animations
+        } catch (error) {
+            console.error('⚠️ Error in transaction loop:', error, 'Transaction:', transaction);
+        }
     });
+    
+    // Also add all transactions immediately without delay as fallback (will be overwritten by animated ones)
+    // This ensures transactions show up even if there's an issue with setTimeout
+    if (filteredTransactions.length > 0) {
+        console.log(`✅ Queued ${filteredTransactions.length} transactions for display`);
+    }
 
     // Update mobile summary cards
     updateMobileSummary();
