@@ -1,31 +1,5 @@
 {
-  "date": "2025-11-03",
-  "lastUpdated": "2025-11-03T14:39:36.772217",
-  "totalRecommendations": 0,
-  "openPositions": 2,
+  "lastUpdated": "2025-11-03T14:42:59.476876+00:00",
   "recommendations": [],
-  "positions": [
-    {
-      "symbol": "META",
-      "shares": 0.3,
-      "entryPrice": 660.77,
-      "currentPrice": 655.0,
-      "profitPct": -0.87,
-      "profitAmount": -1.73,
-      "positionValue": 196.5,
-      "entryDate": "2025-11-03",
-      "status": "HELD"
-    },
-    {
-      "symbol": "AAPL",
-      "shares": 1.0,
-      "entryPrice": 266.87,
-      "currentPrice": 267.81,
-      "profitPct": 0.35,
-      "profitAmount": 0.94,
-      "positionValue": 267.81,
-      "entryDate": "2025-11-03",
-      "status": "HELD"
-    }
-  ]
+  "positions": []
 }
