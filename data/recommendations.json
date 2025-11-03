@@ -1,8 +1,8 @@
 {
   "date": "2025-11-03",
-  "lastUpdated": "2025-11-03T21:27:39.080821",
+  "lastUpdated": "2025-11-03T21:34:10.767706",
   "totalRecommendations": 20,
-  "openPositions": 0,
+  "openPositions": 3,
   "recommendations": [
     {
       "rank": 1,
@@ -10,7 +10,7 @@
       "confidence": 74.0,
       "predictedReturn": 0.51,
       "currentPrice": 1100.09,
-      "priceTimestamp": "2025-11-03T21:24:25.801950",
+      "priceTimestamp": "2025-11-03T21:31:03.335410",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 1050.17,
@@ -25,7 +25,7 @@
       "confidence": 90.0,
       "predictedReturn": 0.37,
       "currentPrice": 7.63,
-      "priceTimestamp": "2025-11-03T21:24:37.389738",
+      "priceTimestamp": "2025-11-03T21:31:15.120475",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 7.12,
@@ -40,7 +40,7 @@
       "confidence": 75.8,
       "predictedReturn": 0.44,
       "currentPrice": 3.66,
-      "priceTimestamp": "2025-11-03T21:24:50.639904",
+      "priceTimestamp": "2025-11-03T21:31:29.082799",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 3.54,
@@ -55,7 +55,7 @@
       "confidence": 86.2,
       "predictedReturn": 0.37,
       "currentPrice": 101.61,
-      "priceTimestamp": "2025-11-03T21:25:01.821373",
+      "priceTimestamp": "2025-11-03T21:31:40.430237",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 95.14,
@@ -70,7 +70,7 @@
       "confidence": 67.8,
       "predictedReturn": 0.4,
       "currentPrice": 330.42,
-      "priceTimestamp": "2025-11-03T21:25:07.720247",
+      "priceTimestamp": "2025-11-03T21:31:45.415282",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 313.34,
@@ -85,7 +85,7 @@
       "confidence": 70.1,
       "predictedReturn": 0.38,
       "currentPrice": 147.08,
-      "priceTimestamp": "2025-11-03T21:25:13.089147",
+      "priceTimestamp": "2025-11-03T21:31:50.124974",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 137.42,
@@ -100,7 +100,7 @@
       "confidence": 71.0,
       "predictedReturn": 0.37,
       "currentPrice": 87.3,
-      "priceTimestamp": "2025-11-03T21:25:24.234791",
+      "priceTimestamp": "2025-11-03T21:32:00.999057",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 82.58,
@@ -115,7 +115,7 @@
       "confidence": 73.3,
       "predictedReturn": 0.33,
       "currentPrice": 309.35,
-      "priceTimestamp": "2025-11-03T21:25:37.693651",
+      "priceTimestamp": "2025-11-03T21:32:13.387991",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 294.05,
@@ -130,7 +130,7 @@
       "confidence": 79.3,
       "predictedReturn": 0.3,
       "currentPrice": 261.34,
-      "priceTimestamp": "2025-11-03T21:25:48.809745",
+      "priceTimestamp": "2025-11-03T21:32:24.480059",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 243.59,
@@ -145,7 +145,7 @@
       "confidence": 73.7,
       "predictedReturn": 0.28,
       "currentPrice": 4.8,
-      "priceTimestamp": "2025-11-03T21:26:00.591458",
+      "priceTimestamp": "2025-11-03T21:32:36.604782",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 4.54,
@@ -155,5 +155,39 @@
       "finalScore": 0.0021
     }
   ],
-  "positions": []
+  "positions": [
+    {
+      "symbol": "META",
+      "shares": 0.3,
+      "entryPrice": 660.77,
+      "currentPrice": 637.72,
+      "profitPct": -3.49,
+      "profitAmount": -6.92,
+      "positionValue": 191.32,
+      "entryDate": "2025-11-03",
+      "status": "HELD"
+    },
+    {
+      "symbol": "AAPL",
+      "shares": 1.0,
+      "entryPrice": 266.87,
+      "currentPrice": 269.06,
+      "profitPct": 0.82,
+      "profitAmount": 2.19,
+      "positionValue": 269.06,
+      "entryDate": "2025-11-03",
+      "status": "HELD"
+    },
+    {
+      "symbol": "NVDA",
+      "shares": 0.3891,
+      "entryPrice": 210.61,
+      "currentPrice": 207.02,
+      "profitPct": -1.7,
+      "profitAmount": -1.39,
+      "positionValue": 80.55,
+      "entryDate": "2025-11-03",
+      "status": "HELD"
+    }
+  ]
 }
