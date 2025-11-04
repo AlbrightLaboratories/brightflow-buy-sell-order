@@ -1,6 +1,6 @@
 {
   "date": "2025-11-04",
-  "lastUpdated": "2025-11-04T10:27:48.042883",
+  "lastUpdated": "2025-11-04T10:33:05.272377",
   "totalRecommendations": 0,
   "openPositions": 3,
   "recommendations": [],
@@ -9,10 +9,10 @@
       "symbol": "META",
       "shares": 0.3,
       "entryPrice": 660.77,
-      "currentPrice": 660.77,
-      "profitPct": 0.0,
-      "profitAmount": 0.0,
-      "positionValue": 198.23,
+      "currentPrice": 637.72,
+      "profitPct": -3.49,
+      "profitAmount": -6.92,
+      "positionValue": 191.32,
       "entryDate": "2025-11-04",
       "status": "HELD"
     },
