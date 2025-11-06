@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2025-11-06T23:41:28.126065",
-  "totalTransactions": 23,
+  "lastUpdated": "2025-11-06T23:48:08.133532",
+  "totalTransactions": 25,
   "currentBalance": 2001.0,
   "transactions": [
     {
@@ -208,6 +208,24 @@
       "shares": 0.3891,
       "price": 188.6662,
       "amount": -73.41,
+      "balance": 2001.0
+    },
+    {
+      "timestamp": "2025-11-06T23:46:06.557749+00:00",
+      "symbol": "META",
+      "action": "SELL",
+      "shares": 0.3,
+      "price": 620.2,
+      "amount": -186.06,
+      "balance": 2001.0
+    },
+    {
+      "timestamp": "2025-11-06T23:46:07.303213+00:00",
+      "symbol": "NVDA",
+      "action": "SELL",
+      "shares": 0.3891,
+      "price": 188.8975,
+      "amount": -73.5,
       "balance": 2001.0
     }
   ]
