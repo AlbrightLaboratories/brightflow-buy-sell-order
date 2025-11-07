@@ -1,9 +1,42 @@
 {
   "date": "2025-11-07",
-  "lastUpdated": "2025-11-07T00:10:41.092032",
+  "lastUpdated": "2025-11-07T00:14:13.798367",
   "totalRecommendations": 0,
-  "openPositions": 0,
+  "openPositions": 3,
   "recommendations": [],
-  "positions": [],
-  "error": "HTTPSConnectionPool(host='api.github.com', port=443): Max retries exceeded with url: /repos/AlbrightLaboratories/brightflow/issues?state=open&per_page=10 (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x7f3ef3cbe590>: Failed to resolve 'api.github.com' ([Errno -3] Temporary failure in name resolution)\"))"
+  "positions": [
+    {
+      "symbol": "META",
+      "shares": 0.3,
+      "entryPrice": 660.77,
+      "currentPrice": 619.1,
+      "profitPct": -6.31,
+      "profitAmount": -12.5,
+      "positionValue": 185.73,
+      "entryDate": "2025-11-04",
+      "status": "HELD"
+    },
+    {
+      "symbol": "NVDA",
+      "shares": 0.3891,
+      "entryPrice": 210.61,
+      "currentPrice": 188.17,
+      "profitPct": -10.65,
+      "profitAmount": -8.73,
+      "positionValue": 73.22,
+      "entryDate": "2025-11-04",
+      "status": "HELD"
+    },
+    {
+      "symbol": "AAPL",
+      "shares": 1.0,
+      "entryPrice": 266.87,
+      "currentPrice": 269.64,
+      "profitPct": 1.04,
+      "profitAmount": 2.77,
+      "positionValue": 269.64,
+      "entryDate": "2025-11-03",
+      "status": "HELD"
+    }
+  ]
 }
