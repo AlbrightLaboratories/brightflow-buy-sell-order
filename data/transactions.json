@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2025-11-07T05:57:40.343689",
-  "totalTransactions": 41,
+  "lastUpdated": "2025-11-07T06:02:44.483785",
+  "totalTransactions": 42,
   "currentBalance": 2001.0,
   "transactions": [
     {
@@ -370,6 +370,15 @@
       "shares": 0.3891,
       "price": 189.026,
       "amount": -73.55,
+      "balance": 2001.0
+    },
+    {
+      "timestamp": "2025-11-07T06:00:51.255185+00:00",
+      "symbol": "META",
+      "action": "SELL",
+      "shares": 0.3,
+      "price": 620.3667,
+      "amount": -186.11,
       "balance": 2001.0
     }
   ]
