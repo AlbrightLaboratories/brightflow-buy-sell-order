@@ -1,6 +1,6 @@
 {
   "date": "2025-11-11",
-  "lastUpdated": "2025-11-11T19:13:02.077426",
+  "lastUpdated": "2025-11-11T19:18:12.938002",
   "totalRecommendations": 0,
   "openPositions": 2,
   "recommendations": [],
@@ -9,10 +9,10 @@
       "symbol": "AAPL",
       "shares": 0.4005,
       "entryPrice": 272.68,
-      "currentPrice": 274.95,
-      "profitPct": 0.83,
-      "profitAmount": 0.91,
-      "positionValue": 110.12,
+      "currentPrice": 274.92,
+      "profitPct": 0.82,
+      "profitAmount": 0.9,
+      "positionValue": 110.1,
       "entryDate": "2025-11-11",
       "status": "HELD"
     },
@@ -20,10 +20,10 @@
       "symbol": "NVDA",
       "shares": -0.3891,
       "entryPrice": 192.74,
-      "currentPrice": 194.08,
-      "profitPct": 0.69,
-      "profitAmount": -0.52,
-      "positionValue": -75.52,
+      "currentPrice": 194.0,
+      "profitPct": 0.65,
+      "profitAmount": -0.49,
+      "positionValue": -75.48,
       "entryDate": "2025-11-11",
       "status": "HELD"
     }
