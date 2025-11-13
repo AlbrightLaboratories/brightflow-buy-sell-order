@@ -1,6 +1,6 @@
 {
   "date": "2025-11-13",
-  "lastUpdated": "2025-11-13T15:12:54.399114",
+  "lastUpdated": "2025-11-13T15:18:12.405299",
   "totalRecommendations": 0,
   "openPositions": 2,
   "recommendations": [],
@@ -10,9 +10,9 @@
       "shares": 0.4005,
       "entryPrice": 272.68,
       "currentPrice": 274.22,
-      "profitPct": 0.56,
+      "profitPct": 0.57,
       "profitAmount": 0.62,
-      "positionValue": 109.82,
+      "positionValue": 109.83,
       "entryDate": "2025-11-13",
       "status": "HELD"
     },
@@ -20,10 +20,10 @@
       "symbol": "NVDA",
       "shares": -0.3891,
       "entryPrice": 192.74,
-      "currentPrice": 189.48,
-      "profitPct": -1.69,
-      "profitAmount": 1.27,
-      "positionValue": -73.73,
+      "currentPrice": 189.17,
+      "profitPct": -1.85,
+      "profitAmount": 1.39,
+      "positionValue": -73.61,
       "entryDate": "2025-11-13",
       "status": "HELD"
     }
