@@ -1,6 +1,6 @@
 {
   "date": "2025-11-14",
-  "lastUpdated": "2025-11-14T04:28:23.242756",
+  "lastUpdated": "2025-11-14T04:32:54.673321",
   "totalRecommendations": 0,
   "openPositions": 2,
   "recommendations": [],
@@ -9,10 +9,10 @@
       "symbol": "AAPL",
       "shares": 0.4005,
       "entryPrice": 272.68,
-      "currentPrice": 272.68,
-      "profitPct": 0.0,
-      "profitAmount": 0.0,
-      "positionValue": 109.21,
+      "currentPrice": 273.04,
+      "profitPct": 0.13,
+      "profitAmount": 0.15,
+      "positionValue": 109.35,
       "entryDate": "2025-11-14",
       "status": "HELD"
     },
