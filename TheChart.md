@@ -1,14 +1,14 @@
 # BrightFlow ML Trading Analysis - REAL IBKR Paper Trading
 
-**Last Updated:** 2025-11-14 01:27:55 EST
+**Last Updated:** 2025-11-14 01:35:01 EST
 
 ## Performance Summary (IBKR Paper Account DUM665729)
 
-- **Total Portfolio Value:** $2,150.00
+- **Total Portfolio Value:** $2,115.79
 - **Cash Balance:** $2,115.79
-- **Position Value:** $34.21
+- **Position Value:** $0.00
 - **Initial Balance:** $488.00
-- **Total Return:** +340.57%
+- **Total Return:** +333.56%
 - **Total Trades:** 53
 - **Buy Orders:** 18
 - **Sell Orders:** 35
