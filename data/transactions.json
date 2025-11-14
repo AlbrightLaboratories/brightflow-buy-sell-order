@@ -1,17 +1,8 @@
 {
-  "lastUpdated": "2025-11-14T21:27:53.586249",
+  "lastUpdated": "2025-11-14T21:33:01.392481",
   "totalTransactions": 100,
   "currentBalance": 2115.79,
   "transactions": [
-    {
-      "timestamp": "2025-10-29T03:35:12.948907+00:00",
-      "symbol": "TSLA",
-      "action": "SELL",
-      "shares": 0.1,
-      "price": 461.82,
-      "amount": 46.18,
-      "balance": 417.61
-    },
     {
       "timestamp": "2025-10-29T03:35:13.488441+00:00",
       "symbol": "SPY",
@@ -896,6 +887,15 @@
     },
     {
       "timestamp": "2025-11-14T21:25:49.657603+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T21:30:51.128760+00:00",
       "symbol": "SPY",
       "action": "BUY",
       "shares": 0.1488,
