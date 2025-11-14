@@ -1,607 +1,907 @@
 {
-  "lastUpdated": "2025-11-14T23:36:47.663850+00:00",
-  "totalTransactions": 50,
-  "currentBalance": -6232.27,
+  "lastUpdated": "2025-11-14T23:37:58.123160",
+  "totalTransactions": 100,
+  "currentBalance": 2115.79,
   "transactions": [
     {
-      "id": "tx_951",
-      "timestamp": "2025-11-10T21:36:45.973479+00:00",
-      "action": "BUY",
-      "symbol": "SPY",
-      "quantity": 12,
-      "price": 224.61,
-      "amount": -2695.32,
-      "runningBalance": 7304.68,
-      "confidence": 0.78,
-      "strategy": "value"
-    },
-    {
-      "id": "tx_952",
-      "timestamp": "2025-11-10T23:36:45.973431+00:00",
-      "action": "BUY",
-      "symbol": "TSLA",
-      "quantity": 31,
-      "price": 268.27,
-      "amount": -8316.45,
-      "runningBalance": -1011.77,
-      "confidence": 0.84,
-      "strategy": "value"
-    },
-    {
-      "id": "tx_953",
-      "timestamp": "2025-11-11T01:36:45.973385+00:00",
-      "action": "SELL",
-      "symbol": "SPY",
-      "quantity": 67,
-      "price": 390.08,
-      "amount": 26135.61,
-      "runningBalance": 25123.84,
-      "confidence": 0.76,
-      "strategy": "growth"
-    },
-    {
-      "id": "tx_954",
-      "timestamp": "2025-11-11T03:36:45.973339+00:00",
-      "action": "SELL",
-      "symbol": "GOOGL",
-      "quantity": 32,
-      "price": 231.72,
-      "amount": 7415.12,
-      "runningBalance": 32538.96,
-      "confidence": 0.83,
-      "strategy": "value"
-    },
-    {
-      "id": "tx_955",
-      "timestamp": "2025-11-11T05:36:45.973293+00:00",
-      "action": "BUY",
-      "symbol": "AMZN",
-      "quantity": 21,
-      "price": 217.35,
-      "amount": -4564.3,
-      "runningBalance": 27974.66,
-      "confidence": 0.89,
-      "strategy": "growth"
-    },
-    {
-      "id": "tx_956",
-      "timestamp": "2025-11-11T07:36:45.973247+00:00",
-      "action": "SELL",
-      "symbol": "META",
-      "quantity": 7,
-      "price": 142.89,
-      "amount": 1000.24,
-      "runningBalance": 28974.9,
-      "confidence": 0.81,
-      "strategy": "breakout"
-    },
-    {
-      "id": "tx_957",
-      "timestamp": "2025-11-11T09:36:45.973201+00:00",
-      "action": "SELL",
-      "symbol": "META",
-      "quantity": 77,
-      "price": 121.65,
-      "amount": 9367.37,
-      "runningBalance": 38342.27,
-      "confidence": 0.62,
-      "strategy": "mean_reversion"
-    },
-    {
-      "id": "tx_958",
-      "timestamp": "2025-11-11T11:36:45.973155+00:00",
-      "action": "SELL",
-      "symbol": "MSFT",
-      "quantity": 85,
-      "price": 489.24,
-      "amount": 41585.23,
-      "runningBalance": 79927.5,
-      "confidence": 0.7,
-      "strategy": "growth"
-    },
-    {
-      "id": "tx_959",
-      "timestamp": "2025-11-11T13:36:45.973108+00:00",
-      "action": "SELL",
-      "symbol": "MSFT",
-      "quantity": 53,
-      "price": 184.64,
-      "amount": 9785.87,
-      "runningBalance": 89713.37,
-      "confidence": 0.74,
-      "strategy": "value"
-    },
-    {
-      "id": "tx_960",
-      "timestamp": "2025-11-11T15:36:45.973041+00:00",
-      "action": "BUY",
-      "symbol": "AMZN",
-      "quantity": 47,
-      "price": 81.96,
-      "amount": -3852.32,
-      "runningBalance": 85861.05,
-      "confidence": 0.94,
-      "strategy": "value"
-    },
-    {
-      "id": "tx_961",
-      "timestamp": "2025-11-11T17:36:45.972996+00:00",
-      "action": "BUY",
-      "symbol": "TSLA",
-      "quantity": 64,
-      "price": 165.95,
-      "amount": -10620.82,
-      "runningBalance": 75240.23,
-      "confidence": 0.88,
-      "strategy": "mean_reversion"
-    },
-    {
-      "id": "tx_962",
-      "timestamp": "2025-11-11T19:36:45.972949+00:00",
-      "action": "SELL",
-      "symbol": "META",
-      "quantity": 57,
-      "price": 51.5,
-      "amount": 2935.75,
-      "runningBalance": 78175.98,
-      "confidence": 0.88,
-      "strategy": "momentum"
-    },
-    {
-      "id": "tx_963",
-      "timestamp": "2025-11-11T21:36:45.972902+00:00",
-      "action": "BUY",
-      "symbol": "TSLA",
-      "quantity": 78,
-      "price": 325.93,
-      "amount": -25422.81,
-      "runningBalance": 52753.17,
-      "confidence": 0.87,
-      "strategy": "value"
-    },
-    {
-      "id": "tx_964",
-      "timestamp": "2025-11-11T23:36:45.972856+00:00",
-      "action": "BUY",
-      "symbol": "GOOGL",
-      "quantity": 15,
-      "price": 68.3,
-      "amount": -1024.44,
-      "runningBalance": 51728.73,
-      "confidence": 0.92,
-      "strategy": "value"
-    },
-    {
-      "id": "tx_965",
-      "timestamp": "2025-11-12T01:36:45.972810+00:00",
-      "action": "SELL",
-      "symbol": "META",
-      "quantity": 63,
-      "price": 245.64,
-      "amount": 15475.45,
-      "runningBalance": 67204.18,
-      "confidence": 0.67,
-      "strategy": "mean_reversion"
-    },
-    {
-      "id": "tx_966",
-      "timestamp": "2025-11-12T03:36:45.972763+00:00",
-      "action": "BUY",
-      "symbol": "AMZN",
-      "quantity": 85,
-      "price": 438.45,
-      "amount": -37268.55,
-      "runningBalance": 29935.63,
-      "confidence": 0.71,
-      "strategy": "momentum"
-    },
-    {
-      "id": "tx_967",
-      "timestamp": "2025-11-12T05:36:45.972717+00:00",
-      "action": "SELL",
-      "symbol": "TSLA",
-      "quantity": 16,
-      "price": 398.48,
-      "amount": 6375.63,
-      "runningBalance": 36311.26,
-      "confidence": 0.92,
-      "strategy": "growth"
-    },
-    {
-      "id": "tx_968",
-      "timestamp": "2025-11-12T07:36:45.972670+00:00",
-      "action": "BUY",
-      "symbol": "AMZN",
-      "quantity": 54,
-      "price": 250.76,
-      "amount": -13541.17,
-      "runningBalance": 22770.09,
-      "confidence": 0.9,
-      "strategy": "momentum"
-    },
-    {
-      "id": "tx_969",
-      "timestamp": "2025-11-12T09:36:45.972623+00:00",
-      "action": "BUY",
-      "symbol": "META",
-      "quantity": 62,
-      "price": 384.09,
-      "amount": -23813.61,
-      "runningBalance": -1043.52,
-      "confidence": 0.75,
-      "strategy": "value"
-    },
-    {
-      "id": "tx_970",
-      "timestamp": "2025-11-12T11:36:45.972576+00:00",
-      "action": "SELL",
-      "symbol": "AMZN",
-      "quantity": 76,
-      "price": 468.13,
-      "amount": 35578.23,
-      "runningBalance": 34534.71,
-      "confidence": 0.85,
-      "strategy": "momentum"
-    },
-    {
-      "id": "tx_971",
-      "timestamp": "2025-11-12T13:36:45.972528+00:00",
-      "action": "BUY",
+      "timestamp": "2025-11-07T00:01:51.059350+00:00",
       "symbol": "NVDA",
-      "quantity": 9,
-      "price": 430.78,
-      "amount": -3877.0,
-      "runningBalance": 30657.71,
-      "confidence": 0.62,
-      "strategy": "growth"
-    },
-    {
-      "id": "tx_972",
-      "timestamp": "2025-11-12T15:36:45.972480+00:00",
-      "action": "BUY",
-      "symbol": "AAPL",
-      "quantity": 18,
-      "price": 457.09,
-      "amount": -8227.57,
-      "runningBalance": 22430.14,
-      "confidence": 0.6,
-      "strategy": "mean_reversion"
-    },
-    {
-      "id": "tx_973",
-      "timestamp": "2025-11-12T17:36:45.972431+00:00",
-      "action": "BUY",
-      "symbol": "NVDA",
-      "quantity": 19,
-      "price": 306.04,
-      "amount": -5814.71,
-      "runningBalance": 16615.43,
-      "confidence": 0.71,
-      "strategy": "value"
-    },
-    {
-      "id": "tx_974",
-      "timestamp": "2025-11-12T19:36:45.972385+00:00",
-      "action": "BUY",
-      "symbol": "SPY",
-      "quantity": 88,
-      "price": 452.37,
-      "amount": -39808.94,
-      "runningBalance": -23193.51,
-      "confidence": 0.82,
-      "strategy": "growth"
-    },
-    {
-      "id": "tx_975",
-      "timestamp": "2025-11-12T21:36:45.972338+00:00",
       "action": "SELL",
-      "symbol": "MSFT",
-      "quantity": 91,
-      "price": 83.98,
-      "amount": 7642.56,
-      "runningBalance": -15550.95,
-      "confidence": 0.77,
-      "strategy": "growth"
+      "shares": 0.3891,
+      "price": 188.9746,
+      "amount": -73.53,
+      "balance": 2001.0
     },
     {
-      "id": "tx_976",
-      "timestamp": "2025-11-12T23:36:45.972291+00:00",
-      "action": "BUY",
-      "symbol": "TSLA",
-      "quantity": 2,
-      "price": 443.22,
-      "amount": -886.43,
-      "runningBalance": -16437.38,
-      "confidence": 0.78,
-      "strategy": "growth"
-    },
-    {
-      "id": "tx_977",
-      "timestamp": "2025-11-13T01:36:45.972244+00:00",
-      "action": "BUY",
-      "symbol": "AAPL",
-      "quantity": 34,
-      "price": 224.04,
-      "amount": -7617.24,
-      "runningBalance": -24054.62,
-      "confidence": 0.71,
-      "strategy": "growth"
-    },
-    {
-      "id": "tx_978",
-      "timestamp": "2025-11-13T03:36:45.972196+00:00",
-      "action": "BUY",
-      "symbol": "TSLA",
-      "quantity": 58,
-      "price": 148.47,
-      "amount": -8611.44,
-      "runningBalance": -32666.06,
-      "confidence": 0.92,
-      "strategy": "mean_reversion"
-    },
-    {
-      "id": "tx_979",
-      "timestamp": "2025-11-13T05:36:45.972148+00:00",
-      "action": "BUY",
-      "symbol": "MSFT",
-      "quantity": 79,
-      "price": 51.23,
-      "amount": -4047.46,
-      "runningBalance": -36713.52,
-      "confidence": 0.89,
-      "strategy": "value"
-    },
-    {
-      "id": "tx_980",
-      "timestamp": "2025-11-13T07:36:45.972095+00:00",
-      "action": "SELL",
+      "timestamp": "2025-11-07T00:05:47.461318+00:00",
       "symbol": "META",
-      "quantity": 83,
-      "price": 482.89,
-      "amount": 40079.93,
-      "runningBalance": 3366.41,
-      "confidence": 0.86,
-      "strategy": "breakout"
-    },
-    {
-      "id": "tx_981",
-      "timestamp": "2025-11-13T09:36:45.972020+00:00",
-      "action": "BUY",
-      "symbol": "AMZN",
-      "quantity": 26,
-      "price": 108.52,
-      "amount": -2821.55,
-      "runningBalance": 544.86,
-      "confidence": 0.84,
-      "strategy": "breakout"
-    },
-    {
-      "id": "tx_982",
-      "timestamp": "2025-11-13T11:36:45.971972+00:00",
       "action": "SELL",
-      "symbol": "GOOGL",
-      "quantity": 14,
-      "price": 249.55,
-      "amount": 3493.7,
-      "runningBalance": 4038.56,
-      "confidence": 0.9,
-      "strategy": "growth"
+      "shares": 0.3,
+      "price": 619.8,
+      "amount": -185.94,
+      "balance": 2001.0
     },
     {
-      "id": "tx_983",
-      "timestamp": "2025-11-13T13:36:45.971922+00:00",
-      "action": "BUY",
-      "symbol": "MSFT",
-      "quantity": 54,
-      "price": 315.55,
-      "amount": -17039.52,
-      "runningBalance": -13000.96,
-      "confidence": 0.91,
-      "strategy": "momentum"
-    },
-    {
-      "id": "tx_984",
-      "timestamp": "2025-11-13T15:36:45.971874+00:00",
-      "action": "BUY",
+      "timestamp": "2025-11-07T00:05:48.135014+00:00",
       "symbol": "NVDA",
-      "quantity": 24,
-      "price": 486.63,
-      "amount": -11679.22,
-      "runningBalance": -24680.18,
-      "confidence": 0.65,
-      "strategy": "momentum"
-    },
-    {
-      "id": "tx_985",
-      "timestamp": "2025-11-13T17:36:45.971827+00:00",
-      "action": "BUY",
-      "symbol": "TSLA",
-      "quantity": 64,
-      "price": 196.52,
-      "amount": -12577.19,
-      "runningBalance": -37257.37,
-      "confidence": 0.83,
-      "strategy": "momentum"
-    },
-    {
-      "id": "tx_986",
-      "timestamp": "2025-11-13T19:36:45.971781+00:00",
-      "action": "BUY",
-      "symbol": "AAPL",
-      "quantity": 88,
-      "price": 301.73,
-      "amount": -26551.83,
-      "runningBalance": -63809.2,
-      "confidence": 0.91,
-      "strategy": "value"
-    },
-    {
-      "id": "tx_987",
-      "timestamp": "2025-11-13T21:36:45.971734+00:00",
       "action": "SELL",
-      "symbol": "TSLA",
-      "quantity": 68,
-      "price": 314.82,
-      "amount": 21407.5,
-      "runningBalance": -42401.7,
-      "confidence": 0.74,
-      "strategy": "momentum"
+      "shares": 0.3891,
+      "price": 188.9489,
+      "amount": -73.52,
+      "balance": 2001.0
     },
     {
-      "id": "tx_988",
-      "timestamp": "2025-11-13T23:36:45.971687+00:00",
-      "action": "BUY",
-      "symbol": "GOOGL",
-      "quantity": 44,
-      "price": 89.58,
-      "amount": -3941.69,
-      "runningBalance": -46343.39,
-      "confidence": 0.62,
-      "strategy": "momentum"
-    },
-    {
-      "id": "tx_989",
-      "timestamp": "2025-11-14T01:36:45.971640+00:00",
+      "timestamp": "2025-11-07T00:10:47.334981+00:00",
+      "symbol": "META",
       "action": "SELL",
+      "shares": 0.3,
+      "price": 619.9667,
+      "amount": -185.99,
+      "balance": 2001.0
+    },
+    {
+      "timestamp": "2025-11-07T00:10:50.243024+00:00",
+      "symbol": "NVDA",
+      "action": "SELL",
+      "shares": 0.3891,
+      "price": 189.1802,
+      "amount": -73.61,
+      "balance": 2001.0
+    },
+    {
+      "timestamp": "2025-11-07T00:15:49.104892+00:00",
+      "symbol": "META",
+      "action": "SELL",
+      "shares": 0.3,
+      "price": 620.0,
+      "amount": -186.0,
+      "balance": 2001.0
+    },
+    {
+      "timestamp": "2025-11-07T00:15:49.943278+00:00",
+      "symbol": "NVDA",
+      "action": "SELL",
+      "shares": 0.3891,
+      "price": 188.9489,
+      "amount": -73.52,
+      "balance": 2001.0
+    },
+    {
+      "timestamp": "2025-11-07T00:21:01.972560+00:00",
+      "symbol": "META",
+      "action": "SELL",
+      "shares": 0.3,
+      "price": 620.0,
+      "amount": -186.0,
+      "balance": 2001.0
+    },
+    {
+      "timestamp": "2025-11-07T00:21:02.501112+00:00",
+      "symbol": "NVDA",
+      "action": "SELL",
+      "shares": 0.3891,
+      "price": 188.769,
+      "amount": -73.45,
+      "balance": 2001.0
+    },
+    {
+      "timestamp": "2025-11-07T00:26:02.212857+00:00",
+      "symbol": "META",
+      "action": "SELL",
+      "shares": 0.3,
+      "price": 620.0,
+      "amount": -186.0,
+      "balance": 2001.0
+    },
+    {
+      "timestamp": "2025-11-07T00:26:02.798778+00:00",
+      "symbol": "NVDA",
+      "action": "SELL",
+      "shares": 0.3891,
+      "price": 189.026,
+      "amount": -73.55,
+      "balance": 2001.0
+    },
+    {
+      "timestamp": "2025-11-07T06:00:51.255185+00:00",
+      "symbol": "META",
+      "action": "SELL",
+      "shares": 0.3,
+      "price": 620.3667,
+      "amount": -186.11,
+      "balance": 2001.0
+    },
+    {
+      "timestamp": "2025-11-14T03:15:56.016969+00:00",
       "symbol": "SPY",
-      "quantity": 92,
-      "price": 391.09,
-      "amount": 35980.47,
-      "runningBalance": -10362.92,
-      "confidence": 0.63,
-      "strategy": "growth"
-    },
-    {
-      "id": "tx_990",
-      "timestamp": "2025-11-14T03:36:45.971593+00:00",
       "action": "BUY",
-      "symbol": "AMZN",
-      "quantity": 27,
-      "price": 392.8,
-      "amount": -10605.64,
-      "runningBalance": -20968.56,
-      "confidence": 0.75,
-      "strategy": "momentum"
+      "shares": 0.1488,
+      "price": 672.05,
+      "amount": 100.0,
+      "balance": 2115.79
     },
     {
-      "id": "tx_991",
-      "timestamp": "2025-11-14T05:36:45.971546+00:00",
-      "action": "SELL",
-      "symbol": "GOOGL",
-      "quantity": 59,
-      "price": 76.06,
-      "amount": 4487.38,
-      "runningBalance": -16481.18,
-      "confidence": 0.9,
-      "strategy": "breakout"
-    },
-    {
-      "id": "tx_992",
-      "timestamp": "2025-11-14T07:36:45.971498+00:00",
+      "timestamp": "2025-11-14T03:20:55.408044+00:00",
+      "symbol": "SPY",
       "action": "BUY",
-      "symbol": "TSLA",
-      "quantity": 11,
-      "price": 352.44,
-      "amount": -3876.85,
-      "runningBalance": -20358.03,
-      "confidence": 0.63,
-      "strategy": "growth"
+      "shares": 0.1488,
+      "price": 672.05,
+      "amount": 100.0,
+      "balance": 2115.79
     },
     {
-      "id": "tx_993",
-      "timestamp": "2025-11-14T09:36:45.971448+00:00",
-      "action": "SELL",
-      "symbol": "GOOGL",
-      "quantity": 13,
-      "price": 299.43,
-      "amount": 3892.61,
-      "runningBalance": -16465.42,
-      "confidence": 0.72,
-      "strategy": "growth"
-    },
-    {
-      "id": "tx_994",
-      "timestamp": "2025-11-14T11:36:45.971396+00:00",
-      "action": "SELL",
-      "symbol": "GOOGL",
-      "quantity": 60,
-      "price": 453.89,
-      "amount": 27233.32,
-      "runningBalance": 10767.9,
-      "confidence": 0.7,
-      "strategy": "growth"
-    },
-    {
-      "id": "tx_995",
-      "timestamp": "2025-11-14T13:36:45.971346+00:00",
-      "action": "SELL",
-      "symbol": "AAPL",
-      "quantity": 43,
-      "price": 198.25,
-      "amount": 8524.56,
-      "runningBalance": 19292.46,
-      "confidence": 0.78,
-      "strategy": "breakout"
-    },
-    {
-      "id": "tx_996",
-      "timestamp": "2025-11-14T15:36:45.971296+00:00",
+      "timestamp": "2025-11-14T03:25:50.039572+00:00",
+      "symbol": "SPY",
       "action": "BUY",
-      "symbol": "GOOGL",
-      "quantity": 63,
-      "price": 235.53,
-      "amount": -14838.7,
-      "runningBalance": 4453.76,
-      "confidence": 0.89,
-      "strategy": "growth"
+      "shares": 0.1488,
+      "price": 672.05,
+      "amount": 100.0,
+      "balance": 2115.79
     },
     {
-      "id": "tx_997",
-      "timestamp": "2025-11-14T17:36:45.971245+00:00",
-      "action": "SELL",
-      "symbol": "MSFT",
-      "quantity": 64,
-      "price": 437.61,
-      "amount": 28006.87,
-      "runningBalance": 32460.63,
-      "confidence": 0.94,
-      "strategy": "momentum"
-    },
-    {
-      "id": "tx_998",
-      "timestamp": "2025-11-14T19:36:45.971190+00:00",
+      "timestamp": "2025-11-14T03:30:51.341428+00:00",
+      "symbol": "SPY",
       "action": "BUY",
-      "symbol": "AMZN",
-      "quantity": 79,
-      "price": 123.64,
-      "amount": -9767.24,
-      "runningBalance": 22693.39,
-      "confidence": 0.72,
-      "strategy": "growth"
+      "shares": 0.1488,
+      "price": 672.05,
+      "amount": 100.0,
+      "balance": 2115.79
     },
     {
-      "id": "tx_999",
-      "timestamp": "2025-11-14T21:36:45.971120+00:00",
+      "timestamp": "2025-11-14T03:35:50.699742+00:00",
+      "symbol": "SPY",
       "action": "BUY",
-      "symbol": "AMZN",
-      "quantity": 15,
-      "price": 460.2,
-      "amount": -6902.93,
-      "runningBalance": 15790.46,
-      "confidence": 0.63,
-      "strategy": "breakout"
+      "shares": 0.1488,
+      "price": 672.05,
+      "amount": 100.0,
+      "balance": 2115.79
     },
     {
-      "id": "tx_1000",
-      "timestamp": "2025-11-14T23:36:45.970895+00:00",
+      "timestamp": "2025-11-14T03:40:50.463824+00:00",
+      "symbol": "SPY",
       "action": "BUY",
-      "symbol": "GOOGL",
-      "quantity": 47,
-      "price": 468.57,
-      "amount": -22022.73,
-      "runningBalance": -6232.27,
-      "confidence": 0.68,
-      "strategy": "mean_reversion"
+      "shares": 0.1488,
+      "price": 672.05,
+      "amount": 100.0,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T03:45:50.774533+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 672.05,
+      "amount": 100.0,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T03:50:50.834926+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 672.05,
+      "amount": 100.0,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T03:55:51.035935+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 672.05,
+      "amount": 100.0,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T04:00:54.697970+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 672.05,
+      "amount": 100.0,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T04:05:53.812449+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 672.05,
+      "amount": 100.0,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T17:15:05.828115+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1481,
+      "price": 675.28,
+      "amount": 100.01,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T17:16:39.319921+00:00",
+      "symbol": "QQQ",
+      "action": "BUY",
+      "shares": 0.1631,
+      "price": 612.9415,
+      "amount": 99.97,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T17:20:52.354776+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1481,
+      "price": 675.175,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T17:25:49.313285+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1482,
+      "price": 674.87,
+      "amount": 100.02,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T17:30:50.040391+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1482,
+      "price": 674.6071,
+      "amount": 99.98,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T17:35:51.967741+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1481,
+      "price": 675.08,
+      "amount": 99.98,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T17:40:55.244092+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1482,
+      "price": 674.97,
+      "amount": 100.03,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T17:45:49.281084+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1481,
+      "price": 675.12,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T17:50:50.640639+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1484,
+      "price": 673.628,
+      "amount": 99.97,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T17:55:50.139553+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1483,
+      "price": 674.3,
+      "amount": 100.0,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T18:00:51.960319+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1485,
+      "price": 673.5201,
+      "amount": 100.02,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T18:05:50.186422+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1487,
+      "price": 672.316,
+      "amount": 99.97,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T18:10:50.722596+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1485,
+      "price": 673.18,
+      "amount": 99.97,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T18:15:48.725333+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1484,
+      "price": 673.99,
+      "amount": 100.02,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T18:20:49.886017+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1486,
+      "price": 672.8415,
+      "amount": 99.98,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T18:25:51.602208+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1487,
+      "price": 672.47,
+      "amount": 100.0,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T18:30:50.575213+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1485,
+      "price": 673.4345,
+      "amount": 100.01,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T18:35:48.358803+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1486,
+      "price": 673.1716,
+      "amount": 100.03,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T18:40:51.416149+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 672.09,
+      "amount": 100.01,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T18:45:51.105406+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1489,
+      "price": 671.74,
+      "amount": 100.02,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T18:50:55.523550+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1487,
+      "price": 672.35,
+      "amount": 99.98,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T18:55:49.609172+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1485,
+      "price": 673.585,
+      "amount": 100.03,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T19:00:54.126421+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1485,
+      "price": 673.54,
+      "amount": 100.02,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T19:05:49.766238+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1487,
+      "price": 672.58,
+      "amount": 100.01,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T19:10:49.275193+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1486,
+      "price": 673.0296,
+      "amount": 100.01,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T19:15:48.505923+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1485,
+      "price": 673.37,
+      "amount": 100.0,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T19:20:50.023707+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1485,
+      "price": 673.53,
+      "amount": 100.02,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T19:25:49.560238+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1484,
+      "price": 673.92,
+      "amount": 100.01,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T19:30:49.636872+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1483,
+      "price": 674.28,
+      "amount": 100.0,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T19:35:50.647905+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1484,
+      "price": 673.85,
+      "amount": 100.0,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T19:40:51.459181+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1484,
+      "price": 674.06,
+      "amount": 100.03,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T19:45:52.998244+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1483,
+      "price": 674.3001,
+      "amount": 100.0,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T19:50:49.443216+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1483,
+      "price": 674.35,
+      "amount": 100.01,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T19:55:50.300657+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1483,
+      "price": 674.262,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T20:00:53.148141+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1482,
+      "price": 674.71,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T20:05:51.377438+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1482,
+      "price": 674.635,
+      "amount": 99.98,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T20:10:49.416434+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1483,
+      "price": 674.19,
+      "amount": 99.98,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T20:15:49.062334+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1485,
+      "price": 673.5,
+      "amount": 100.01,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T20:20:53.420045+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1486,
+      "price": 673.01,
+      "amount": 100.01,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T20:25:52.373077+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1487,
+      "price": 672.68,
+      "amount": 100.03,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T20:30:52.387843+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1487,
+      "price": 672.285,
+      "amount": 99.97,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T20:35:49.972933+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1486,
+      "price": 672.99,
+      "amount": 100.01,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T20:40:49.758725+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1487,
+      "price": 672.44,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T20:45:49.801338+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1487,
+      "price": 672.41,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T20:50:51.947219+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.85,
+      "amount": 99.97,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T20:55:47.176993+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.845,
+      "amount": 99.97,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T21:00:52.191062+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.149,
+      "price": 671.29,
+      "amount": 100.02,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T21:05:50.648143+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T21:10:49.966014+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T21:15:49.751231+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T21:20:51.015420+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T21:25:49.657603+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T21:30:51.128760+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T21:35:53.567357+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T21:40:52.747218+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T21:46:24.411951+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T21:50:50.380815+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T21:55:50.397812+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T22:00:52.139381+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T22:05:48.636194+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T22:10:49.797299+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T22:15:51.787377+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T22:20:50.135659+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T22:25:48.632111+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T22:30:52.438690+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T22:35:48.592440+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T22:40:50.713627+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T22:45:51.473661+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T22:50:50.544643+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T23:00:52.139536+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T23:05:50.240863+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T23:10:50.084667+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T23:15:48.914096+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T23:20:50.021394+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T23:25:50.177066+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T23:30:50.408827+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-14T23:35:54.318571+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
     }
   ]
 }
