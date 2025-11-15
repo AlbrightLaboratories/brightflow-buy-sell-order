@@ -1,8 +1,8 @@
 {
   "date": "2025-11-15",
-  "lastUpdated": "2025-11-15T16:18:21.305259",
+  "lastUpdated": "2025-11-15T16:25:05.472408",
   "totalRecommendations": 20,
-  "openPositions": 2,
+  "openPositions": 0,
   "recommendations": [
     {
       "rank": 1,
@@ -10,7 +10,7 @@
       "confidence": 70.2,
       "predictedReturn": 0.62,
       "currentPrice": 1112.17,
-      "priceTimestamp": "2025-11-15T16:14:55.844004",
+      "priceTimestamp": "2025-11-15T16:21:37.881253",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 1063.19,
@@ -25,7 +25,7 @@
       "confidence": 79.1,
       "predictedReturn": 0.5,
       "currentPrice": 1.08,
-      "priceTimestamp": "2025-11-15T16:15:02.668253",
+      "priceTimestamp": "2025-11-15T16:21:43.271884",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 1.04,
@@ -40,7 +40,7 @@
       "confidence": 63.8,
       "predictedReturn": 0.59,
       "currentPrice": 6.03,
-      "priceTimestamp": "2025-11-15T16:15:14.248506",
+      "priceTimestamp": "2025-11-15T16:21:55.269005",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 5.83,
@@ -55,7 +55,7 @@
       "confidence": 70.7,
       "predictedReturn": 0.43,
       "currentPrice": 25.06,
-      "priceTimestamp": "2025-11-15T16:15:25.734468",
+      "priceTimestamp": "2025-11-15T16:22:07.141747",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 23.95,
@@ -70,7 +70,7 @@
       "confidence": 66.1,
       "predictedReturn": 0.46,
       "currentPrice": 64.17,
-      "priceTimestamp": "2025-11-15T16:15:37.674286",
+      "priceTimestamp": "2025-11-15T16:22:18.566483",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 61.4,
@@ -85,7 +85,7 @@
       "confidence": 78.2,
       "predictedReturn": 0.35,
       "currentPrice": 167.58,
-      "priceTimestamp": "2025-11-15T16:15:49.827790",
+      "priceTimestamp": "2025-11-15T16:22:29.942002",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 159.93,
@@ -100,7 +100,7 @@
       "confidence": 71.0,
       "predictedReturn": 0.36,
       "currentPrice": 92.92,
-      "priceTimestamp": "2025-11-15T16:16:01.876746",
+      "priceTimestamp": "2025-11-15T16:22:43.048988",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 88.81,
@@ -115,7 +115,7 @@
       "confidence": 72.7,
       "predictedReturn": 0.34,
       "currentPrice": 321.86,
-      "priceTimestamp": "2025-11-15T16:16:13.771334",
+      "priceTimestamp": "2025-11-15T16:22:54.646169",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 310.74,
@@ -130,7 +130,7 @@
       "confidence": 62.0,
       "predictedReturn": 0.38,
       "currentPrice": 232.36,
-      "priceTimestamp": "2025-11-15T16:16:25.228380",
+      "priceTimestamp": "2025-11-15T16:23:05.766814",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 222.51,
@@ -145,7 +145,7 @@
       "confidence": 80.9,
       "predictedReturn": 0.26,
       "currentPrice": 195.93,
-      "priceTimestamp": "2025-11-15T16:16:36.736035",
+      "priceTimestamp": "2025-11-15T16:23:17.668485",
       "priceSource": "google_finance",
       "priceVerified": true,
       "gtcBuy": 186.88,
@@ -155,28 +155,5 @@
       "finalScore": 0.0021
     }
   ],
-  "positions": [
-    {
-      "symbol": "AAPL",
-      "shares": 0.4005,
-      "entryPrice": 272.68,
-      "currentPrice": 272.55,
-      "profitPct": -0.05,
-      "profitAmount": -0.05,
-      "positionValue": 109.16,
-      "entryDate": "2025-11-15",
-      "status": "HELD"
-    },
-    {
-      "symbol": "NVDA",
-      "shares": -0.3891,
-      "entryPrice": 192.74,
-      "currentPrice": 190.23,
-      "profitPct": -1.3,
-      "profitAmount": 0.98,
-      "positionValue": -74.02,
-      "entryDate": "2025-11-15",
-      "status": "HELD"
-    }
-  ]
+  "positions": []
 }
