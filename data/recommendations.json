@@ -1,8 +1,20 @@
 {
   "date": "2025-11-15",
-  "lastUpdated": "2025-11-15T12:43:04.922367",
+  "lastUpdated": "2025-11-15T12:48:06.440432",
   "totalRecommendations": 0,
-  "openPositions": 0,
+  "openPositions": 1,
   "recommendations": [],
-  "positions": []
+  "positions": [
+    {
+      "symbol": "SPY",
+      "shares": 0.1488,
+      "entryPrice": 671.95,
+      "currentPrice": 671.95,
+      "profitPct": 0.0,
+      "profitAmount": 0.0,
+      "positionValue": 99.99,
+      "entryDate": "2025-11-15",
+      "status": "HELD"
+    }
+  ]
 }
