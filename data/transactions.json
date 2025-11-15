@@ -1,17 +1,8 @@
 {
-  "lastUpdated": "2025-11-15T22:43:35.590000",
+  "lastUpdated": "2025-11-15T22:50:14.187391",
   "totalTransactions": 100,
   "currentBalance": 2115.79,
   "transactions": [
-    {
-      "timestamp": "2025-11-15T11:55:50.554134+00:00",
-      "symbol": "SPY",
-      "action": "BUY",
-      "shares": 0.1488,
-      "price": 671.95,
-      "amount": 99.99,
-      "balance": 0.0
-    },
     {
       "timestamp": "2025-11-15T12:00:54.013269+00:00",
       "symbol": "SPY",
@@ -896,6 +887,15 @@
     },
     {
       "timestamp": "2025-11-15T22:41:02.922257+00:00",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.1488,
+      "price": 671.95,
+      "amount": 99.99,
+      "balance": 2115.79
+    },
+    {
+      "timestamp": "2025-11-15T22:45:55.421456+00:00",
       "symbol": "SPY",
       "action": "BUY",
       "shares": 0.1488,
