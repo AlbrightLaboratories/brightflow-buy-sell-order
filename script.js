@@ -26,6 +26,11 @@ document.addEventListener('DOMContentLoaded', function() {
     setupTimeRangeControls();
     setupTransactionFilter();
     loadOrderTicker(); // Load streaming order ticker
+
+    // Initialize mobile-specific features
+    initializeMobileMenu();
+    initializeMobileStockSearch();
+
     loadRealData().then(() => {
         // Start real-time updates only after data is loaded
         startRealTimeUpdates();
