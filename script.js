@@ -1791,10 +1791,15 @@ function updatePerformanceDisplayWithRealData(performanceData, transactionData =
         console.log('📊 Using normalized value:', displayValue, 'Return:', totalReturn.toFixed(2) + '%');
     }
     
-    currentValueEl.textContent = '$' + displayValue.toFixed(2);
-    dailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}% total return`;
-    dailyChangeEl.className = 'performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
-    
+    // Update desktop elements if they exist
+    if (currentValueEl) {
+        currentValueEl.textContent = '$' + displayValue.toFixed(2);
+    }
+    if (dailyChangeEl) {
+        dailyChangeEl.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}% total return`;
+        dailyChangeEl.className = 'performance-change ' + (totalReturn >= 0 ? 'positive' : 'negative');
+    }
+
         // Update mobile elements if they exist
         const mobileCurrentValueEl = document.getElementById('mobileCurrentValue');
         const mobileDailyChangeEl = document.getElementById('mobileDailyChange');
