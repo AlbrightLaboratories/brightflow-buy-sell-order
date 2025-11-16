@@ -1728,15 +1728,15 @@ function updateMobileChartWithRealData(data) {
             return;
         }
     }
-    
+
     console.log('📱 Updating mobile chart with real data');
     console.log('📱 Mobile chart exists:', !!mobileChart);
     console.log('📱 Data received:', data);
-    
-    const brightflowData = data.performance.brightflow || [];
-    
+
+    const brightflowData = data.brightflow || [];
+
     if (brightflowData.length > 0) {
-        mobileChart.data.labels = brightflowData.map(item => 
+        mobileChart.data.labels = brightflowData.map(item =>
             new Date(item.date).toLocaleDateString()
         );
         mobileChart.data.datasets[0].data = brightflowData.map(item => item.value);
