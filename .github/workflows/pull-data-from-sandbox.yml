@@ -23,22 +23,22 @@ jobs:
         curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3.raw" \
           -o data/transactions.json \
-          https://api.github.com/repos/AlbrightLaboratories/brightflow-sandbox/contents/data/transactions.json?ref=data
+          https://api.github.com/repos/AlbrightLaboratories/brightflow-sandbox/contents/data/data/transactions.json?ref=data
 
         curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3.raw" \
           -o data/performance.json \
-          https://api.github.com/repos/AlbrightLaboratories/brightflow-sandbox/contents/data/performance.json?ref=data
+          https://api.github.com/repos/AlbrightLaboratories/brightflow-sandbox/contents/data/data/performance.json?ref=data
 
         curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3.raw" \
           -o data/recommendations.json \
-          https://api.github.com/repos/AlbrightLaboratories/brightflow-sandbox/contents/data/recommendations.json?ref=data
+          https://api.github.com/repos/AlbrightLaboratories/brightflow-sandbox/contents/data/data/recommendations.json?ref=data
 
         curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3.raw" \
           -o data/hourly_market_data.json \
-          https://api.github.com/repos/AlbrightLaboratories/brightflow-sandbox/contents/data/hourly_market_data.json?ref=data
+          https://api.github.com/repos/AlbrightLaboratories/brightflow-sandbox/contents/data/data/hourly_market_data.json?ref=data
 
         echo "✅ Downloaded all data files"
 
