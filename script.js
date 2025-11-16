@@ -1576,11 +1576,11 @@ function updateChartWithRealData(data) {
     
     const datasets = ['brightflow', 'spy', 'vfiax', 'spdr'];
     const colors = ['#ffd700', '#ff4444', '#44ff44', '#4488ff'];
-    
+
     datasets.forEach((key, index) => {
-        const performanceArray = data.performance[key];
+        const performanceArray = data[key];
         console.log(`Processing ${key}:`, performanceArray);
-        
+
         if (performanceArray && Array.isArray(performanceArray)) {
         // Values are already in the correct format from the JSON
         performanceChart.data.datasets[index].data = performanceArray.map(item => item.value);
@@ -1590,10 +1590,10 @@ function updateChartWithRealData(data) {
             performanceChart.data.datasets[index].data = [];
         }
     });
-    
+
     // Update labels with dates from brightflow data
-    if (data.performance.brightflow && Array.isArray(data.performance.brightflow)) {
-    performanceChart.data.labels = data.performance.brightflow.map(item => 
+    if (data.brightflow && Array.isArray(data.brightflow)) {
+    performanceChart.data.labels = data.brightflow.map(item =>
         new Date(item.date).toLocaleDateString()
     );
         console.log('✅ Updated chart labels with dates');
