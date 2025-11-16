@@ -625,13 +625,13 @@ function convertPerformanceDataToHistorical(performanceData) {
         vfiax: [],
         spdr: []
     };
-    
+
     // Convert each dataset
     const datasets = ['brightflow', 'spy', 'vfiax', 'spdr'];
-    
+
     datasets.forEach(key => {
-        if (performanceData.performance[key]) {
-            performanceData.performance[key].forEach((item, index) => {
+        if (performanceData[key]) {
+            performanceData[key].forEach((item, index) => {
                 if (key === 'brightflow') {
                     // Only add dates once (from brightflow data)
                     data.dates.push(new Date(item.date));
@@ -640,7 +640,7 @@ function convertPerformanceDataToHistorical(performanceData) {
             });
         }
     });
-    
+
     return data;
 }
 
