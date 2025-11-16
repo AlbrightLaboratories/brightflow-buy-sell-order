@@ -646,8 +646,14 @@ function convertPerformanceDataToHistorical(performanceData) {
 
 // Chart initialization with animations
 function initializeChart() {
-    const ctx = document.getElementById('performanceChart').getContext('2d');
-    
+    const chartElement = document.getElementById('performanceChart');
+    if (!chartElement) {
+        console.log('📊 Desktop chart canvas not found - skipping (likely on mobile page)');
+        return;
+    }
+
+    const ctx = chartElement.getContext('2d');
+
     // Generate complete historical dataset
     historicalData = generateCompleteHistoricalData();
     
