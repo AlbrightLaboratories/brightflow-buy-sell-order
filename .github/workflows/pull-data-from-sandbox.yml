@@ -1,0 +1,85 @@
+name: Pull Data from Sandbox
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # Every 10 minutes
+  workflow_dispatch:
+
+jobs:
+  pull-data:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Download Data from Sandbox
+      run: |
+        echo "📥 Downloading data from sandbox..."
+        mkdir -p data
+
+        curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3.raw" \
+          -o data/transactions.json \
+          https://api.github.com/repos/AlbrightLaboratories/brightflow-sandbox/contents/data/data/transactions.json?ref=data
+
+        curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3.raw" \
+          -o data/performance.json \
+          https://api.github.com/repos/AlbrightLaboratories/brightflow-sandbox/contents/data/data/performance.json?ref=data
+
+        curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3.raw" \
+          -o data/recommendations.json \
+          https://api.github.com/repos/AlbrightLaboratories/brightflow-sandbox/contents/data/data/recommendations.json?ref=data
+
+        curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3.raw" \
+          -o data/hourly_market_data.json \
+          https://api.github.com/repos/AlbrightLaboratories/brightflow-sandbox/contents/data/data/hourly_market_data.json?ref=data
+
+        echo "✅ Downloaded all data files"
+
+    - name: Validate JSON
+      run: |
+        python3 -m json.tool data/transactions.json > /dev/null && echo "✅ transactions.json valid"
+        python3 -m json.tool data/performance.json > /dev/null && echo "✅ performance.json valid"
+        python3 -m json.tool data/recommendations.json > /dev/null && echo "✅ recommendations.json valid"
+        python3 -m json.tool data/hourly_market_data.json > /dev/null && echo "✅ hourly_market_data.json valid"
+
+    - name: Check for Changes
+      id: changes
+      run: |
+        git add data/*.json
+        if git diff --cached --quiet; then
+          echo "changed=false" >> $GITHUB_OUTPUT
+          echo "📊 No changes detected"
+        else
+          echo "changed=true" >> $GITHUB_OUTPUT
+          echo "📊 Changes detected"
+        fi
+
+    - name: Commit and Push
+      if: steps.changes.outputs.changed == 'true'
+      run: |
+        git config user.name "BrightFlow Data Bot"
+        git config user.email "data-bot@brightflow.ai"
+        git add data/*.json
+        git commit -m "chore: update trading data $(date -u +'%Y-%m-%d %H:%M:%S') UTC
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+        git push
+
+    - name: Success
+      if: steps.changes.outputs.changed == 'true'
+      run: |
+        echo "✅ Data synced at $(date)"
+        echo "🌐 Dashboard will update automatically"
+
+    - name: No Changes
+      if: steps.changes.outputs.changed == 'false'
+      run: echo "⏭️  No updates needed"
