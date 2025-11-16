@@ -1640,10 +1640,15 @@ function initializeMobileChart() {
                 label: 'BrightFlow',
                 data: [],
                 borderColor: '#ffd700',
-                backgroundColor: 'rgba(255, 215, 0, 0.1)',
-                borderWidth: 2,
+                backgroundColor: 'rgba(255, 215, 0, 0.2)',
+                borderWidth: 3,
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#ffd700',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
             }]
         },
         options: {
@@ -1657,10 +1662,29 @@ function initializeMobileChart() {
             },
             scales: {
                 x: {
-                    display: false
+                    display: true,
+                    grid: {
+                        color: '#333',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#888',
+                        maxRotation: 0,
+                        autoSkipPadding: 20
+                    }
                 },
                 y: {
-                    display: false
+                    display: true,
+                    grid: {
+                        color: '#333',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#888',
+                        callback: function(value) {
+                            return '$' + value.toFixed(0);
+                        }
+                    }
                 }
             },
             elements: {
