@@ -96,13 +96,13 @@ async function loadOrderTicker() {
         const data = await response.json();
 
         // VALIDATE DATA FRESHNESS - REJECT IF OLDER THAN 30 MINUTES
-        if (!data.date && !data.timestamp) {
+        if (!data.lastUpdated && !data.timestamp && !data.date) {
             console.error('❌ No timestamp in recommendations data - rejecting');
             ticker.innerHTML = '<div class="order-item watching"><span class="order-details">❌ Recommendations data has no timestamp - cannot validate freshness</span></div>';
             return;
         }
 
-        const dataTimestamp = data.timestamp || data.date;
+        const dataTimestamp = data.lastUpdated || data.timestamp || data.date;
         if (!isDataFresh(dataTimestamp, 30)) {
             const dataAge = Math.round((new Date() - new Date(dataTimestamp)) / (1000 * 60));
             ticker.innerHTML = `<div class="order-item watching"><span class="order-details">❌ Recommendations data is ${dataAge} minutes old (max: 30 min) - waiting for fresh data...</span></div>`;
