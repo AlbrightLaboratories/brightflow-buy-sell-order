@@ -2271,27 +2271,27 @@ function populateTransactionTableWithRealData(data) {
 // Create transaction row from real data format
 function createTransactionRowFromRealData(transaction) {
     const row = document.createElement('tr');
-    const isPositive = transaction.amount > 0;
+    const isPositive = transaction.action === 'BUY';
     const date = new Date(transaction.timestamp);
-    
+
     row.innerHTML = `
         <td>${date.toLocaleDateString()}</td>
         <td>${date.toLocaleTimeString()}</td>
         <td><span class="${transaction.action.toLowerCase()}">${transaction.action}</span></td>
         <td>${transaction.symbol}</td>
-        <td>${transaction.quantity}</td>
+        <td>${transaction.shares.toFixed(4)}</td>
         <td>$${transaction.price.toFixed(2)}</td>
         <td class="${isPositive ? 'buy' : 'sell'}">
-            ${isPositive ? '+' : ''}$${Math.abs(transaction.amount).toFixed(2)}
+            ${isPositive ? '-' : '+'}$${Math.abs(transaction.amount).toFixed(2)}
         </td>
-        <td class="running-balance">$${transaction.runningBalance.toFixed(2)}</td>
+        <td class="running-balance">$${transaction.balance.toFixed(2)}</td>
     `;
-    
+
     // Add confidence and strategy info as tooltip
     if (transaction.confidence) {
         row.title = `Strategy: ${transaction.strategy || 'N/A'} | Confidence: ${(transaction.confidence * 100).toFixed(1)}%`;
     }
-    
+
     return row;
 }
 
