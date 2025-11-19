@@ -1,44 +1,8 @@
 {
-  "lastUpdated": "2025-11-19T15:54:45.446911",
+  "lastUpdated": "2025-11-19T16:34:04.936479",
   "totalTransactions": 100,
-  "currentBalance": 9527082904902.77,
+  "currentBalance": 9527082904158.49,
   "transactions": [
-    {
-      "timestamp": "2025-11-13T10:41:41.131423",
-      "symbol": "QQQ",
-      "action": "BUY",
-      "shares": 753686705.0,
-      "price": 621.08,
-      "amount": 468099751621.79,
-      "balance": 8893895291294.26
-    },
-    {
-      "timestamp": "2025-11-13T10:41:41.915221",
-      "symbol": "DIA",
-      "action": "SELL",
-      "shares": 921074514.0,
-      "price": 482.8,
-      "amount": 444694764115.61,
-      "balance": 9338590055409.88
-    },
-    {
-      "timestamp": "2025-11-13T10:45:47.483978",
-      "symbol": "QQQ",
-      "action": "BUY",
-      "shares": 751802489.0,
-      "price": 621.08,
-      "amount": 466929502716.31,
-      "balance": 8871660552693.57
-    },
-    {
-      "timestamp": "2025-11-13T10:45:48.323293",
-      "symbol": "DIA",
-      "action": "SELL",
-      "shares": 918771828.0,
-      "price": 482.8,
-      "amount": 443583027342.92,
-      "balance": 9315243580036.5
-    },
     {
       "timestamp": "2025-11-13T10:50:47.862279",
       "symbol": "SPY",
@@ -902,6 +866,42 @@
       "price": 240.65,
       "amount": 120.32,
       "balance": 9527082904902.77
+    },
+    {
+      "timestamp": "2025-11-19T16:11:59.787475",
+      "symbol": "SPY",
+      "action": "BUY",
+      "shares": 0.5,
+      "price": 662.37,
+      "amount": 331.18,
+      "balance": 9527082904571.58
+    },
+    {
+      "timestamp": "2025-11-19T16:12:00.749491",
+      "symbol": "QQQ",
+      "action": "BUY",
+      "shares": 0.5,
+      "price": 599.77,
+      "amount": 299.88,
+      "balance": 9527082904271.7
+    },
+    {
+      "timestamp": "2025-11-19T16:12:02.747478",
+      "symbol": "IWM",
+      "action": "SELL",
+      "shares": 0.5,
+      "price": 233.87,
+      "amount": 116.93,
+      "balance": 9527082904388.64
+    },
+    {
+      "timestamp": "2025-11-19T16:12:04.207986",
+      "symbol": "DIA",
+      "action": "BUY",
+      "shares": 0.5,
+      "price": 460.28,
+      "amount": 230.14,
+      "balance": 9527082904158.49
     }
   ]
 }
