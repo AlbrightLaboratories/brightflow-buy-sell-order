@@ -123,18 +123,24 @@ jobs:
   push-data:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout brightflow-ml
+      uses: actions/checkout@v3
+      with:
+        path: brightflow-ml
+
+    - name: Checkout brightflow-buy-sell-order (data source)
+      uses: actions/checkout@v3
+      with:
+        repository: AlbrightLaboratories/brightflow-buy-sell-order
+        path: brightflow-buy-sell-order
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
 
-    - name: Install Dependencies
-      run: |
-        pip install pandas numpy yfinance python-dateutil requests
-
     - name: Export Real Data
+      working-directory: brightflow-ml
       run: python scripts/export_trading_data.py
 
     - name: Clone Sandbox
@@ -144,9 +150,10 @@ jobs:
         git clone https://x-access-token:${SANDBOX_TOKEN}@github.com/AlbrightLaboratories/brightflow-sandbox.git sandbox
 
     - name: Copy Data Files
+      working-directory: brightflow-ml
       run: |
-        mkdir -p sandbox/data/data
-        cp output/*.json sandbox/data/data/
+        mkdir -p ../sandbox/data/data
+        cp output/*.json ../sandbox/data/data/
 
     - name: Push to Sandbox
       run: |
@@ -193,14 +200,18 @@ def export_real_trading_data():
     output_dir = Path("output")
     output_dir.mkdir(exist_ok=True)
 
-    # TODO: Replace with YOUR actual data file paths
-    # Example:
-    # shutil.copy("/path/to/real/transactions.json", output_dir / "transactions.json")
-    # shutil.copy("/path/to/real/performance.json", output_dir / "performance.json")
-    # shutil.copy("/path/to/real/recommendations.json", output_dir / "recommendations.json")
-    # shutil.copy("/path/to/real/hourly_market_data.json", output_dir / "hourly_market_data.json")
+    # Your ML system's REAL data is stored in brightflow-buy-sell-order repo:
+    # https://github.com/AlbrightLaboratories/brightflow-buy-sell-order/tree/main/data
 
-    print("✅ REAL data exported (verify no mock/fake data!)")
+    # Copy from the brightflow-buy-sell-order/data directory
+    data_source = Path("../brightflow-buy-sell-order/data")
+
+    shutil.copy(data_source / "transactions.json", output_dir / "transactions.json")
+    shutil.copy(data_source / "performance.json", output_dir / "performance.json")
+    shutil.copy(data_source / "recommendations.json", output_dir / "recommendations.json")
+    shutil.copy(data_source / "hourly_market_data.json", output_dir / "hourly_market_data.json")
+
+    print("✅ REAL data exported from brightflow-buy-sell-order/data (verify no mock/fake data!)")
 
 if __name__ == "__main__":
     export_real_trading_data()
@@ -253,11 +264,13 @@ Where you currently track BrightFlow performance, also track these 10 indices:
 
 ## 📂 File Locations and Paths
 
-**Source (brightflow-ml):**
-- Your ML system stores REAL data at: `[wherever your ML system stores data]`
-- Export script copies REAL data to: `output/*.json`
+**Source (brightflow-buy-sell-order/data):**
+- Your ML system's REAL data is stored at: `https://github.com/AlbrightLaboratories/brightflow-buy-sell-order/tree/main/data`
 - 4 files: `transactions.json`, `performance.json`, `recommendations.json`, `hourly_market_data.json`
-- **CRITICAL:** These must be REAL data files, not generated/mock data
+
+**Processing (brightflow-ml):**
+- Export script copies REAL data from `../brightflow-buy-sell-order/data/` to: `output/*.json`
+- **CRITICAL:** Must copy from brightflow-buy-sell-order repo, not generate new data
 
 **Destination (brightflow-sandbox):**
 - Repository: `AlbrightLaboratories/brightflow-sandbox`
@@ -273,19 +286,21 @@ Where you currently track BrightFlow performance, also track these 10 indices:
 ## 🔄 Data Pipeline Flow
 
 ```
-brightflow-ml
-  ├─ ML system tracks real trading + market indices
-  ├─ Export script runs every 3 minutes
-  ├─ COPIES 4 REAL data files (no mock/fake data!)
-  ├─ Pushes REAL data to brightflow-sandbox/data branch
+brightflow-buy-sell-order/data
+  ├─ Contains REAL trading data (transactions, performance, etc.)
   │
-  └─> brightflow-sandbox (data/data/*.json)
+  └─> brightflow-ml
+        ├─ Export script runs every 3 minutes
+        ├─ COPIES 4 REAL data files from brightflow-buy-sell-order/data
+        ├─ Pushes to brightflow-sandbox/data branch
         │
-        └─> brightflow-buy-sell-order pulls every 5 minutes
+        └─> brightflow-sandbox (data/data/*.json)
               │
-              └─> GitHub Pages deploys automatically
+              └─> brightflow-buy-sell-order pulls every 5 minutes
                     │
-                    └─> Dashboard shows REAL live data! 🎉
+                    └─> GitHub Pages deploys automatically
+                          │
+                          └─> Dashboard shows REAL live data! 🎉
 ```
 
 ---
@@ -313,14 +328,15 @@ brightflow-ml
 
 ## 🎯 Action Items Summary
 
-- [ ] **CRITICAL:** Locate where your ML system stores REAL trading data
+- [ ] **CRITICAL:** Clone brightflow-buy-sell-order repository to access real data
+- [ ] Verify data location: `brightflow-buy-sell-order/data/` contains 4 JSON files
 - [ ] Add market index tracking to ML system (fetch REAL prices for 10 indices daily)
-- [ ] Update ML system to normalize all indices to base 100 (starting Sept 25, 2024)
-- [ ] Create `scripts/export_trading_data.py` to COPY real data files (not generate fake data)
-- [ ] Create `.github/workflows/push-to-sandbox.yml` workflow
+- [ ] Update brightflow-buy-sell-order/data/performance.json to include all 10 indices
+- [ ] Create `scripts/export_trading_data.py` in brightflow-ml to COPY from `../brightflow-buy-sell-order/data/`
+- [ ] Create `.github/workflows/push-to-sandbox.yml` workflow in brightflow-ml
 - [ ] Set workflow schedule to every 3 minutes (`*/3 * * * *`)
 - [ ] Add `SANDBOX_PUSH_TOKEN` secret to brightflow-ml repository
-- [ ] Test export script locally - verify REAL data (no mock/fake/placeholder data)
+- [ ] Test export script locally - verify it copies REAL data from brightflow-buy-sell-order/data
 - [ ] Test workflow manually before enabling scheduled runs
 - [ ] Verify REAL data appears in brightflow-sandbox/data branch
 - [ ] Confirm dashboard displays all 10 market indices with REAL market data

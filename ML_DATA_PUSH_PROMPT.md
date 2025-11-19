@@ -149,18 +149,24 @@ jobs:
   push-data:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout brightflow-ml
+      uses: actions/checkout@v3
+      with:
+        path: brightflow-ml
+
+    - name: Checkout brightflow-buy-sell-order (data source)
+      uses: actions/checkout@v3
+      with:
+        repository: AlbrightLaboratories/brightflow-buy-sell-order
+        path: brightflow-buy-sell-order
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
 
-    - name: Install Dependencies
-      run: |
-        pip install pandas numpy yfinance python-dateutil requests
-
     - name: Export Real Data
+      working-directory: brightflow-ml
       run: python scripts/export_trading_data.py
 
     - name: Clone Sandbox
@@ -170,9 +176,10 @@ jobs:
         git clone https://x-access-token:${SANDBOX_TOKEN}@github.com/AlbrightLaboratories/brightflow-sandbox.git sandbox
 
     - name: Copy Data Files
+      working-directory: brightflow-ml
       run: |
-        mkdir -p sandbox/data/data
-        cp output/*.json sandbox/data/data/
+        mkdir -p ../sandbox/data/data
+        cp output/*.json ../sandbox/data/data/
 
     - name: Push to Sandbox
       run: |
@@ -222,31 +229,32 @@ def export_real_trading_data():
     output_dir = Path("output")
     output_dir.mkdir(exist_ok=True)
 
-    # TODO: Replace these paths with YOUR actual data file locations
-    # These should point to where YOUR ML system stores real trading data
+    # Your ML system's data is stored in:
+    # https://github.com/AlbrightLaboratories/brightflow-buy-sell-order/tree/main/data
 
-    # Example: Copy from your actual data storage
-    # shutil.copy("path/to/your/real/transactions.json", output_dir / "transactions.json")
-    # shutil.copy("path/to/your/real/performance.json", output_dir / "performance.json")
-    # shutil.copy("path/to/your/real/recommendations.json", output_dir / "recommendations.json")
-    # shutil.copy("path/to/your/real/hourly_market_data.json", output_dir / "hourly_market_data.json")
+    # Copy from brightflow-buy-sell-order/data directory
+    # This is where your REAL trading data is stored
+    data_source = Path("../brightflow-buy-sell-order/data")
 
-    # OR: Query your database and export real data
-    # transactions = query_transactions_from_database()
-    # performance = calculate_real_performance_with_all_indices()
-    # recommendations = get_current_ml_recommendations()
-    # hourly_data = get_hourly_trading_activity()
+    shutil.copy(data_source / "transactions.json", output_dir / "transactions.json")
+    shutil.copy(data_source / "performance.json", output_dir / "performance.json")
+    shutil.copy(data_source / "recommendations.json", output_dir / "recommendations.json")
+    shutil.copy(data_source / "hourly_market_data.json", output_dir / "hourly_market_data.json")
 
-    print("✅ Real data files exported!")
+    print("✅ Real data files exported from brightflow-buy-sell-order/data!")
     print("⚠️  Ensure all data is REAL - no mock/fake data allowed!")
 
 if __name__ == "__main__":
     export_real_trading_data()
 ```
 
+**DATA SOURCE LOCATION:**
+Your ML system's real trading data is stored at:
+`https://github.com/AlbrightLaboratories/brightflow-buy-sell-order/tree/main/data`
+
 **YOU MUST:**
-1. Locate where your ML system stores real trading data
-2. Copy/export that real data to the output directory
+1. Clone/checkout the brightflow-buy-sell-order repository
+2. Copy data files from `brightflow-buy-sell-order/data/` directory
 3. Ensure performance.json includes ALL 10 market indices with real market data
 4. Never use placeholder, mock, or fake data
 
