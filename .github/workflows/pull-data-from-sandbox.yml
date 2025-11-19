@@ -59,11 +59,7 @@ jobs:
         git config user.name "BrightFlow Data Bot"
         git config user.email "data-bot@brightflow.ai"
         git add data/*.json
-        git commit -m "chore: update trading data $(date -u +'%Y-%m-%d %H:%M:%S') UTC
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
+        git commit -m "chore: update trading data $(date -u +'%Y-%m-%d %H:%M:%S') UTC"
         git push
 
     - name: Success
