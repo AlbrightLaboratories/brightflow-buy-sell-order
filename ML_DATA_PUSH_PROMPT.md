@@ -2,7 +2,7 @@
 
 ## Quick Start for ML Team
 
-You need to push 4 JSON files to `brightflow-sandbox/data/data/` every 5 minutes.
+You need to push 4 JSON files to `brightflow-sandbox/data/data/` **every 3 minutes**.
 
 ---
 
@@ -28,7 +28,9 @@ You need to push 4 JSON files to `brightflow-sandbox/data/data/` every 5 minutes
 }
 ```
 
-### 2. **performance.json** - Portfolio Performance vs SPY
+### 2. **performance.json** - Portfolio Performance vs Market Indices
+**CRITICAL: Must include ALL market indices for comparison chart**
+
 ```json
 {
   "currentValue": 100.09,
@@ -40,9 +42,55 @@ You need to push 4 JSON files to `brightflow-sandbox/data/data/` every 5 minutes
     {"date": "2025-10-27", "value": 100.0},
     {"date": "2025-10-29", "value": 100.06}
   ],
+  "vfiax": [
+    {"date": "2025-10-27", "value": 100.0},
+    {"date": "2025-10-29", "value": 100.05}
+  ],
+  "voo": [
+    {"date": "2025-10-27", "value": 100.0},
+    {"date": "2025-10-29", "value": 100.06}
+  ],
+  "qqq": [
+    {"date": "2025-10-27", "value": 100.0},
+    {"date": "2025-10-29", "value": 100.12}
+  ],
+  "dia": [
+    {"date": "2025-10-27", "value": 100.0},
+    {"date": "2025-10-29", "value": 100.04}
+  ],
+  "vti": [
+    {"date": "2025-10-27", "value": 100.0},
+    {"date": "2025-10-29", "value": 100.06}
+  ],
+  "iwm": [
+    {"date": "2025-10-27", "value": 100.0},
+    {"date": "2025-10-29", "value": 99.95}
+  ],
+  "vxus": [
+    {"date": "2025-10-27", "value": 100.0},
+    {"date": "2025-10-29", "value": 100.02}
+  ],
+  "eem": [
+    {"date": "2025-10-27", "value": 100.0},
+    {"date": "2025-10-29", "value": 100.08}
+  ],
   "lastUpdated": "2025-11-16T01:03:20.862279"
 }
 ```
+
+**Required Market Indices (10 total):**
+- `spy` - SPDR S&P 500 ETF (existing)
+- `vfiax` - Vanguard 500 Index Fund Admiral Shares (MISSING - ADD THIS!)
+- `voo` - Vanguard S&P 500 ETF
+- `qqq` - Invesco QQQ (NASDAQ-100)
+- `dia` - SPDR Dow Jones Industrial Average
+- `vti` - Vanguard Total Stock Market ETF
+- `iwm` - iShares Russell 2000 (small-cap)
+- `vxus` - Vanguard Total International Stock
+- `eem` - iShares MSCI Emerging Markets
+- `vea` - Vanguard FTSE Developed Markets
+
+**Note:** All indices should use lowercase keys in JSON. Each array must have matching dates with brightflow data.
 
 ### 3. **recommendations.json** - Current Recommendations
 ```json
@@ -94,7 +142,7 @@ name: Push Data to Sandbox
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Every 5 minutes
+    - cron: '*/3 * * * *'  # Every 3 minutes
   workflow_dispatch:
 
 jobs:
@@ -161,11 +209,20 @@ def generate_trading_data():
         "transactions": []
     }
 
-    # Generate performance
+    # Generate performance with ALL market indices
     performance = {
         "currentValue": 10000.0,
         "brightflow": [],
         "spy": [],
+        "vfiax": [],  # REQUIRED - Vanguard 500 Index Fund
+        "voo": [],
+        "qqq": [],
+        "dia": [],
+        "vti": [],
+        "iwm": [],
+        "vxus": [],
+        "eem": [],
+        "vea": [],
         "lastUpdated": datetime.now(timezone.utc).isoformat()
     }
 
@@ -241,12 +298,12 @@ In **brightflow-ml** repository → Settings → Secrets → Actions:
 ## 📊 Data Flow
 
 ```
-brightflow-ml (every 5 min)
+brightflow-ml (every 3 min)
     ↓ generates 4 JSON files
     ↓ pushes to brightflow-sandbox/data branch
 brightflow-sandbox/data/data/*.json
     ↓
-brightflow-buy-sell-order pulls (every 10 min)
+brightflow-buy-sell-order pulls (every 5 min)
     ↓
 GitHub Pages auto-deploys
     ↓
@@ -260,8 +317,9 @@ Dashboard updates! 🎉
 1. **Use ISO 8601 timestamps** - Always include timezone (UTC)
 2. **Target branch:** Push to `data` branch in sandbox repo
 3. **Path:** Files go to `brightflow-sandbox/data/data/*.json`
-4. **Frequency:** Every 5 minutes (brightflow-buy-sell-order pulls every 10 min)
+4. **Frequency:** Every 3 minutes (brightflow-buy-sell-order pulls every 5 min)
 5. **lastUpdated field is CRITICAL** - Dashboard validates freshness (max 30 min)
+6. **Market Indices:** Must include all 10 market indices in performance.json (especially VFIAX!)
 
 ---
 
