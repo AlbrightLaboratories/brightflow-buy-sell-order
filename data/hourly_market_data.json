@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-16T09:26:19.994270",
+  "lastUpdated": "2025-11-19T00:48:15.826358",
   "data": [
     {
       "timestamp": "2025-11-14T03:00:00+00:00",
@@ -255,9 +255,303 @@
     },
     {
       "timestamp": "2025-11-16T09:00:00+00:00",
-      "tradeCount": 6,
+      "tradeCount": 12,
       "avgPrice": 671.95,
-      "volume": 599.94
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T10:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T11:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T12:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T13:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T14:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T15:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T16:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T17:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T18:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T19:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T20:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T21:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T22:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-16T23:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-17T00:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-17T01:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-17T02:00:00+00:00",
+      "tradeCount": 11,
+      "avgPrice": 672.2527272727273,
+      "volume": 1099.91
+    },
+    {
+      "timestamp": "2025-11-17T03:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 671.95,
+      "volume": 1199.88
+    },
+    {
+      "timestamp": "2025-11-17T04:00:00+00:00",
+      "tradeCount": 11,
+      "avgPrice": 672.1963636363637,
+      "volume": 1099.88
+    },
+    {
+      "timestamp": "2025-11-17T05:00:00+00:00",
+      "tradeCount": 7,
+      "avgPrice": 671.95,
+      "volume": 699.93
+    },
+    {
+      "timestamp": "2025-11-17T16:00:00+00:00",
+      "tradeCount": 1,
+      "avgPrice": 609.03,
+      "volume": 100.0
+    },
+    {
+      "timestamp": "2025-11-17T18:00:00+00:00",
+      "tradeCount": 11,
+      "avgPrice": 522.7161090909091,
+      "volume": 1128.78
+    },
+    {
+      "timestamp": "2025-11-17T19:00:00+00:00",
+      "tradeCount": 19,
+      "avgPrice": 518.5158631578947,
+      "volume": 1948.65
+    },
+    {
+      "timestamp": "2025-11-17T20:00:00+00:00",
+      "tradeCount": 5,
+      "avgPrice": 504.27682,
+      "volume": 513.09
+    },
+    {
+      "timestamp": "2025-11-17T21:00:00+00:00",
+      "tradeCount": 13,
+      "avgPrice": 512.5246153846153,
+      "volume": 1335.52
+    },
+    {
+      "timestamp": "2025-11-17T22:00:00+00:00",
+      "tradeCount": 19,
+      "avgPrice": 518.9736842105264,
+      "volume": 1949.72
+    },
+    {
+      "timestamp": "2025-11-17T23:00:00+00:00",
+      "tradeCount": 16,
+      "avgPrice": 566.1325,
+      "volume": 1628.36
+    },
+    {
+      "timestamp": "2025-11-18T00:00:00+00:00",
+      "tradeCount": 20,
+      "avgPrice": 506.398,
+      "volume": 2056.84
+    },
+    {
+      "timestamp": "2025-11-18T01:00:00+00:00",
+      "tradeCount": 20,
+      "avgPrice": 506.398,
+      "volume": 2056.84
+    },
+    {
+      "timestamp": "2025-11-18T02:00:00+00:00",
+      "tradeCount": 18,
+      "avgPrice": 532.9466666666667,
+      "volume": 1842.6
+    },
+    {
+      "timestamp": "2025-11-18T03:00:00+00:00",
+      "tradeCount": 14,
+      "avgPrice": 608.8,
+      "volume": 1414.12
+    },
+    {
+      "timestamp": "2025-11-18T04:00:00+00:00",
+      "tradeCount": 17,
+      "avgPrice": 548.5635294117648,
+      "volume": 1735.48
+    },
+    {
+      "timestamp": "2025-11-18T05:00:00+00:00",
+      "tradeCount": 18,
+      "avgPrice": 510.8227777777778,
+      "volume": 1849.73
+    },
+    {
+      "timestamp": "2025-11-18T06:00:00+00:00",
+      "tradeCount": 20,
+      "avgPrice": 506.398,
+      "volume": 2056.84
+    },
+    {
+      "timestamp": "2025-11-18T07:00:00+00:00",
+      "tradeCount": 20,
+      "avgPrice": 506.398,
+      "volume": 2056.84
+    },
+    {
+      "timestamp": "2025-11-18T08:00:00+00:00",
+      "tradeCount": 20,
+      "avgPrice": 506.398,
+      "volume": 2056.84
+    },
+    {
+      "timestamp": "2025-11-18T09:00:00+00:00",
+      "tradeCount": 17,
+      "avgPrice": 548.5635294117648,
+      "volume": 1735.48
+    },
+    {
+      "timestamp": "2025-11-18T10:00:00+00:00",
+      "tradeCount": 19,
+      "avgPrice": 518.9736842105264,
+      "volume": 1949.72
+    },
+    {
+      "timestamp": "2025-11-18T11:00:00+00:00",
+      "tradeCount": 19,
+      "avgPrice": 518.9736842105264,
+      "volume": 1949.72
+    },
+    {
+      "timestamp": "2025-11-18T12:00:00+00:00",
+      "tradeCount": 18,
+      "avgPrice": 532.9466666666667,
+      "volume": 1842.6
+    },
+    {
+      "timestamp": "2025-11-18T13:00:00+00:00",
+      "tradeCount": 20,
+      "avgPrice": 506.398,
+      "volume": 2056.84
+    },
+    {
+      "timestamp": "2025-11-18T14:00:00+00:00",
+      "tradeCount": 20,
+      "avgPrice": 505.345815,
+      "volume": 2057.85
+    },
+    {
+      "timestamp": "2025-11-18T15:00:00+00:00",
+      "tradeCount": 18,
+      "avgPrice": 506.16012222222224,
+      "volume": 1848.43
+    },
+    {
+      "timestamp": "2025-11-18T16:00:00+00:00",
+      "tradeCount": 15,
+      "avgPrice": 502.51523333333336,
+      "volume": 1541.57
+    },
+    {
+      "timestamp": "2025-11-18T20:00:00+00:00",
+      "tradeCount": 8,
+      "avgPrice": 555.457875,
+      "volume": 814.63
+    },
+    {
+      "timestamp": "2025-11-18T21:00:00+00:00",
+      "tradeCount": 12,
+      "avgPrice": 660.1966666666667,
+      "volume": 1200.1
+    },
+    {
+      "timestamp": "2025-11-18T22:00:00+00:00",
+      "tradeCount": 9,
+      "avgPrice": 645.9555555555555,
+      "volume": 900.07
+    },
+    {
+      "timestamp": "2025-11-18T23:00:00+00:00",
+      "tradeCount": 11,
+      "avgPrice": 660.14,
+      "volume": 1100.11
+    },
+    {
+      "timestamp": "2025-11-19T00:00:00+00:00",
+      "tradeCount": 10,
+      "avgPrice": 660.14,
+      "volume": 1000.1
     }
   ]
 }
