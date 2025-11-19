@@ -160,8 +160,8 @@ jobs:
       run: |
         pip install pandas numpy yfinance python-dateutil requests
 
-    - name: Generate Data
-      run: python scripts/generate_trading_data.py
+    - name: Export Real Data
+      run: python scripts/export_trading_data.py
 
     - name: Clone Sandbox
       env:
@@ -186,80 +186,69 @@ jobs:
 
 ---
 
-## 🐍 Python Script Template
+## 🐍 Python Script - Export Real Data Only
 
-Create `scripts/generate_trading_data.py` in **brightflow-ml**:
+**CRITICAL: Your brightflow-ml system must COPY/EXPORT existing real data files. DO NOT generate mock/fake data.**
+
+Create `scripts/export_trading_data.py` in **brightflow-ml**:
 
 ```python
 #!/usr/bin/env python3
+"""
+CRITICAL: This script EXPORTS real data from your ML system.
+DO NOT create mock/fake/placeholder data. Only copy real trading data.
+"""
 import json
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
-def generate_trading_data():
-    """Generate all required data files"""
+def export_real_trading_data():
+    """
+    Export REAL data files from your ML system to output directory.
+
+    REQUIREMENTS:
+    - Copy actual transaction data from your trading database
+    - Export real portfolio performance calculations
+    - Include REAL market index data from your data sources
+    - Use actual recommendations from your ML algorithms
+
+    DO NOT:
+    - Generate fake/mock data
+    - Use placeholder values
+    - Create empty arrays
+    """
+
     output_dir = Path("output")
     output_dir.mkdir(exist_ok=True)
 
-    # Generate transactions
-    transactions = {
-        "lastUpdated": datetime.now(timezone.utc).isoformat(),
-        "totalTransactions": 0,
-        "currentBalance": 10000.0,
-        "transactions": []
-    }
+    # TODO: Replace these paths with YOUR actual data file locations
+    # These should point to where YOUR ML system stores real trading data
 
-    # Generate performance with ALL market indices
-    performance = {
-        "currentValue": 10000.0,
-        "brightflow": [],
-        "spy": [],
-        "vfiax": [],  # REQUIRED - Vanguard 500 Index Fund
-        "voo": [],
-        "qqq": [],
-        "dia": [],
-        "vti": [],
-        "iwm": [],
-        "vxus": [],
-        "eem": [],
-        "vea": [],
-        "lastUpdated": datetime.now(timezone.utc).isoformat()
-    }
+    # Example: Copy from your actual data storage
+    # shutil.copy("path/to/your/real/transactions.json", output_dir / "transactions.json")
+    # shutil.copy("path/to/your/real/performance.json", output_dir / "performance.json")
+    # shutil.copy("path/to/your/real/recommendations.json", output_dir / "recommendations.json")
+    # shutil.copy("path/to/your/real/hourly_market_data.json", output_dir / "hourly_market_data.json")
 
-    # Generate recommendations
-    recommendations = {
-        "date": datetime.now().strftime("%Y-%m-%d"),
-        "lastUpdated": datetime.now(timezone.utc).isoformat(),
-        "totalRecommendations": 0,
-        "openPositions": 0,
-        "recommendations": [],
-        "positions": []
-    }
+    # OR: Query your database and export real data
+    # transactions = query_transactions_from_database()
+    # performance = calculate_real_performance_with_all_indices()
+    # recommendations = get_current_ml_recommendations()
+    # hourly_data = get_hourly_trading_activity()
 
-    # Generate hourly data
-    hourly_data = {
-        "lastUpdated": datetime.now(timezone.utc).isoformat(),
-        "data": []
-    }
-
-    # Write files
-    with open(output_dir / "transactions.json", 'w') as f:
-        json.dump(transactions, f, indent=2)
-
-    with open(output_dir / "performance.json", 'w') as f:
-        json.dump(performance, f, indent=2)
-
-    with open(output_dir / "recommendations.json", 'w') as f:
-        json.dump(recommendations, f, indent=2)
-
-    with open(output_dir / "hourly_market_data.json", 'w') as f:
-        json.dump(hourly_data, f, indent=2)
-
-    print("✅ All data files generated!")
+    print("✅ Real data files exported!")
+    print("⚠️  Ensure all data is REAL - no mock/fake data allowed!")
 
 if __name__ == "__main__":
-    generate_trading_data()
+    export_real_trading_data()
 ```
+
+**YOU MUST:**
+1. Locate where your ML system stores real trading data
+2. Copy/export that real data to the output directory
+3. Ensure performance.json includes ALL 10 market indices with real market data
+4. Never use placeholder, mock, or fake data
 
 ---
 
@@ -276,22 +265,31 @@ In **brightflow-ml** repository → Settings → Secrets → Actions:
 
 ## ✅ Testing
 
-1. Run locally:
+1. **CRITICAL:** Verify you're exporting REAL data (not mock/fake data):
    ```bash
-   python scripts/generate_trading_data.py
+   python scripts/export_trading_data.py
    ls output/  # Should see 4 JSON files
+   cat output/transactions.json  # Verify real transaction data
+   cat output/performance.json   # Verify all 10 market indices present
    ```
 
-2. Validate JSON:
+2. Validate JSON structure:
    ```bash
    python -m json.tool output/transactions.json
+   python -m json.tool output/performance.json
    ```
 
-3. Test workflow:
+3. Verify data is REAL:
+   - Check transactions match your actual trading activity
+   - Verify performance values match your calculations
+   - Confirm all 10 market indices have real market data
+   - NO placeholder values, NO empty arrays, NO fake data
+
+4. Test workflow:
    - Push workflow to brightflow-ml
    - Go to Actions tab → "Push Data to Sandbox"
    - Click "Run workflow"
-   - Check brightflow-sandbox for new commits
+   - Check brightflow-sandbox for new commits with REAL data
 
 ---
 

@@ -134,8 +134,8 @@ jobs:
       run: |
         pip install pandas numpy yfinance python-dateutil requests
 
-    - name: Generate Data
-      run: python scripts/generate_trading_data.py
+    - name: Export Real Data
+      run: python scripts/export_trading_data.py
 
     - name: Clone Sandbox
       env:
@@ -158,34 +158,90 @@ jobs:
         git push origin data
 ```
 
-### 4. Update Your Data Generation Script
+### 4. Export Your Real Data Files
 
-**Key changes needed:**
+**CRITICAL: DO NOT generate mock/fake data. Export REAL data from your ML system.**
 
-1. **Fetch market index data** using yfinance or similar:
-   ```python
-   import yfinance as yf
+Create `scripts/export_trading_data.py` to COPY your real data:
 
-   # Fetch index data
-   indices = ['SPY', 'VFIAX', 'VOO', 'QQQ', 'DIA', 'VTI', 'IWM', 'VXUS', 'EEM', 'VEA']
+```python
+#!/usr/bin/env python3
+"""
+EXPORT REAL DATA ONLY - No mock/fake data allowed.
+This script must copy actual data from your ML trading system.
+"""
+import json
+import shutil
+from pathlib import Path
 
-   for symbol in indices:
-       ticker = yf.Ticker(symbol)
-       hist = ticker.history(start='2024-09-25', end=datetime.now())
-       # Normalize to starting value of 100
-       # Store in performance dict with lowercase key
-   ```
+def export_real_trading_data():
+    """
+    Copy REAL data files from your ML system to output directory.
 
-2. **Normalize all indices to base 100** (starting Sept 25, 2024)
-   - Each index starts at 100.0 on Sept 25, 2024
-   - Calculate percentage change from that date
+    YOU MUST:
+    - Locate where your ML system stores real transaction data
+    - Find your real performance calculations
+    - Export actual market index data
+    - Copy real trading recommendations
+
+    NEVER:
+    - Generate placeholder data
+    - Create fake/mock transactions
+    - Use empty arrays
+    - Make up values
+    """
+    output_dir = Path("output")
+    output_dir.mkdir(exist_ok=True)
+
+    # TODO: Replace with YOUR actual data file paths
+    # Example:
+    # shutil.copy("/path/to/real/transactions.json", output_dir / "transactions.json")
+    # shutil.copy("/path/to/real/performance.json", output_dir / "performance.json")
+    # shutil.copy("/path/to/real/recommendations.json", output_dir / "recommendations.json")
+    # shutil.copy("/path/to/real/hourly_market_data.json", output_dir / "hourly_market_data.json")
+
+    print("✅ REAL data exported (verify no mock/fake data!)")
+
+if __name__ == "__main__":
+    export_real_trading_data()
+```
+
+**Key requirements for your REAL data:**
+
+1. **Add market index data to your ML system:**
+   - Your ML system must track all 10 market indices
+   - Fetch REAL market prices using yfinance or your data provider
+   - Calculate actual normalized performance (base 100 from Sept 25, 2024)
+   - Store alongside your BrightFlow performance data
+
+2. **Normalize all indices to base 100** (starting Sept 25, 2024):
    - Formula: `normalized_value = 100 * (current_price / start_price)`
+   - Each index starts at 100.0 on Sept 25, 2024
+   - Track daily percentage changes from that baseline
 
-3. **Match dates exactly** across all indices
+3. **Match dates exactly** across all indices:
    - All indices must have data for the same dates as `brightflow` array
-   - Use the same date format: `"YYYY-MM-DD"`
+   - Use format: `"YYYY-MM-DD"`
+   - No gaps, no mismatched dates
 
-### 5. Required GitHub Secret
+4. **Export, don't generate:**
+   - Your script should COPY existing data files
+   - Don't create new fake data each time
+   - Export the same real data your ML system uses internally
+
+### 5. Add Market Index Tracking to Your ML System
+
+**Your ML system needs to store REAL market index data alongside BrightFlow data.**
+
+Where you currently track BrightFlow performance, also track these 10 indices:
+- Fetch real market prices daily for: SPY, VFIAX, VOO, QQQ, DIA, VTI, IWM, VXUS, EEM, VEA
+- Normalize each to base 100 (starting Sept 25, 2024)
+- Store in the same database/storage as your BrightFlow performance
+- When you export data, include all indices in performance.json
+
+**This must be added to your ML system's data collection process, not generated at export time.**
+
+### 6. Required GitHub Secret
 
 **Repository:** brightflow-ml
 **Settings:** Settings → Secrets → Actions
@@ -198,8 +254,10 @@ jobs:
 ## 📂 File Locations and Paths
 
 **Source (brightflow-ml):**
-- Your ML scripts generate to: `output/*.json`
+- Your ML system stores REAL data at: `[wherever your ML system stores data]`
+- Export script copies REAL data to: `output/*.json`
 - 4 files: `transactions.json`, `performance.json`, `recommendations.json`, `hourly_market_data.json`
+- **CRITICAL:** These must be REAL data files, not generated/mock data
 
 **Destination (brightflow-sandbox):**
 - Repository: `AlbrightLaboratories/brightflow-sandbox`
@@ -216,9 +274,10 @@ jobs:
 
 ```
 brightflow-ml
-  ├─ ML scripts run every 3 minutes
-  ├─ Generate 4 JSON files with ALL market indices
-  ├─ Push to brightflow-sandbox/data branch
+  ├─ ML system tracks real trading + market indices
+  ├─ Export script runs every 3 minutes
+  ├─ COPIES 4 REAL data files (no mock/fake data!)
+  ├─ Pushes REAL data to brightflow-sandbox/data branch
   │
   └─> brightflow-sandbox (data/data/*.json)
         │
@@ -226,19 +285,21 @@ brightflow-ml
               │
               └─> GitHub Pages deploys automatically
                     │
-                    └─> Dashboard shows live data! 🎉
+                    └─> Dashboard shows REAL live data! 🎉
 ```
 
 ---
 
 ## ⚠️ Critical Requirements
 
-1. ✅ **ISO 8601 timestamps** - Always use UTC timezone
-2. ✅ **All 10 market indices** - Missing indices = broken chart
-3. ✅ **Matching dates** - All indices must have same date arrays
-4. ✅ **Every 3 minutes** - Set cron to `*/3 * * * *`
-5. ✅ **Correct path** - `brightflow-sandbox/data/data/*.json`
-6. ✅ **Correct branch** - Push to `data` branch (not `main`)
+1. ✅ **REAL DATA ONLY** - No mock/fake/placeholder data. Export actual trading data from your ML system
+2. ✅ **ISO 8601 timestamps** - Always use UTC timezone
+3. ✅ **All 10 market indices** - Missing indices = broken chart
+4. ✅ **Matching dates** - All indices must have same date arrays
+5. ✅ **Every 3 minutes** - Set cron to `*/3 * * * *`
+6. ✅ **Correct path** - `brightflow-sandbox/data/data/*.json`
+7. ✅ **Correct branch** - Push to `data` branch (not `main`)
+8. ✅ **Export, don't generate** - Copy existing data files from your ML system
 
 ---
 
@@ -252,15 +313,17 @@ brightflow-ml
 
 ## 🎯 Action Items Summary
 
-- [ ] Add VFIAX and 8 other market index data sources to ML pipeline
-- [ ] Update performance.json generation to include all 10 indices
-- [ ] Normalize all indices to base 100 (starting Sept 25, 2024)
+- [ ] **CRITICAL:** Locate where your ML system stores REAL trading data
+- [ ] Add market index tracking to ML system (fetch REAL prices for 10 indices daily)
+- [ ] Update ML system to normalize all indices to base 100 (starting Sept 25, 2024)
+- [ ] Create `scripts/export_trading_data.py` to COPY real data files (not generate fake data)
 - [ ] Create `.github/workflows/push-to-sandbox.yml` workflow
 - [ ] Set workflow schedule to every 3 minutes (`*/3 * * * *`)
 - [ ] Add `SANDBOX_PUSH_TOKEN` secret to brightflow-ml repository
+- [ ] Test export script locally - verify REAL data (no mock/fake/placeholder data)
 - [ ] Test workflow manually before enabling scheduled runs
-- [ ] Verify data appears in brightflow-sandbox/data branch
-- [ ] Confirm dashboard displays all 10 market indices in comparison chart
+- [ ] Verify REAL data appears in brightflow-sandbox/data branch
+- [ ] Confirm dashboard displays all 10 market indices with REAL market data
 
 ---
 
