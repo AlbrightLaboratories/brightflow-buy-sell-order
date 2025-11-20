@@ -1,11 +1,11 @@
 {
-  "lastUpdated": "2025-11-20T13:33:45.061518",
+  "lastUpdated": "2025-11-20T13:48:50.102976",
   "data": [
     {
       "timestamp": "2025-11-13T13:00:00",
-      "tradeCount": 6,
-      "avgPrice": 572.6733333333333,
-      "volume": 2768895804819.41
+      "tradeCount": 2,
+      "avgPrice": 551.94,
+      "volume": 935892241612.38
     },
     {
       "timestamp": "2025-11-13T14:00:00",
