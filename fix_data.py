@@ -55,8 +55,8 @@ def fix_transaction_balances():
     return data
 
 def fix_performance_indices():
-    """Add missing VFIAX and SPDR indices"""
-    print("🔧 Adding missing performance indices...")
+    """Generate all global market indices by region"""
+    print("🔧 Generating global market indices...")
 
     with open('data/performance.json', 'r') as f:
         data = json.load(f)
@@ -69,65 +69,48 @@ def fix_performance_indices():
     dates = [item['date'] for item in data['brightflow']]
     num_points = len(dates)
 
-    # S&P 500 - baseline index, starting at 100
-    data['sp500'] = [
-        {
-            'date': dates[i],
-            'value': 100.0 + (i * 0.03) + random.uniform(-0.5, 0.5)  # ~3% growth with volatility
-        }
-        for i in range(num_points)
-    ]
-    print(f"✅ Generated {len(data['sp500'])} S&P 500 data points")
+    # Define all indices with their characteristics
+    indices = {
+        # United States
+        'nasdaq': {'name': 'NASDAQ Composite', 'growth': 0.05, 'volatility': 0.8, 'region': 'US'},
+        'djia': {'name': 'Dow Jones', 'growth': 0.028, 'volatility': 0.4, 'region': 'US'},
+        'sp500': {'name': 'S&P 500', 'growth': 0.03, 'volatility': 0.5, 'region': 'US'},
+        'russell1000': {'name': 'Russell 1000', 'growth': 0.031, 'volatility': 0.5, 'region': 'US'},
+        'russell3000': {'name': 'Russell 3000', 'growth': 0.032, 'volatility': 0.5, 'region': 'US'},
+        'russell2000': {'name': 'Russell 2000', 'growth': 0.035, 'volatility': 0.9, 'region': 'US'},
 
-    # NASDAQ - typically more volatile and higher growth than S&P
-    data['nasdaq'] = [
-        {
-            'date': dates[i],
-            'value': 100.0 + (i * 0.05) + random.uniform(-0.8, 0.8)  # ~5% growth, higher volatility
-        }
-        for i in range(num_points)
-    ]
-    print(f"✅ Generated {len(data['nasdaq'])} NASDAQ data points")
+        # Global
+        'gold': {'name': 'S&P GSCI Gold', 'growth': 0.01, 'volatility': 0.6, 'region': 'Global'},
+        'sp_global_bmi': {'name': 'S&P Global BMI', 'growth': 0.027, 'volatility': 0.6, 'region': 'Global'},
+        'global_dow': {'name': 'Global Dow', 'growth': 0.025, 'volatility': 0.5, 'region': 'Global'},
 
-    # Dow Jones - similar to S&P but slightly more stable
-    data['djia'] = [
-        {
-            'date': dates[i],
-            'value': 100.0 + (i * 0.028) + random.uniform(-0.4, 0.4)  # ~2.8% growth, lower volatility
-        }
-        for i in range(num_points)
-    ]
-    print(f"✅ Generated {len(data['djia'])} Dow Jones data points")
+        # Asia-Pacific
+        'nikkei225': {'name': 'Nikkei 225', 'growth': 0.022, 'volatility': 0.7, 'region': 'Asia'},
+        'topix': {'name': 'TOPIX', 'growth': 0.02, 'volatility': 0.65, 'region': 'Asia'},
+        'sse_composite': {'name': 'SSE Composite', 'growth': 0.018, 'volatility': 1.2, 'region': 'Asia'},
+        'hang_seng': {'name': 'Hang Seng', 'growth': 0.015, 'volatility': 1.0, 'region': 'Asia'},
+        'kospi': {'name': 'KOSPI', 'growth': 0.019, 'volatility': 0.8, 'region': 'Asia'},
 
-    # S&P GSCI Gold - commodity, often inverse to stocks
-    data['gold'] = [
-        {
-            'date': dates[i],
-            'value': 100.0 + (i * 0.01) + random.uniform(-0.6, 0.6)  # ~1% growth, different pattern
-        }
-        for i in range(num_points)
-    ]
-    print(f"✅ Generated {len(data['gold'])} S&P GSCI Gold data points")
+        # Europe
+        'ftse100': {'name': 'FTSE 100', 'growth': 0.02, 'volatility': 0.5, 'region': 'Europe'},
+        'dax': {'name': 'DAX', 'growth': 0.025, 'volatility': 0.6, 'region': 'Europe'},
+        'cac40': {'name': 'CAC 40', 'growth': 0.022, 'volatility': 0.55, 'region': 'Europe'},
+        'eurostoxx50': {'name': 'EURO STOXX 50', 'growth': 0.023, 'volatility': 0.58, 'region': 'Europe'},
+    }
 
-    # Russell 3000 - broad market, similar to S&P
-    data['russell3000'] = [
-        {
-            'date': dates[i],
-            'value': 100.0 + (i * 0.032) + random.uniform(-0.5, 0.5)  # ~3.2% growth
-        }
-        for i in range(num_points)
-    ]
-    print(f"✅ Generated {len(data['russell3000'])} Russell 3000 data points")
+    # Generate data for each index
+    for key, props in indices.items():
+        data[key] = [
+            {
+                'date': dates[i],
+                'value': 100.0 + (i * props['growth']) + random.uniform(-props['volatility'], props['volatility'])
+            }
+            for i in range(num_points)
+        ]
+        print(f"✅ Generated {len(data[key])} {props['name']} data points")
 
-    # Russell 1000 - large cap, tracks closely with S&P
-    data['russell1000'] = [
-        {
-            'date': dates[i],
-            'value': 100.0 + (i * 0.031) + random.uniform(-0.5, 0.5)  # ~3.1% growth
-        }
-        for i in range(num_points)
-    ]
-    print(f"✅ Generated {len(data['russell1000'])} Russell 1000 data points")
+    # Store index metadata
+    data['_indices'] = indices
 
     # Remove old indices that aren't needed
     for old_key in ['spy', 'vfiax', 'spdr']:
