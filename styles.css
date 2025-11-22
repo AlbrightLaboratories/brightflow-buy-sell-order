@@ -1265,7 +1265,7 @@ body {
         top: 15px;
     }
 }
-/* Market Index Filter Panel */
+/* Market Index Filter Panel with Dropdown */
 .index-filter-section {
     background: #1a1a1a;
     border-radius: 8px;
@@ -1283,58 +1283,62 @@ body {
 
 .index-filter-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
 }
 
-.filter-region {
+.index-filters-dropdown {
+    display: contents;
+}
+
+.filter-dropdown-region {
     background: #222;
     border-radius: 6px;
     padding: 15px;
     border: 1px solid #333;
-}
-
-.filter-region-title {
-    color: #ffd700;
-    margin: 0 0 12px 0;
-    font-size: 1rem;
-    font-weight: 500;
-    border-bottom: 1px solid #333;
-    padding-bottom: 8px;
-}
-
-.filter-checkboxes {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
-.filter-checkbox {
-    display: flex;
-    align-items: center;
+.filter-dropdown-label {
+    color: #ffd700;
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #333;
+}
+
+.filter-dropdown-select {
+    background: #1a1a1a;
     color: #ccc;
-    cursor: pointer;
-    padding: 4px 8px;
+    border: 1px solid #444;
     border-radius: 4px;
-    transition: background-color 0.2s;
+    padding: 8px;
     font-size: 0.9rem;
-}
-
-.filter-checkbox:hover {
-    background: #2a2a2a;
-}
-
-.filter-checkbox input[type="checkbox"] {
-    margin-right: 8px;
     cursor: pointer;
-    width: 16px;
-    height: 16px;
-    accent-color: #ffd700;
+    outline: none;
+    transition: border-color 0.2s;
 }
 
-.filter-checkbox span {
-    margin-right: 6px;
-    font-size: 1.2rem;
+.filter-dropdown-select:focus {
+    border-color: #ffd700;
+}
+
+.filter-dropdown-select option {
+    padding: 8px;
+    background: #1a1a1a;
+    color: #ccc;
+}
+
+.filter-dropdown-select option:checked {
+    background: #ffd700;
+    color: #000;
+}
+
+.filter-dropdown-select option:hover {
+    background: #2a2a2a;
 }
 
 /* Mobile Responsive */
@@ -1343,18 +1347,17 @@ body {
         padding: 15px;
         margin-top: 15px;
     }
-    
+
     .index-filter-container {
         grid-template-columns: 1fr;
         gap: 15px;
     }
-    
-    .filter-region {
+
+    .filter-dropdown-region {
         padding: 12px;
     }
-    
-    .filter-checkbox {
+
+    .filter-dropdown-select {
         font-size: 0.85rem;
-        padding: 6px;
     }
 }

@@ -18,43 +18,44 @@ let realPerformanceData = null; // Store real performance data
 let currentTimeRange = '1d'; // Default view - current day
 
 // All available market indices organized by region
+// Colors are maximally distinct to prevent confusion
 const MARKET_INDICES = {
     us: {
         name: 'United States',
         indices: {
-            nasdaq: { name: 'NASDAQ Composite', color: '#00ff88', enabled: true },
-            djia: { name: 'Dow Jones', color: '#4488ff', enabled: true },
-            sp500: { name: 'S&P 500', color: '#ff4444', enabled: true },
-            russell1000: { name: 'Russell 1000', color: '#ff44ff', enabled: false },
-            russell3000: { name: 'Russell 3000', color: '#9944ff', enabled: false },
-            russell2000: { name: 'Russell 2000', color: '#44ffff', enabled: false }
+            nasdaq: { name: 'NASDAQ Composite', color: '#00ff00', enabled: true },      // Pure Green
+            djia: { name: 'Dow Jones', color: '#0088ff', enabled: true },               // Sky Blue
+            sp500: { name: 'S&P 500', color: '#ff0000', enabled: true },                // Pure Red
+            russell1000: { name: 'Russell 1000', color: '#ff00ff', enabled: false },    // Pure Magenta
+            russell3000: { name: 'Russell 3000', color: '#9933ff', enabled: false },    // Purple
+            russell2000: { name: 'Russell 2000', color: '#00ffff', enabled: false }     // Pure Cyan
         }
     },
     global: {
         name: 'Global',
         indices: {
-            gold: { name: 'S&P GSCI Gold', color: '#ff9944', enabled: true },
-            sp_global_bmi: { name: 'S&P Global BMI', color: '#88ff44', enabled: false },
-            global_dow: { name: 'Global Dow', color: '#ff8844', enabled: false }
+            gold: { name: 'S&P GSCI Gold', color: '#ffaa00', enabled: true },           // Gold Orange
+            sp_global_bmi: { name: 'S&P Global BMI', color: '#88ff00', enabled: false }, // Lime
+            global_dow: { name: 'Global Dow', color: '#ff6600', enabled: false }        // Dark Orange
         }
     },
     asia: {
         name: 'Asia-Pacific',
         indices: {
-            nikkei225: { name: 'Nikkei 225', color: '#ff4488', enabled: false },
-            topix: { name: 'TOPIX', color: '#8844ff', enabled: false },
-            sse_composite: { name: 'SSE Composite', color: '#ff0000', enabled: false },
-            hang_seng: { name: 'Hang Seng', color: '#00ffff', enabled: false },
-            kospi: { name: 'KOSPI', color: '#ffff00', enabled: false }
+            nikkei225: { name: 'Nikkei 225', color: '#ff0088', enabled: false },        // Hot Pink
+            topix: { name: 'TOPIX', color: '#6600ff', enabled: false },                 // Deep Purple
+            sse_composite: { name: 'SSE Composite', color: '#cc0000', enabled: false }, // Dark Red
+            hang_seng: { name: 'Hang Seng', color: '#00cccc', enabled: false },         // Teal
+            kospi: { name: 'KOSPI', color: '#ffff00', enabled: false }                  // Pure Yellow
         }
     },
     europe: {
         name: 'Europe',
         indices: {
-            ftse100: { name: 'FTSE 100', color: '#0088ff', enabled: false },
-            dax: { name: 'DAX', color: '#ff8800', enabled: false },
-            cac40: { name: 'CAC 40', color: '#0044ff', enabled: false },
-            eurostoxx50: { name: 'EURO STOXX 50', color: '#4400ff', enabled: false }
+            ftse100: { name: 'FTSE 100', color: '#0066ff', enabled: false },            // Royal Blue
+            dax: { name: 'DAX', color: '#ff9900', enabled: false },                     // Orange
+            cac40: { name: 'CAC 40', color: '#0000ff', enabled: false },                // Pure Blue
+            eurostoxx50: { name: 'EURO STOXX 50', color: '#8800ff', enabled: false }    // Violet
         }
     }
 };
@@ -111,7 +112,7 @@ function setupTransactionFilter() {
     }
 }
 
-// Setup index filter controls
+// Setup index filter controls with dropdown menu
 function setupIndexFilters() {
     const filterContainer = document.getElementById('indexFilterContainer');
     if (!filterContainer) {
@@ -119,30 +120,28 @@ function setupIndexFilters() {
         return;
     }
 
-    // Build filter UI
-    let html = '<div class="index-filters">';
+    // Build dropdown filter UI organized by region
+    let html = '<div class="index-filters-dropdown">';
 
     Object.entries(MARKET_INDICES).forEach(([regionKey, region]) => {
         html += `
-            <div class="filter-region">
-                <h4 class="filter-region-title">${region.name}</h4>
-                <div class="filter-checkboxes">
+            <div class="filter-dropdown-region">
+                <label class="filter-dropdown-label">${region.name}:</label>
+                <select class="filter-dropdown-select" data-region="${regionKey}" multiple size="6">
         `;
 
         Object.entries(region.indices).forEach(([key, props]) => {
             html += `
-                <label class="filter-checkbox">
-                    <input type="checkbox"
-                           data-index="${key}"
-                           ${props.enabled ? 'checked' : ''}>
-                    <span style="color: ${props.color}">█</span>
-                    ${props.name}
-                </label>
+                    <option value="${key}"
+                            data-color="${props.color}"
+                            ${props.enabled ? 'selected' : ''}>
+                        ${props.name}
+                    </option>
             `;
         });
 
         html += `
-                </div>
+                </select>
             </div>
         `;
     });
@@ -150,17 +149,15 @@ function setupIndexFilters() {
     html += '</div>';
     filterContainer.innerHTML = html;
 
-    // Add event listeners
-    filterContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            const indexKey = this.dataset.index;
-            const isEnabled = this.checked;
+    // Add event listeners to all dropdowns
+    filterContainer.querySelectorAll('.filter-dropdown-select').forEach(select => {
+        select.addEventListener('change', function() {
+            const regionKey = this.dataset.region;
+            const selectedOptions = Array.from(this.selectedOptions).map(opt => opt.value);
 
-            // Update MARKET_INDICES
-            Object.values(MARKET_INDICES).forEach(region => {
-                if (region.indices[indexKey]) {
-                    region.indices[indexKey].enabled = isEnabled;
-                }
+            // Update MARKET_INDICES for this region
+            Object.entries(MARKET_INDICES[regionKey].indices).forEach(([key, props]) => {
+                props.enabled = selectedOptions.includes(key);
             });
 
             // Update selected competitors
@@ -171,11 +168,11 @@ function setupIndexFilters() {
                 updateChartWithRealData(realPerformanceData);
             }
 
-            console.log(`${isEnabled ? '✅' : '❌'} ${indexKey} ${isEnabled ? 'enabled' : 'disabled'}`);
+            console.log(`📊 ${regionKey} indices updated:`, selectedOptions);
         });
     });
 
-    console.log('✅ Index filters setup complete');
+    console.log('✅ Index dropdown filters setup complete');
 }
 
 // Validate data freshness - REJECT DATA OLDER THAN 30 MINUTES
