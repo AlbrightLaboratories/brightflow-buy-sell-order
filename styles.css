@@ -1265,3 +1265,96 @@ body {
         top: 15px;
     }
 }
+/* Market Index Filter Panel */
+.index-filter-section {
+    background: #1a1a1a;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid #333;
+}
+
+.filter-section-title {
+    color: #ffd700;
+    margin: 0 0 15px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.index-filter-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.filter-region {
+    background: #222;
+    border-radius: 6px;
+    padding: 15px;
+    border: 1px solid #333;
+}
+
+.filter-region-title {
+    color: #ffd700;
+    margin: 0 0 12px 0;
+    font-size: 1rem;
+    font-weight: 500;
+    border-bottom: 1px solid #333;
+    padding-bottom: 8px;
+}
+
+.filter-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    color: #ccc;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    font-size: 0.9rem;
+}
+
+.filter-checkbox:hover {
+    background: #2a2a2a;
+}
+
+.filter-checkbox input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    accent-color: #ffd700;
+}
+
+.filter-checkbox span {
+    margin-right: 6px;
+    font-size: 1.2rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .index-filter-section {
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .index-filter-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .filter-region {
+        padding: 12px;
+    }
+    
+    .filter-checkbox {
+        font-size: 0.85rem;
+        padding: 6px;
+    }
+}

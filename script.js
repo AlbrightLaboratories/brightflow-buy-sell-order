@@ -16,7 +16,61 @@ let historicalData = null; // Store complete historical dataset
 let realDataLoaded = false; // Track if real data is loaded
 let realPerformanceData = null; // Store real performance data
 let currentTimeRange = '1d'; // Default view - current day
-let selectedCompetitors = ['sp500', 'nasdaq', 'djia', 'gold', 'russell3000', 'russell1000']; // Default competitors
+
+// All available market indices organized by region
+const MARKET_INDICES = {
+    us: {
+        name: 'United States',
+        indices: {
+            nasdaq: { name: 'NASDAQ Composite', color: '#00ff88', enabled: true },
+            djia: { name: 'Dow Jones', color: '#4488ff', enabled: true },
+            sp500: { name: 'S&P 500', color: '#ff4444', enabled: true },
+            russell1000: { name: 'Russell 1000', color: '#ff44ff', enabled: false },
+            russell3000: { name: 'Russell 3000', color: '#9944ff', enabled: false },
+            russell2000: { name: 'Russell 2000', color: '#44ffff', enabled: false }
+        }
+    },
+    global: {
+        name: 'Global',
+        indices: {
+            gold: { name: 'S&P GSCI Gold', color: '#ff9944', enabled: true },
+            sp_global_bmi: { name: 'S&P Global BMI', color: '#88ff44', enabled: false },
+            global_dow: { name: 'Global Dow', color: '#ff8844', enabled: false }
+        }
+    },
+    asia: {
+        name: 'Asia-Pacific',
+        indices: {
+            nikkei225: { name: 'Nikkei 225', color: '#ff4488', enabled: false },
+            topix: { name: 'TOPIX', color: '#8844ff', enabled: false },
+            sse_composite: { name: 'SSE Composite', color: '#ff0000', enabled: false },
+            hang_seng: { name: 'Hang Seng', color: '#00ffff', enabled: false },
+            kospi: { name: 'KOSPI', color: '#ffff00', enabled: false }
+        }
+    },
+    europe: {
+        name: 'Europe',
+        indices: {
+            ftse100: { name: 'FTSE 100', color: '#0088ff', enabled: false },
+            dax: { name: 'DAX', color: '#ff8800', enabled: false },
+            cac40: { name: 'CAC 40', color: '#0044ff', enabled: false },
+            eurostoxx50: { name: 'EURO STOXX 50', color: '#4400ff', enabled: false }
+        }
+    }
+};
+
+// Helper function to get list of enabled indices
+function getEnabledIndices() {
+    const enabled = [];
+    Object.values(MARKET_INDICES).forEach(region => {
+        Object.entries(region.indices).forEach(([key, props]) => {
+            if (props.enabled) enabled.push(key);
+        });
+    });
+    return enabled;
+}
+
+let selectedCompetitors = getEnabledIndices(); // Get enabled indices from MARKET_INDICES
 let mobileChart = null; // Mobile chart instance
 
 // Initialize the application
@@ -25,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeMobileChart();
     setupTimeRangeControls();
     setupTransactionFilter();
+    setupIndexFilters(); // Setup index filter controls
     loadOrderTicker(); // Load streaming order ticker
 
     // Initialize mobile-specific features
@@ -54,6 +109,73 @@ function setupTransactionFilter() {
         });
         console.log('✅ Transaction filter setup complete');
     }
+}
+
+// Setup index filter controls
+function setupIndexFilters() {
+    const filterContainer = document.getElementById('indexFilterContainer');
+    if (!filterContainer) {
+        console.log('⚠️ Index filter container not found');
+        return;
+    }
+
+    // Build filter UI
+    let html = '<div class="index-filters">';
+
+    Object.entries(MARKET_INDICES).forEach(([regionKey, region]) => {
+        html += `
+            <div class="filter-region">
+                <h4 class="filter-region-title">${region.name}</h4>
+                <div class="filter-checkboxes">
+        `;
+
+        Object.entries(region.indices).forEach(([key, props]) => {
+            html += `
+                <label class="filter-checkbox">
+                    <input type="checkbox"
+                           data-index="${key}"
+                           ${props.enabled ? 'checked' : ''}>
+                    <span style="color: ${props.color}">█</span>
+                    ${props.name}
+                </label>
+            `;
+        });
+
+        html += `
+                </div>
+            </div>
+        `;
+    });
+
+    html += '</div>';
+    filterContainer.innerHTML = html;
+
+    // Add event listeners
+    filterContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const indexKey = this.dataset.index;
+            const isEnabled = this.checked;
+
+            // Update MARKET_INDICES
+            Object.values(MARKET_INDICES).forEach(region => {
+                if (region.indices[indexKey]) {
+                    region.indices[indexKey].enabled = isEnabled;
+                }
+            });
+
+            // Update selected competitors
+            selectedCompetitors = getEnabledIndices();
+
+            // Rebuild and update chart
+            if (realPerformanceData) {
+                updateChartWithRealData(realPerformanceData);
+            }
+
+            console.log(`${isEnabled ? '✅' : '❌'} ${indexKey} ${isEnabled ? 'enabled' : 'disabled'}`);
+        });
+    });
+
+    console.log('✅ Index filters setup complete');
 }
 
 // Validate data freshness - REJECT DATA OLDER THAN 30 MINUTES
@@ -1778,35 +1900,45 @@ function updateChartWithRealData(data) {
 
     console.log('📊 Updating chart with real data:', data);
 
-    const datasets = ['brightflow', 'sp500', 'nasdaq', 'djia', 'gold', 'russell3000', 'russell1000'];
-    const colors = ['#ffd700', '#ff4444', '#44ff44', '#4488ff', '#ff9944', '#9944ff', '#ff44ff'];
+    // Clear existing datasets except BrightFlow (first dataset)
+    while (performanceChart.data.datasets.length > 1) {
+        performanceChart.data.datasets.pop();
+    }
 
-    datasets.forEach((key, index) => {
-        const performanceArray = data[key];
-        console.log(`Processing ${key}:`, performanceArray);
+    // Update BrightFlow data (always first)
+    if (data.brightflow && Array.isArray(data.brightflow)) {
+        performanceChart.data.datasets[0].data = data.brightflow.map(item => item.value);
+        performanceChart.data.labels = data.brightflow.map(item =>
+            new Date(item.date).toLocaleDateString()
+        );
+        console.log(`✅ Updated BrightFlow dataset with ${data.brightflow.length} data points`);
+    }
 
-        if (performanceArray && Array.isArray(performanceArray)) {
-        // Values are already in the correct format from the JSON
-        performanceChart.data.datasets[index].data = performanceArray.map(item => item.value);
-            console.log(`✅ Updated ${key} dataset with ${performanceArray.length} data points`);
-        } else {
-            console.warn(`⚠️ No data found for ${key}, using empty array`);
-            performanceChart.data.datasets[index].data = [];
-        }
+    // Add enabled indices
+    Object.values(MARKET_INDICES).forEach(region => {
+        Object.entries(region.indices).forEach(([key, props]) => {
+            if (props.enabled && data[key] && Array.isArray(data[key])) {
+                performanceChart.data.datasets.push({
+                    label: props.name,
+                    data: data[key].map(item => item.value),
+                    borderColor: props.color,
+                    backgroundColor: props.color + '20', // Add transparency
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: props.color,
+                    pointHoverBorderColor: '#fff',
+                    pointHoverBorderWidth: 2
+                });
+                console.log(`✅ Added ${props.name} dataset with ${data[key].length} data points`);
+            }
+        });
     });
 
-    // Update labels with dates from brightflow data
-    if (data.brightflow && Array.isArray(data.brightflow)) {
-    performanceChart.data.labels = data.brightflow.map(item =>
-        new Date(item.date).toLocaleDateString()
-    );
-        console.log('✅ Updated chart labels with dates');
-    } else {
-        console.warn('⚠️ No brightflow data found for labels');
-    }
-    
     performanceChart.update('active');
-    console.log('✅ Chart updated successfully');
+    console.log(`✅ Chart updated with ${performanceChart.data.datasets.length} datasets`);
 }
 
 // Initialize mobile chart
