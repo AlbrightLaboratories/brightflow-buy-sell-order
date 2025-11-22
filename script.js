@@ -17,6 +17,9 @@ let realDataLoaded = false; // Track if real data is loaded
 let realPerformanceData = null; // Store real performance data
 let currentTimeRange = '1d'; // Default view - current day
 
+// BrightFlow visibility control (separate from indices since it's always available)
+let brightflowEnabled = true;
+
 // All available market indices organized by region
 // Colors are maximally distinct to prevent confusion
 const MARKET_INDICES = {
@@ -123,6 +126,26 @@ function setupIndexFilters() {
     // Build custom dropdown UI organized by region
     let html = '<div class="index-filters-dropdown">';
 
+    // Add BrightFlow dropdown first
+    html += `
+        <div class="custom-dropdown brightflow-dropdown" data-region="brightflow">
+            <button class="dropdown-button" type="button">
+                <span class="dropdown-title">BrightFlow (${brightflowEnabled ? '1/1' : '0/1'})</span>
+                <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="dropdown-menu">
+                <label class="dropdown-checkbox-item">
+                    <input type="checkbox"
+                           data-region="brightflow"
+                           data-index="brightflow"
+                           ${brightflowEnabled ? 'checked' : ''}>
+                    <span class="color-indicator" style="background-color: #ffd700"></span>
+                    <span>BrightFlow Portfolio</span>
+                </label>
+            </div>
+        </div>
+    `;
+
     Object.entries(MARKET_INDICES).forEach(([regionKey, region]) => {
         // Count enabled indices for this region
         const enabledCount = Object.values(region.indices).filter(i => i.enabled).length;
@@ -194,13 +217,17 @@ function setupIndexFilters() {
             const indexKey = this.dataset.index;
             const isEnabled = this.checked;
 
-            // Update MARKET_INDICES
-            if (MARKET_INDICES[regionKey]?.indices[indexKey]) {
-                MARKET_INDICES[regionKey].indices[indexKey].enabled = isEnabled;
+            // Handle BrightFlow separately
+            if (regionKey === 'brightflow' && indexKey === 'brightflow') {
+                brightflowEnabled = isEnabled;
+                updateDropdownTitle('brightflow');
+            } else {
+                // Update MARKET_INDICES for other indices
+                if (MARKET_INDICES[regionKey]?.indices[indexKey]) {
+                    MARKET_INDICES[regionKey].indices[indexKey].enabled = isEnabled;
+                }
+                updateDropdownTitle(regionKey);
             }
-
-            // Update dropdown title with new count
-            updateDropdownTitle(regionKey);
 
             // Update chart legend to show selected indices
             updateChartLegend();
@@ -228,14 +255,20 @@ function updateDropdownTitle(regionKey) {
     const dropdown = document.querySelector(`.custom-dropdown[data-region="${regionKey}"]`);
     if (!dropdown) return;
 
+    const titleElement = dropdown.querySelector('.dropdown-title');
+    if (!titleElement) return;
+
+    // Handle BrightFlow separately
+    if (regionKey === 'brightflow') {
+        titleElement.textContent = `BrightFlow (${brightflowEnabled ? '1/1' : '0/1'})`;
+        return;
+    }
+
+    // Handle other regions
     const region = MARKET_INDICES[regionKey];
     const enabledCount = Object.values(region.indices).filter(i => i.enabled).length;
     const totalCount = Object.values(region.indices).length;
-
-    const titleElement = dropdown.querySelector('.dropdown-title');
-    if (titleElement) {
-        titleElement.textContent = `${region.name} (${enabledCount}/${totalCount})`;
-    }
+    titleElement.textContent = `${region.name} (${enabledCount}/${totalCount})`;
 }
 
 // Update chart legend to show currently selected indices
@@ -243,13 +276,17 @@ function updateChartLegend() {
     const legendContainer = document.getElementById('chartLegend');
     if (!legendContainer) return;
 
-    // Start with BrightFlow (always shown)
-    let html = `
-        <div class="legend-item">
-            <div class="legend-color" style="background-color: #ffd700;"></div>
-            <span>BrightFlow</span>
-        </div>
-    `;
+    let html = '';
+
+    // Add BrightFlow if enabled
+    if (brightflowEnabled) {
+        html += `
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #ffd700;"></div>
+                <span>BrightFlow</span>
+            </div>
+        `;
+    }
 
     // Add all enabled indices
     Object.values(MARKET_INDICES).forEach(region => {
@@ -2020,18 +2057,33 @@ function updateChartWithRealData(data) {
 
     console.log('📊 Updating chart with real data:', data);
 
-    // Clear existing datasets except BrightFlow (first dataset)
-    while (performanceChart.data.datasets.length > 1) {
-        performanceChart.data.datasets.pop();
-    }
+    // Clear ALL datasets
+    performanceChart.data.datasets = [];
 
-    // Update BrightFlow data (always first)
+    // Update labels if BrightFlow data exists
     if (data.brightflow && Array.isArray(data.brightflow)) {
-        performanceChart.data.datasets[0].data = data.brightflow.map(item => item.value);
         performanceChart.data.labels = data.brightflow.map(item =>
             new Date(item.date).toLocaleDateString()
         );
-        console.log(`✅ Updated BrightFlow dataset with ${data.brightflow.length} data points`);
+    }
+
+    // Add BrightFlow if enabled
+    if (brightflowEnabled && data.brightflow && Array.isArray(data.brightflow)) {
+        performanceChart.data.datasets.push({
+            label: 'BrightFlow Portfolio',
+            data: data.brightflow.map(item => item.value),
+            borderColor: '#ffd700',
+            backgroundColor: 'rgba(255, 215, 0, 0.1)',
+            borderWidth: 3,
+            fill: false,
+            tension: 0.4,
+            pointRadius: 0,
+            pointHoverRadius: 6,
+            pointHoverBackgroundColor: '#ffd700',
+            pointHoverBorderColor: '#fff',
+            pointHoverBorderWidth: 2
+        });
+        console.log(`✅ Added BrightFlow dataset with ${data.brightflow.length} data points`);
     }
 
     // Add enabled indices
