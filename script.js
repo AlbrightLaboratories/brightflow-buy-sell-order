@@ -202,6 +202,9 @@ function setupIndexFilters() {
             // Update dropdown title with new count
             updateDropdownTitle(regionKey);
 
+            // Update chart legend to show selected indices
+            updateChartLegend();
+
             // Update selected competitors
             selectedCompetitors = getEnabledIndices();
 
@@ -213,6 +216,9 @@ function setupIndexFilters() {
             console.log(`${isEnabled ? '✅' : '❌'} ${indexKey} ${isEnabled ? 'enabled' : 'disabled'}`);
         });
     });
+
+    // Initialize legend with default enabled indices
+    updateChartLegend();
 
     console.log('✅ Index dropdown filters setup complete');
 }
@@ -230,6 +236,36 @@ function updateDropdownTitle(regionKey) {
     if (titleElement) {
         titleElement.textContent = `${region.name} (${enabledCount}/${totalCount})`;
     }
+}
+
+// Update chart legend to show currently selected indices
+function updateChartLegend() {
+    const legendContainer = document.getElementById('chartLegend');
+    if (!legendContainer) return;
+
+    // Start with BrightFlow (always shown)
+    let html = `
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #ffd700;"></div>
+            <span>BrightFlow</span>
+        </div>
+    `;
+
+    // Add all enabled indices
+    Object.values(MARKET_INDICES).forEach(region => {
+        Object.entries(region.indices).forEach(([key, props]) => {
+            if (props.enabled) {
+                html += `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: ${props.color};"></div>
+                        <span>${props.name}</span>
+                    </div>
+                `;
+            }
+        });
+    });
+
+    legendContainer.innerHTML = html;
 }
 
 // Validate data freshness - REJECT DATA OLDER THAN 30 MINUTES
