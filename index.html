@@ -7,6 +7,8 @@
     <title>BrightFlow Buy-Sell Order Tracker</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
     <script>
         // Fix for date-fns exports issue
@@ -116,6 +118,7 @@
                     <button class="time-btn" data-range="6m">6M</button>
                     <button class="time-btn" data-range="1y">1Y</button>
                     <button class="time-btn" data-range="5y">5Y</button>
+                    <button class="time-btn reset-zoom" id="resetZoom">Reset Zoom</button>
                 </div>
             </div>
 

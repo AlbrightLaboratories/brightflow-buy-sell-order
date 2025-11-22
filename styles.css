@@ -477,6 +477,19 @@ body {
     transform: scale(0.95);
 }
 
+.time-btn.reset-zoom {
+    background: #2a2a2a;
+    border-color: #666;
+    color: #ffd700;
+    margin-left: 10px;
+}
+
+.time-btn.reset-zoom:hover {
+    background: #3a3a3a;
+    border-color: #ffd700;
+    color: #ffd700;
+}
+
 /* Ledger Section */
 .ledger-section {
     background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
@@ -1265,7 +1278,7 @@ body {
         top: 15px;
     }
 }
-/* Market Index Filter Panel with Dropdown */
+/* Market Index Filter Panel with Custom Dropdown */
 .index-filter-section {
     background: #1a1a1a;
     border-radius: 8px;
@@ -1291,54 +1304,106 @@ body {
     display: contents;
 }
 
-.filter-dropdown-region {
+/* Custom Dropdown Styles */
+.custom-dropdown {
+    position: relative;
     background: #222;
     border-radius: 6px;
-    padding: 15px;
     border: 1px solid #333;
+}
+
+.dropdown-button {
+    width: 100%;
+    background: #222;
+    color: #ffd700;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 6px;
+    cursor: pointer;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.dropdown-button:hover {
+    background: #2a2a2a;
+}
+
+.dropdown-title {
+    flex: 1;
+    text-align: left;
+}
+
+.dropdown-arrow {
+    color: #ffd700;
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+}
+
+.custom-dropdown.open .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 6px;
+    margin-top: 4px;
+    padding: 8px;
+    display: none;
     flex-direction: column;
+    gap: 4px;
+    z-index: 1000;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.custom-dropdown.open .dropdown-menu {
+    display: flex;
+}
+
+.dropdown-checkbox-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    color: #ccc;
     gap: 10px;
 }
 
-.filter-dropdown-label {
-    color: #ffd700;
-    font-size: 1rem;
-    font-weight: 500;
-    margin: 0;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #333;
-}
-
-.filter-dropdown-select {
-    background: #1a1a1a;
-    color: #ccc;
-    border: 1px solid #444;
-    border-radius: 4px;
-    padding: 8px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.2s;
-}
-
-.filter-dropdown-select:focus {
-    border-color: #ffd700;
-}
-
-.filter-dropdown-select option {
-    padding: 8px;
-    background: #1a1a1a;
-    color: #ccc;
-}
-
-.filter-dropdown-select option:checked {
-    background: #ffd700;
-    color: #000;
-}
-
-.filter-dropdown-select option:hover {
+.dropdown-checkbox-item:hover {
     background: #2a2a2a;
+}
+
+.dropdown-checkbox-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #ffd700;
+    flex-shrink: 0;
+}
+
+.color-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    border: 1px solid #444;
+}
+
+.dropdown-checkbox-item span:last-child {
+    flex: 1;
+    font-size: 0.9rem;
 }
 
 /* Mobile Responsive */
@@ -1353,11 +1418,13 @@ body {
         gap: 15px;
     }
 
-    .filter-dropdown-region {
-        padding: 12px;
+    .dropdown-button {
+        padding: 10px 12px;
+        font-size: 0.9rem;
     }
 
-    .filter-dropdown-select {
+    .dropdown-checkbox-item {
+        padding: 6px 8px;
         font-size: 0.85rem;
     }
 }

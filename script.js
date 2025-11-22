@@ -112,7 +112,7 @@ function setupTransactionFilter() {
     }
 }
 
-// Setup index filter controls with dropdown menu
+// Setup index filter controls with custom dropdown containing checkboxes
 function setupIndexFilters() {
     const filterContainer = document.getElementById('indexFilterContainer');
     if (!filterContainer) {
@@ -120,28 +120,38 @@ function setupIndexFilters() {
         return;
     }
 
-    // Build dropdown filter UI organized by region
+    // Build custom dropdown UI organized by region
     let html = '<div class="index-filters-dropdown">';
 
     Object.entries(MARKET_INDICES).forEach(([regionKey, region]) => {
+        // Count enabled indices for this region
+        const enabledCount = Object.values(region.indices).filter(i => i.enabled).length;
+        const totalCount = Object.values(region.indices).length;
+
         html += `
-            <div class="filter-dropdown-region">
-                <label class="filter-dropdown-label">${region.name}:</label>
-                <select class="filter-dropdown-select" data-region="${regionKey}" multiple size="6">
+            <div class="custom-dropdown" data-region="${regionKey}">
+                <button class="dropdown-button" type="button">
+                    <span class="dropdown-title">${region.name} (${enabledCount}/${totalCount})</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu">
         `;
 
         Object.entries(region.indices).forEach(([key, props]) => {
             html += `
-                    <option value="${key}"
-                            data-color="${props.color}"
-                            ${props.enabled ? 'selected' : ''}>
-                        ${props.name}
-                    </option>
+                    <label class="dropdown-checkbox-item">
+                        <input type="checkbox"
+                               data-region="${regionKey}"
+                               data-index="${key}"
+                               ${props.enabled ? 'checked' : ''}>
+                        <span class="color-indicator" style="background-color: ${props.color}"></span>
+                        <span>${props.name}</span>
+                    </label>
             `;
         });
 
         html += `
-                </select>
+                </div>
             </div>
         `;
     });
@@ -149,16 +159,48 @@ function setupIndexFilters() {
     html += '</div>';
     filterContainer.innerHTML = html;
 
-    // Add event listeners to all dropdowns
-    filterContainer.querySelectorAll('.filter-dropdown-select').forEach(select => {
-        select.addEventListener('change', function() {
-            const regionKey = this.dataset.region;
-            const selectedOptions = Array.from(this.selectedOptions).map(opt => opt.value);
+    // Add event listeners for dropdown buttons
+    filterContainer.querySelectorAll('.dropdown-button').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = this.closest('.custom-dropdown');
+            const wasOpen = dropdown.classList.contains('open');
 
-            // Update MARKET_INDICES for this region
-            Object.entries(MARKET_INDICES[regionKey].indices).forEach(([key, props]) => {
-                props.enabled = selectedOptions.includes(key);
+            // Close all other dropdowns
+            filterContainer.querySelectorAll('.custom-dropdown').forEach(d => {
+                d.classList.remove('open');
             });
+
+            // Toggle this dropdown
+            if (!wasOpen) {
+                dropdown.classList.add('open');
+            }
+        });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            filterContainer.querySelectorAll('.custom-dropdown').forEach(d => {
+                d.classList.remove('open');
+            });
+        }
+    });
+
+    // Add event listeners for checkboxes
+    filterContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const regionKey = this.dataset.region;
+            const indexKey = this.dataset.index;
+            const isEnabled = this.checked;
+
+            // Update MARKET_INDICES
+            if (MARKET_INDICES[regionKey]?.indices[indexKey]) {
+                MARKET_INDICES[regionKey].indices[indexKey].enabled = isEnabled;
+            }
+
+            // Update dropdown title with new count
+            updateDropdownTitle(regionKey);
 
             // Update selected competitors
             selectedCompetitors = getEnabledIndices();
@@ -168,11 +210,26 @@ function setupIndexFilters() {
                 updateChartWithRealData(realPerformanceData);
             }
 
-            console.log(`📊 ${regionKey} indices updated:`, selectedOptions);
+            console.log(`${isEnabled ? '✅' : '❌'} ${indexKey} ${isEnabled ? 'enabled' : 'disabled'}`);
         });
     });
 
     console.log('✅ Index dropdown filters setup complete');
+}
+
+// Update dropdown title to show selected count
+function updateDropdownTitle(regionKey) {
+    const dropdown = document.querySelector(`.custom-dropdown[data-region="${regionKey}"]`);
+    if (!dropdown) return;
+
+    const region = MARKET_INDICES[regionKey];
+    const enabledCount = Object.values(region.indices).filter(i => i.enabled).length;
+    const totalCount = Object.values(region.indices).length;
+
+    const titleElement = dropdown.querySelector('.dropdown-title');
+    if (titleElement) {
+        titleElement.textContent = `${region.name} (${enabledCount}/${totalCount})`;
+    }
 }
 
 // Validate data freshness - REJECT DATA OLDER THAN 30 MINUTES
@@ -483,12 +540,23 @@ function getDataForTimeRange(range) {
 // Setup time range control buttons
 function setupTimeRangeControls() {
     // Setup desktop buttons
-    const desktopButtons = document.querySelectorAll('.time-btn');
+    const desktopButtons = document.querySelectorAll('.time-btn:not(.reset-zoom)');
     setupTimeRangeButtons(desktopButtons);
-    
+
     // Setup mobile buttons
     const mobileButtons = document.querySelectorAll('.mobile-time-btn');
     setupTimeRangeButtons(mobileButtons);
+
+    // Setup reset zoom button
+    const resetZoomBtn = document.getElementById('resetZoom');
+    if (resetZoomBtn && performanceChart) {
+        resetZoomBtn.addEventListener('click', function() {
+            if (performanceChart && performanceChart.resetZoom) {
+                performanceChart.resetZoom();
+                console.log('🔍 Chart zoom reset');
+            }
+        });
+    }
 }
 
 // Setup time range buttons (works for both desktop and mobile)
@@ -1090,6 +1158,25 @@ function initializeChart() {
                         label: function(context) {
                             return context.dataset.label + ': $' + context.parsed.y.toFixed(2);
                         }
+                    }
+                },
+                zoom: {
+                    zoom: {
+                        wheel: {
+                            enabled: true,
+                            speed: 0.1
+                        },
+                        pinch: {
+                            enabled: true
+                        },
+                        mode: 'x'
+                    },
+                    pan: {
+                        enabled: true,
+                        mode: 'x'
+                    },
+                    limits: {
+                        x: {min: 'original', max: 'original'}
                     }
                 }
             },
