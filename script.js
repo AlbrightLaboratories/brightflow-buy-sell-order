@@ -1060,6 +1060,88 @@ function convertPerformanceDataToHistorical(performanceData) {
     return data;
 }
 
+// Bull watermark plugin for Chart.js
+const bullWatermarkPlugin = {
+    id: 'bullWatermark',
+    beforeDraw: (chart) => {
+        const ctx = chart.ctx;
+        const chartArea = chart.chartArea;
+        const img = chart.bullImage;
+
+        if (!img || !img.complete) return;
+
+        // Calculate watermark size and position (centered, semi-transparent)
+        const maxWidth = chartArea.width * 0.4;
+        const maxHeight = chartArea.height * 0.4;
+        const aspectRatio = img.width / img.height;
+
+        let width = maxWidth;
+        let height = maxWidth / aspectRatio;
+
+        if (height > maxHeight) {
+            height = maxHeight;
+            width = maxHeight * aspectRatio;
+        }
+
+        const x = chartArea.left + (chartArea.width - width) / 2;
+        const y = chartArea.top + (chartArea.height - height) / 2;
+
+        ctx.save();
+        ctx.globalAlpha = 0.08; // Subtle watermark
+
+        // Flip the bull to face right
+        ctx.translate(x + width, y);
+        ctx.scale(-1, 1);
+        ctx.drawImage(img, 0, 0, width, height);
+
+        ctx.restore();
+    }
+};
+
+// Register the plugin
+Chart.register(bullWatermarkPlugin);
+
+// Flashing points plugin for Chart.js
+const flashingPointsPlugin = {
+    id: 'flashingPoints',
+    beforeDatasetsDraw: (chart) => {
+        const ctx = chart.ctx;
+        const time = Date.now();
+
+        chart.data.datasets.forEach((dataset, datasetIndex) => {
+            const meta = chart.getDatasetMeta(datasetIndex);
+            if (!meta.hidden && meta.data.length > 0) {
+                meta.data.forEach((point, index) => {
+                    // Create pulsing effect using sine wave
+                    const pulse = Math.abs(Math.sin(time / 500 + index * 0.3));
+                    const radius = 2 + pulse * 2; // Pulse between 2-4px
+                    const alpha = 0.4 + pulse * 0.6; // Pulse between 0.4-1.0
+
+                    ctx.save();
+                    ctx.fillStyle = dataset.borderColor;
+                    ctx.globalAlpha = alpha;
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.restore();
+                });
+            }
+        });
+    }
+};
+
+// Register the flashing points plugin
+Chart.register(flashingPointsPlugin);
+
+// Start animation loop for flashing effect
+function startChartAnimation() {
+    setInterval(() => {
+        if (performanceChart && !performanceChart.options.animation.animating) {
+            performanceChart.update('none'); // Update without animation to just refresh the flash
+        }
+    }, 50); // Update every 50ms for smooth flashing
+}
+
 // Chart initialization with animations
 function initializeChart() {
     const chartElement = document.getElementById('performanceChart');
@@ -1070,12 +1152,22 @@ function initializeChart() {
 
     const ctx = chartElement.getContext('2d');
 
+    // Load bull image for watermark (facing right - flipped horizontally)
+    const bullImg = new Image();
+    bullImg.src = 'GoldenBull.png';
+    bullImg.onload = () => {
+        if (performanceChart) {
+            performanceChart.bullImage = bullImg;
+            performanceChart.update();
+        }
+    };
+
     // Generate complete historical dataset
     historicalData = generateCompleteHistoricalData();
-    
+
     // Initialize chart with 14-day default view
     const chartData = getDataForTimeRange(currentTimeRange);
-    
+
     performanceChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -1259,6 +1351,9 @@ function initializeChart() {
             }
         }
     });
+
+    // Start the flashing animation for data points
+    startChartAnimation();
 }
 
 // Initialize realistic portfolio with actual stock prices
