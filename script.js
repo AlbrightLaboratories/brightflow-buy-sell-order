@@ -456,7 +456,8 @@ async function loadOrderTicker() {
     if (!ticker) return;
 
     try {
-        const response = await fetch('./data/recommendations.json', {
+        // Fetch from sandbox repository (live data)
+        const response = await fetch('https://raw.githubusercontent.com/AlbrightLaboratories/brightflow-sandbox/data/data/recommendations.json', {
             method: 'GET',
             headers: {
                 'Cache-Control': 'no-cache'
@@ -627,6 +628,28 @@ function setupTimeRangeControls() {
             if (performanceChart && performanceChart.resetZoom) {
                 performanceChart.resetZoom();
                 console.log('🔍 Chart zoom reset');
+            }
+        });
+    }
+
+    // Setup zoom in button
+    const zoomInBtn = document.getElementById('zoomIn');
+    if (zoomInBtn && performanceChart) {
+        zoomInBtn.addEventListener('click', function() {
+            if (performanceChart && performanceChart.zoom) {
+                performanceChart.zoom(1.2); // Zoom in by 20%
+                console.log('🔍 Chart zoomed in');
+            }
+        });
+    }
+
+    // Setup zoom out button
+    const zoomOutBtn = document.getElementById('zoomOut');
+    if (zoomOutBtn && performanceChart) {
+        zoomOutBtn.addEventListener('click', function() {
+            if (performanceChart && performanceChart.zoom) {
+                performanceChart.zoom(0.8); // Zoom out by 20%
+                console.log('🔍 Chart zoomed out');
             }
         });
     }
@@ -995,18 +1018,64 @@ async function loadRealData() {
     }
 }
 
+// Validate balance to reject corrupted/absurd values
+function isBalanceValid(balance) {
+    // Reasonable limits: Portfolio should be between $0.01 and $100,000
+    // (Started with $2,100, so even 40x growth = $84,000)
+    const MIN_BALANCE = 0.01;
+    const MAX_BALANCE = 100000;
+
+    if (!balance || isNaN(balance)) {
+        console.error('❌ Balance validation failed: Invalid number');
+        return false;
+    }
+
+    if (balance < MIN_BALANCE) {
+        console.error(`❌ Balance validation failed: ${balance} is below minimum ${MIN_BALANCE}`);
+        return false;
+    }
+
+    if (balance > MAX_BALANCE) {
+        console.error(`❌ Balance validation failed: ${balance} exceeds maximum ${MAX_BALANCE}`);
+        return false;
+    }
+
+    return true;
+}
+
 // Initialize portfolio values from actual data files
 function initializePortfolioFromData(performanceData, transactionData) {
     // Use actual running balance from transactions if available, otherwise use normalized value
     if (transactionData && transactionData.currentBalance && transactionData.currentBalance > 0) {
-        portfolio.currentValue = transactionData.currentBalance;
-        portfolio.totalValue = transactionData.currentBalance;
-        console.log('💰 Portfolio initialized with transaction balance:', transactionData.currentBalance);
-    } else {
-        // Fallback to normalized value
-    portfolio.currentValue = performanceData.currentValue;
+        // VALIDATE BALANCE BEFORE USING IT
+        if (!isBalanceValid(transactionData.currentBalance)) {
+            console.error('❌ Transaction balance is corrupted:', transactionData.currentBalance);
+            console.log('⚠️ Falling back to normalized performance value');
+            // Fall through to use performanceData.currentValue instead
+        } else {
+            portfolio.currentValue = transactionData.currentBalance;
+            portfolio.totalValue = transactionData.currentBalance;
+            console.log('💰 Portfolio initialized with transaction balance:', transactionData.currentBalance);
+            return; // Exit early if we successfully used transaction balance
+        }
+    }
+
+    // Fallback to normalized value (or if transaction balance was invalid)
+    if (performanceData && performanceData.currentValue) {
+        if (!isBalanceValid(performanceData.currentValue)) {
+            console.error('❌ Performance currentValue is also corrupted:', performanceData.currentValue);
+            console.error('❌ CRITICAL: All balance data is corrupted - cannot display portfolio value');
+            portfolio.currentValue = 0;
+            portfolio.totalValue = 0;
+            return;
+        }
+        portfolio.currentValue = performanceData.currentValue;
         portfolio.totalValue = performanceData.currentValue;
         console.log('📊 Portfolio initialized with normalized value:', performanceData.currentValue);
+    } else {
+        console.error('❌ No valid balance data available');
+        portfolio.currentValue = 0;
+        portfolio.totalValue = 0;
     }
     
     // Set cash based on current total value (assuming all cash for now, until we add position tracking)
@@ -1744,6 +1813,12 @@ function startRealTimeUpdates() {
     setInterval(() => {
         updatePerformanceDisplay();
     }, 5000); // Every 5 seconds
+
+    // Refresh recommendations every 5 minutes (initial load happens in DOMContentLoaded)
+    setInterval(() => {
+        loadOrderTicker();
+        console.log('🔄 Refreshing recommendations data from sandbox');
+    }, 5 * 60 * 1000); // Every 5 minutes
 }
 
 // Schedule data updates 24/7 for maximum money-making opportunities
@@ -1813,7 +1888,17 @@ function updatePerformanceDisplay() {
     
     const currentValueEl = document.getElementById('currentValue');
     const dailyChangeEl = document.getElementById('dailyChange');
-    
+
+    // Check if balance data is corrupted
+    if (portfolio.currentValue === 0 && realDataLoaded) {
+        console.error('❌ Cannot display portfolio - balance data is corrupted');
+        currentValueEl.textContent = 'ERROR';
+        currentValueEl.style.color = '#ff0000';
+        dailyChangeEl.textContent = 'Balance data corrupted - waiting for fix';
+        dailyChangeEl.className = 'performance-change negative';
+        return;
+    }
+
     // Don't update if data hasn't been loaded yet
     if (!portfolio.currentValue || portfolio.currentValue === 0) {
         console.log('Waiting for data to load before updating display...');
