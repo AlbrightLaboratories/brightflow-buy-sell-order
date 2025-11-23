@@ -1089,10 +1089,8 @@ const bullWatermarkPlugin = {
         ctx.save();
         ctx.globalAlpha = 0.08; // Subtle watermark
 
-        // Flip the bull to face right
-        ctx.translate(x + width, y);
-        ctx.scale(-1, 1);
-        ctx.drawImage(img, 0, 0, width, height);
+        // Draw the bull facing right (no flip needed - original already faces right)
+        ctx.drawImage(img, x, y, width, height);
 
         ctx.restore();
     }
