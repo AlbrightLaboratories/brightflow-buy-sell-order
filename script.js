@@ -18,7 +18,7 @@ let realPerformanceData = null; // Store real performance data
 let currentTimeRange = '1d'; // Default view - current day
 
 // BrightFlow visibility control (separate from indices since it's always available)
-let brightflowEnabled = true;
+let brightflowEnabled = false; // Hidden by default
 
 // All available market indices organized by region
 // Colors are maximally distinct to prevent confusion
