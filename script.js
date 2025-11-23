@@ -27,38 +27,38 @@ const MARKET_INDICES = {
         name: 'United States',
         indices: {
             nasdaq: { name: 'NASDAQ Composite', color: '#00ff00', enabled: true },      // Pure Green
-            djia: { name: 'Dow Jones', color: '#0088ff', enabled: true },               // Sky Blue
+            djia: { name: 'Dow Jones', color: '#00aaff', enabled: true },               // Bright Blue
             sp500: { name: 'S&P 500', color: '#ff0000', enabled: true },                // Pure Red
             russell1000: { name: 'Russell 1000', color: '#ff00ff', enabled: false },    // Pure Magenta
-            russell3000: { name: 'Russell 3000', color: '#9933ff', enabled: false },    // Purple
+            russell3000: { name: 'Russell 3000', color: '#aa33ff', enabled: false },    // Purple
             russell2000: { name: 'Russell 2000', color: '#00ffff', enabled: false }     // Pure Cyan
         }
     },
     global: {
         name: 'Global',
         indices: {
-            gold: { name: 'S&P GSCI Gold', color: '#ffaa00', enabled: true },           // Gold Orange
+            gold: { name: 'S&P GSCI Gold', color: '#ffcc00', enabled: true },           // Gold Yellow
             sp_global_bmi: { name: 'S&P Global BMI', color: '#88ff00', enabled: false }, // Lime
-            global_dow: { name: 'Global Dow', color: '#ff6600', enabled: false }        // Dark Orange
+            global_dow: { name: 'Global Dow', color: '#ff5500', enabled: false }        // Bright Orange
         }
     },
     asia: {
         name: 'Asia-Pacific',
         indices: {
-            nikkei225: { name: 'Nikkei 225', color: '#ff0088', enabled: false },        // Hot Pink
-            topix: { name: 'TOPIX', color: '#6600ff', enabled: false },                 // Deep Purple
+            nikkei225: { name: 'Nikkei 225', color: '#ff0099', enabled: false },        // Hot Pink
+            topix: { name: 'TOPIX', color: '#7700ff', enabled: false },                 // Deep Purple
             sse_composite: { name: 'SSE Composite', color: '#cc0000', enabled: false }, // Dark Red
-            hang_seng: { name: 'Hang Seng', color: '#00cccc', enabled: false },         // Teal
+            hang_seng: { name: 'Hang Seng', color: '#00dddd', enabled: false },         // Bright Teal
             kospi: { name: 'KOSPI', color: '#ffff00', enabled: false }                  // Pure Yellow
         }
     },
     europe: {
         name: 'Europe',
         indices: {
-            ftse100: { name: 'FTSE 100', color: '#0066ff', enabled: false },            // Royal Blue
-            dax: { name: 'DAX', color: '#ff9900', enabled: false },                     // Orange
-            cac40: { name: 'CAC 40', color: '#0000ff', enabled: false },                // Pure Blue
-            eurostoxx50: { name: 'EURO STOXX 50', color: '#8800ff', enabled: false }    // Violet
+            ftse100: { name: 'FTSE 100', color: '#0044ff', enabled: false },            // Royal Blue
+            dax: { name: 'DAX', color: '#ff8800', enabled: false },                     // Dark Orange
+            cac40: { name: 'CAC 40', color: '#0066ff', enabled: false },                // Medium Blue
+            eurostoxx50: { name: 'EURO STOXX 50', color: '#9900ff', enabled: false }    // Violet
         }
     }
 };
@@ -1102,7 +1102,7 @@ Chart.register(bullWatermarkPlugin);
 // Flashing points plugin for Chart.js
 const flashingPointsPlugin = {
     id: 'flashingPoints',
-    beforeDatasetsDraw: (chart) => {
+    afterDatasetsDraw: (chart) => {
         const ctx = chart.ctx;
         const time = Date.now();
 
@@ -1111,9 +1111,9 @@ const flashingPointsPlugin = {
             if (!meta.hidden && meta.data.length > 0) {
                 meta.data.forEach((point, index) => {
                     // Create pulsing effect using sine wave
-                    const pulse = Math.abs(Math.sin(time / 500 + index * 0.3));
-                    const radius = 2 + pulse * 2; // Pulse between 2-4px
-                    const alpha = 0.4 + pulse * 0.6; // Pulse between 0.4-1.0
+                    const pulse = Math.abs(Math.sin(time / 300 + index * 0.5));
+                    const radius = 3 + pulse * 3; // Pulse between 3-6px (more visible)
+                    const alpha = 0.6 + pulse * 0.4; // Pulse between 0.6-1.0
 
                     ctx.save();
                     ctx.fillStyle = dataset.borderColor;
@@ -1121,6 +1121,13 @@ const flashingPointsPlugin = {
                     ctx.beginPath();
                     ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI);
                     ctx.fill();
+
+                    // Add glow effect
+                    ctx.globalAlpha = alpha * 0.3;
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, radius + 3, 0, 2 * Math.PI);
+                    ctx.fill();
+
                     ctx.restore();
                 });
             }
@@ -1293,6 +1300,7 @@ function initializeChart() {
                     }
                 },
                 y: {
+                    beginAtZero: false, // Don't start from zero - auto-scale to data
                     grid: {
                         color: '#333',
                         lineWidth: 1
