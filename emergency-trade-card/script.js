@@ -1,5 +1,5 @@
 // Emergency Trade Card JavaScript
-const API_BASE = '/api/emergency-trade';
+const API_BASE = 'http://emergency-trade-api.brightflow-ml.svc.cluster.local:80/api/emergency-trade';
 const STOCK_PULLER_API = 'http://stock-puller-service.brightflow-ml.svc.cluster.local:80/api/stock';
 
 // State
