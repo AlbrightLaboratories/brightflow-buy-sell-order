@@ -34,12 +34,26 @@ jobs:
 
         echo "✅ Downloaded all data files"
 
-    - name: Validate JSON
+    - name: Validate JSON Format
       run: |
-        python3 -m json.tool data/transactions.json > /dev/null && echo "✅ transactions.json valid"
-        python3 -m json.tool data/performance.json > /dev/null && echo "✅ performance.json valid"
-        python3 -m json.tool data/recommendations.json > /dev/null && echo "✅ recommendations.json valid"
-        python3 -m json.tool data/hourly_market_data.json > /dev/null && echo "✅ hourly_market_data.json valid"
+        python3 -m json.tool data/transactions.json > /dev/null && echo "✅ transactions.json valid JSON"
+        python3 -m json.tool data/performance.json > /dev/null && echo "✅ performance.json valid JSON"
+        python3 -m json.tool data/recommendations.json > /dev/null && echo "✅ recommendations.json valid JSON"
+        python3 -m json.tool data/hourly_market_data.json > /dev/null && echo "✅ hourly_market_data.json valid JSON"
+
+    - name: Validate Trading Rules
+      run: |
+        echo "🔍 Validating transactions follow trading rules..."
+        python3 validate_transactions.py
+        if [ $? -ne 0 ]; then
+          echo "❌ VALIDATION FAILED: Transactions violate trading rules!"
+          echo "❌ Balance must be realistic (~$2,100, not trillions)"
+          echo "❌ Can't sell shares you don't own"
+          echo "❌ Can't buy with money you don't have"
+          echo "🚫 REJECTING DATA - Not pushing to repo"
+          exit 1
+        fi
+        echo "✅ All transactions validated - using REAL money only!"
 
     - name: Check for Changes
       id: changes
