@@ -1,9 +1,10 @@
-name: Pull Data from Sandbox
+name: Pull Data from Sandbox (TEMPORARILY DISABLED - Sandbox has fictional $8.6T balance)
 
 on:
-  schedule:
-    - cron: '*/5 * * * *'  # Every 5 minutes
-  workflow_dispatch:
+  # DISABLED: Sandbox data violates trading rules (60 violations found)
+  # schedule:
+  #   - cron: '*/5 * * * *'  # Every 5 minutes
+  workflow_dispatch:  # Can still run manually
 
 jobs:
   pull-data:
