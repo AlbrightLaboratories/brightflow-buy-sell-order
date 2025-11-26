@@ -490,6 +490,28 @@ body {
     color: #ffd700;
 }
 
+.time-btn.view-toggle {
+    background: #1a3a5a;
+    border-color: #3a7aba;
+    color: #88ccff;
+    margin-left: 10px;
+    font-weight: 600;
+}
+
+.time-btn.view-toggle:hover {
+    background: #2a4a6a;
+    border-color: #4a8aca;
+    color: #aaddff;
+}
+
+.time-btn.view-toggle.active {
+    background: #00aaff;
+    border-color: #00aaff;
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+}
+
 /* Ledger Section */
 .ledger-section {
     background: linear-gradient(145deg, #1a1a1a, #0f0f0f);

@@ -16,6 +16,8 @@ let historicalData = null; // Store complete historical dataset
 let realDataLoaded = false; // Track if real data is loaded
 let realPerformanceData = null; // Store real performance data
 let currentTimeRange = '1d'; // Default view - current day
+let viewMode = 'normalized'; // 'normalized' or 'yoy' (year-over-year)
+let historicalBaselineData = {}; // Cache for historical baseline data (1 year ago)
 
 // BrightFlow visibility control (separate from indices since it's always available)
 let brightflowEnabled = false; // Hidden by default
@@ -84,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupTimeRangeControls();
     setupTransactionFilter();
     setupIndexFilters(); // Setup index filter controls
+    setupViewToggle(); // Setup view mode toggle (normalized vs YoY)
     loadOrderTicker(); // Load streaming order ticker
 
     // Initialize mobile-specific features
@@ -112,6 +115,66 @@ function setupTransactionFilter() {
             }
         });
         console.log('✅ Transaction filter setup complete');
+    }
+}
+
+// Setup view mode toggle (normalized vs year-over-year)
+function setupViewToggle() {
+    const toggleButton = document.getElementById('viewToggle');
+    if (toggleButton) {
+        toggleButton.addEventListener('click', async function() {
+            // Toggle between modes
+            viewMode = viewMode === 'normalized' ? 'yoy' : 'normalized';
+
+            // Update button appearance
+            if (viewMode === 'yoy') {
+                toggleButton.classList.add('active');
+                toggleButton.textContent = 'Normalized';
+                console.log('📊 Switched to Year-over-Year view');
+
+                // Fetch historical baseline data if not already cached
+                await fetchHistoricalBaseline();
+
+                // Update Y-axis formatting for YoY view
+                if (performanceChart) {
+                    performanceChart.options.scales.y.ticks.callback = function(value) {
+                        // Show as absolute percentage (25% means 25% gain from 1 year ago)
+                        return (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
+                    };
+                    performanceChart.options.plugins.tooltip.callbacks.label = function(context) {
+                        // Show as absolute percentage
+                        const value = context.parsed.y;
+                        const sign = value >= 0 ? '+' : '';
+                        return context.dataset.label + ': ' + sign + value.toFixed(2) + '% YoY';
+                    };
+                }
+            } else {
+                toggleButton.classList.remove('active');
+                toggleButton.textContent = '% YoY';
+                console.log('📊 Switched to Normalized view');
+
+                // Restore normalized view formatting
+                if (performanceChart) {
+                    performanceChart.options.scales.y.ticks.callback = function(value) {
+                        // Show as percentage return (100 = baseline, 110 = +10%, 90 = -10%)
+                        const percentChange = value - 100;
+                        return (percentChange >= 0 ? '+' : '') + percentChange.toFixed(1) + '%';
+                    };
+                    performanceChart.options.plugins.tooltip.callbacks.label = function(context) {
+                        // Show as percentage return (100 = baseline)
+                        const percentChange = context.parsed.y - 100;
+                        const sign = percentChange >= 0 ? '+' : '';
+                        return context.dataset.label + ': ' + sign + percentChange.toFixed(2) + '%';
+                    };
+                }
+            }
+
+            // Refresh the chart with current data in new mode
+            if (realPerformanceData) {
+                updateChartWithRealData(realPerformanceData);
+            }
+        });
+        console.log('✅ View toggle setup complete');
     }
 }
 
@@ -1377,7 +1440,9 @@ function initializeChart() {
                     ticks: {
                         color: '#888',
                         callback: function(value) {
-                            return '$' + value.toFixed(2);
+                            // Show as percentage return (100 = baseline, 110 = +10%, 90 = -10%)
+                            const percentChange = value - 100;
+                            return (percentChange >= 0 ? '+' : '') + percentChange.toFixed(1) + '%';
                         }
                     }
                 }
@@ -1396,7 +1461,10 @@ function initializeChart() {
                     displayColors: true,
                     callbacks: {
                         label: function(context) {
-                            return context.dataset.label + ': $' + context.parsed.y.toFixed(2);
+                            // Show as percentage return (100 = baseline)
+                            const percentChange = context.parsed.y - 100;
+                            const sign = percentChange >= 0 ? '+' : '';
+                            return context.dataset.label + ': ' + sign + percentChange.toFixed(2) + '%';
                         }
                     }
                 },
@@ -2234,6 +2302,107 @@ function executeNewTrade() {
 }
 */
 
+// Fetch historical baseline data from 1 year ago for YoY comparison
+async function fetchHistoricalBaseline() {
+    console.log('📥 Fetching historical baseline data from 1 year ago...');
+
+    // Calculate date from 1 year ago
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    const oneYearAgoTimestamp = Math.floor(oneYearAgo.getTime() / 1000);
+
+    // Map our index keys to Yahoo Finance symbols
+    const symbolMap = {
+        'spy': 'SPY',           // S&P 500 ETF
+        'nasdaq': '^IXIC',      // NASDAQ Composite
+        'djia': '^DJI',         // Dow Jones Industrial Average
+        'sp500': '^GSPC',       // S&P 500 Index
+        'russell1000': '^RUI',  // Russell 1000
+        'russell2000': '^RUT',  // Russell 2000
+        'russell3000': '^RUA',  // Russell 3000
+        'gold': 'GC=F',         // Gold Futures
+        'nikkei225': '^N225',   // Nikkei 225
+        'ftse100': '^FTSE',     // FTSE 100
+        'dax': '^GDAXI',        // DAX
+        'hang_seng': '^HSI'     // Hang Seng
+    };
+
+    const proxyUrl = 'https://api.allorigins.win/raw?url=';
+
+    // Fetch historical data for each index
+    for (const [key, symbol] of Object.entries(symbolMap)) {
+        try {
+            // Yahoo Finance API with historical range (1 year ago to 1 year ago + 1 day)
+            const endTime = oneYearAgoTimestamp + 86400; // +1 day
+            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&period1=${oneYearAgoTimestamp}&period2=${endTime}`;
+
+            const response = await fetch(proxyUrl + encodeURIComponent(url), {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.chart?.result?.[0]?.indicators?.quote?.[0]?.close) {
+                    const closePrice = data.chart.result[0].indicators.quote[0].close[0];
+                    if (closePrice) {
+                        historicalBaselineData[key] = closePrice;
+                        console.log(`✅ Fetched ${key} baseline: ${closePrice}`);
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn(`⚠️ Failed to fetch historical data for ${key}:`, error);
+        }
+    }
+
+    console.log('📊 Historical baseline data:', historicalBaselineData);
+}
+
+// Calculate year-over-year percentage change
+function calculateYoYPercentage(dataArray, indexKey, baselineValue) {
+    if (!dataArray || dataArray.length === 0) {
+        return [];
+    }
+
+    // Use provided baseline or fetch from cache
+    const baseline = baselineValue || historicalBaselineData[indexKey];
+
+    if (!baseline || baseline === 0 || !isFinite(baseline)) {
+        console.warn(`⚠️ No valid baseline for ${indexKey}, using first value`);
+        // Fallback to normalizing from first value
+        return normalizeTo100(dataArray);
+    }
+
+    // Calculate percentage change from 1 year ago: ((current - baseline) / baseline) * 100
+    return dataArray.map(item => {
+        const percentChange = ((item.value - baseline) / baseline) * 100;
+        return isFinite(percentChange) ? percentChange : 0;
+    });
+}
+
+// Normalize data array to start at 100.0 (for comparing % returns)
+function normalizeTo100(dataArray) {
+    if (!dataArray || dataArray.length === 0) {
+        return [];
+    }
+
+    // Get the first value as baseline
+    const firstValue = dataArray[0].value;
+
+    // Avoid division by zero
+    if (firstValue === 0 || !isFinite(firstValue)) {
+        console.warn('⚠️ Cannot normalize data with zero or invalid first value');
+        return dataArray.map(item => 100.0); // Return flat line at 100
+    }
+
+    // Normalize each value: (current / first) * 100
+    return dataArray.map(item => {
+        const normalized = (item.value / firstValue) * 100;
+        return isFinite(normalized) ? normalized : 100.0;
+    });
+}
+
 // Update chart with real data
 function updateChartWithRealData(data) {
     if (!performanceChart) {
@@ -2255,9 +2424,21 @@ function updateChartWithRealData(data) {
 
     // Add BrightFlow if enabled
     if (brightflowEnabled && data.brightflow && Array.isArray(data.brightflow)) {
+        // Choose data transformation based on view mode
+        let brightflowData;
+        if (viewMode === 'yoy') {
+            // Calculate YoY percentage change from 1 year ago
+            brightflowData = calculateYoYPercentage(data.brightflow, 'brightflow');
+            console.log(`📊 BrightFlow (YoY mode): ${data.brightflow.length} points`);
+        } else {
+            // Normalize to start at 100.0 (same as market indices)
+            brightflowData = normalizeTo100(data.brightflow);
+            console.log(`📊 BrightFlow (normalized mode): ${data.brightflow.length} points`);
+        }
+
         performanceChart.data.datasets.push({
             label: 'BrightFlow Portfolio',
-            data: data.brightflow.map(item => item.value),
+            data: brightflowData,
             borderColor: '#ffd700',
             backgroundColor: 'rgba(255, 215, 0, 0.1)',
             borderWidth: 3,
@@ -2276,9 +2457,19 @@ function updateChartWithRealData(data) {
     Object.values(MARKET_INDICES).forEach(region => {
         Object.entries(region.indices).forEach(([key, props]) => {
             if (props.enabled && data[key] && Array.isArray(data[key])) {
+                // Choose data transformation based on view mode
+                let indexData;
+                if (viewMode === 'yoy') {
+                    // Calculate YoY percentage change from 1 year ago
+                    indexData = calculateYoYPercentage(data[key], key);
+                } else {
+                    // Use normalized values (data already normalized in performance.json)
+                    indexData = data[key].map(item => item.value);
+                }
+
                 performanceChart.data.datasets.push({
                     label: props.name,
-                    data: data[key].map(item => item.value),
+                    data: indexData,
                     borderColor: props.color,
                     backgroundColor: props.color + '20', // Add transparency
                     borderWidth: 2,
@@ -2365,7 +2556,9 @@ function initializeMobileChart() {
                     ticks: {
                         color: '#888',
                         callback: function(value) {
-                            return '$' + value.toFixed(0);
+                            // Show as percentage return (100 = baseline)
+                            const percentChange = value - 100;
+                            return (percentChange >= 0 ? '+' : '') + percentChange.toFixed(1) + '%';
                         }
                     }
                 }
