@@ -118,11 +118,11 @@ function setupTransactionFilter() {
     }
 }
 
-// Setup view mode toggle (normalized vs year-over-year)
+// Setup view mode toggle (normalized vs performance comparison)
 function setupViewToggle() {
     const toggleButton = document.getElementById('viewToggle');
     if (toggleButton) {
-        toggleButton.addEventListener('click', async function() {
+        toggleButton.addEventListener('click', function() {
             // Toggle between modes
             viewMode = viewMode === 'normalized' ? 'yoy' : 'normalized';
 
@@ -130,27 +130,24 @@ function setupViewToggle() {
             if (viewMode === 'yoy') {
                 toggleButton.classList.add('active');
                 toggleButton.textContent = 'Normalized';
-                console.log('📊 Switched to Year-over-Year view');
+                console.log('📊 Switched to Performance Comparison view');
 
-                // Fetch historical baseline data if not already cached
-                await fetchHistoricalBaseline();
-
-                // Update Y-axis formatting for YoY view
+                // Update Y-axis formatting for performance comparison view
                 if (performanceChart) {
                     performanceChart.options.scales.y.ticks.callback = function(value) {
-                        // Show as absolute percentage (25% means 25% gain from 1 year ago)
+                        // Show as absolute percentage gain/loss over the selected period
                         return (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
                     };
                     performanceChart.options.plugins.tooltip.callbacks.label = function(context) {
                         // Show as absolute percentage
                         const value = context.parsed.y;
                         const sign = value >= 0 ? '+' : '';
-                        return context.dataset.label + ': ' + sign + value.toFixed(2) + '% YoY';
+                        return context.dataset.label + ': ' + sign + value.toFixed(2) + '%';
                     };
                 }
             } else {
                 toggleButton.classList.remove('active');
-                toggleButton.textContent = '% YoY';
+                toggleButton.textContent = '% Gain';
                 console.log('📊 Switched to Normalized view');
 
                 // Restore normalized view formatting
@@ -722,18 +719,28 @@ function setupTimeRangeControls() {
 function setupTimeRangeButtons(buttons) {
     buttons.forEach(button => {
         button.addEventListener('click', function() {
+            // Skip if this is the view-toggle button
+            if (this.classList.contains('view-toggle')) {
+                return;
+            }
+
             // Remove active class from all buttons of the same type
             const buttonClass = this.classList.contains('mobile-time-btn') ? 'mobile-time-btn' : 'time-btn';
-            const allButtons = document.querySelectorAll('.' + buttonClass);
+            const allButtons = document.querySelectorAll('.' + buttonClass + ':not(.view-toggle):not(.reset-zoom)');
             allButtons.forEach(btn => btn.classList.remove('active'));
-            
+
             // Add active class to clicked button
             this.classList.add('active');
-            
+
             // Update chart with new time range
             const range = this.getAttribute('data-range');
             currentTimeRange = range;
-            updateChartTimeRange(range);
+            console.log(`📊 Time range changed to: ${range}`);
+
+            // Refresh chart with filtered data
+            if (realPerformanceData) {
+                updateChartWithRealData(realPerformanceData);
+            }
         });
     });
 }
@@ -2359,26 +2366,77 @@ async function fetchHistoricalBaseline() {
     console.log('📊 Historical baseline data:', historicalBaselineData);
 }
 
-// Calculate year-over-year percentage change
+// Calculate percentage gain/loss from the first value in the range
+// This shows actual performance over the selected time period
 function calculateYoYPercentage(dataArray, indexKey, baselineValue) {
     if (!dataArray || dataArray.length === 0) {
         return [];
     }
 
-    // Use provided baseline or fetch from cache
-    const baseline = baselineValue || historicalBaselineData[indexKey];
+    // Use the first value in the array as baseline (start of the selected time period)
+    const baseline = dataArray[0].value;
 
     if (!baseline || baseline === 0 || !isFinite(baseline)) {
-        console.warn(`⚠️ No valid baseline for ${indexKey}, using first value`);
-        // Fallback to normalizing from first value
-        return normalizeTo100(dataArray);
+        console.warn(`⚠️ No valid baseline for ${indexKey}, returning zeros`);
+        return dataArray.map(() => 0);
     }
 
-    // Calculate percentage change from 1 year ago: ((current - baseline) / baseline) * 100
+    // Calculate percentage change from first value: ((current - baseline) / baseline) * 100
     return dataArray.map(item => {
         const percentChange = ((item.value - baseline) / baseline) * 100;
         return isFinite(percentChange) ? percentChange : 0;
     });
+}
+
+// Filter data by time range (1D, 7D, 1M, 3M, 6M, 1Y, 5Y)
+function filterDataByTimeRange(data, range) {
+    if (!data) return {};
+
+    const filtered = {};
+
+    // Determine how many data points to include based on range
+    let pointsToInclude;
+    switch (range) {
+        case '1d':
+            pointsToInclude = 1;
+            break;
+        case '7d':
+            pointsToInclude = 7;
+            break;
+        case '14d':
+            pointsToInclude = 14;
+            break;
+        case '1m':
+            pointsToInclude = 22; // ~1 month trading days
+            break;
+        case '3m':
+            pointsToInclude = 66; // ~3 months trading days
+            break;
+        case '6m':
+            pointsToInclude = 130; // ~6 months trading days
+            break;
+        case '1y':
+            pointsToInclude = 252; // ~1 year trading days
+            break;
+        case '5y':
+            pointsToInclude = Infinity; // All data
+            break;
+        default:
+            pointsToInclude = Infinity;
+    }
+
+    // Filter each dataset
+    Object.keys(data).forEach(key => {
+        if (Array.isArray(data[key])) {
+            const dataLength = data[key].length;
+            const startIndex = Math.max(0, dataLength - pointsToInclude);
+            filtered[key] = data[key].slice(startIndex);
+        } else {
+            filtered[key] = data[key]; // Copy non-array properties
+        }
+    });
+
+    return filtered;
 }
 
 // Normalize data array to start at 100.0 (for comparing % returns)
@@ -2412,28 +2470,31 @@ function updateChartWithRealData(data) {
 
     console.log('📊 Updating chart with real data:', data);
 
+    // Filter data based on current time range
+    const filteredData = filterDataByTimeRange(data, currentTimeRange);
+
     // Clear ALL datasets
     performanceChart.data.datasets = [];
 
     // Update labels if BrightFlow data exists
-    if (data.brightflow && Array.isArray(data.brightflow)) {
-        performanceChart.data.labels = data.brightflow.map(item =>
+    if (filteredData.brightflow && Array.isArray(filteredData.brightflow)) {
+        performanceChart.data.labels = filteredData.brightflow.map(item =>
             new Date(item.date).toLocaleDateString()
         );
     }
 
     // Add BrightFlow if enabled
-    if (brightflowEnabled && data.brightflow && Array.isArray(data.brightflow)) {
+    if (brightflowEnabled && filteredData.brightflow && Array.isArray(filteredData.brightflow)) {
         // Choose data transformation based on view mode
         let brightflowData;
         if (viewMode === 'yoy') {
-            // Calculate YoY percentage change from 1 year ago
-            brightflowData = calculateYoYPercentage(data.brightflow, 'brightflow');
-            console.log(`📊 BrightFlow (YoY mode): ${data.brightflow.length} points`);
+            // Calculate percentage gain/loss from start of period
+            brightflowData = calculateYoYPercentage(filteredData.brightflow, 'brightflow');
+            console.log(`📊 BrightFlow (Performance mode): ${filteredData.brightflow.length} points`);
         } else {
             // Normalize to start at 100.0 (same as market indices)
-            brightflowData = normalizeTo100(data.brightflow);
-            console.log(`📊 BrightFlow (normalized mode): ${data.brightflow.length} points`);
+            brightflowData = normalizeTo100(filteredData.brightflow);
+            console.log(`📊 BrightFlow (normalized mode): ${filteredData.brightflow.length} points`);
         }
 
         performanceChart.data.datasets.push({
@@ -2450,21 +2511,21 @@ function updateChartWithRealData(data) {
             pointHoverBorderColor: '#fff',
             pointHoverBorderWidth: 2
         });
-        console.log(`✅ Added BrightFlow dataset with ${data.brightflow.length} data points`);
+        console.log(`✅ Added BrightFlow dataset with ${filteredData.brightflow.length} data points`);
     }
 
     // Add enabled indices
     Object.values(MARKET_INDICES).forEach(region => {
         Object.entries(region.indices).forEach(([key, props]) => {
-            if (props.enabled && data[key] && Array.isArray(data[key])) {
+            if (props.enabled && filteredData[key] && Array.isArray(filteredData[key])) {
                 // Choose data transformation based on view mode
                 let indexData;
                 if (viewMode === 'yoy') {
-                    // Calculate YoY percentage change from 1 year ago
-                    indexData = calculateYoYPercentage(data[key], key);
+                    // Calculate percentage gain/loss from start of period
+                    indexData = calculateYoYPercentage(filteredData[key], key);
                 } else {
                     // Use normalized values (data already normalized in performance.json)
-                    indexData = data[key].map(item => item.value);
+                    indexData = filteredData[key].map(item => item.value);
                 }
 
                 performanceChart.data.datasets.push({
@@ -2481,7 +2542,7 @@ function updateChartWithRealData(data) {
                     pointHoverBorderColor: '#fff',
                     pointHoverBorderWidth: 2
                 });
-                console.log(`✅ Added ${props.name} dataset with ${data[key].length} data points`);
+                console.log(`✅ Added ${props.name} dataset with ${filteredData[key].length} data points`);
             }
         });
     });

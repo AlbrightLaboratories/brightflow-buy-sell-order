@@ -508,8 +508,10 @@ body {
     background: #00aaff;
     border-color: #00aaff;
     color: #fff;
-    font-weight: 700;
+    font-weight: 900;
+    font-size: 1rem;
     box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+    transform: scale(1.05);
 }
 
 /* Ledger Section */
