@@ -3347,3 +3347,251 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Stock Search Functionality - Now handled by stock-search.js
 // The real stock search with API integration is in stock-search.js
+
+// ========================================
+// P&L Timeline Chart
+// ========================================
+
+// DAXXON API endpoint (will be proxied through dashboard)
+const DAXXON_API_URL = 'https://daxxon-api.brightflow.ai';
+
+let pnlChart = null;
+let currentPnLPeriod = 'hourly';
+
+// Initialize P&L chart
+async function initPnLChart() {
+    const ctx = document.getElementById('pnlChart');
+    if (!ctx) return;
+
+    pnlChart = new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Net Liquidation Value',
+                data: [],
+                borderColor: '#ffd700',
+                backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 3,
+                pointBackgroundColor: '#ffd700'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '$' + context.parsed.y.toFixed(2);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: '#888',
+                        maxRotation: 45
+                    }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: '#888',
+                        callback: function(value) {
+                            return '$' + value.toFixed(0);
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Load initial data
+    await loadPnLData(currentPnLPeriod);
+    await loadPnLSummary();
+
+    // Setup period buttons
+    setupPnLButtons();
+
+    // Refresh every 2 minutes
+    setInterval(function() {
+        loadPnLData(currentPnLPeriod);
+        loadPnLSummary();
+    }, 120000);
+}
+
+// Load P&L timeline data
+async function loadPnLData(period) {
+    try {
+        const response = await fetch(DAXXON_API_URL + '/api/pnl/timeline?period=' + period + '&days=30', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) {
+            throw new Error('HTTP error! status: ' + response.status);
+        }
+
+        const data = await response.json();
+
+        if (data.success && data.timeline && data.timeline.length > 0) {
+            updatePnLChart(data.timeline, period);
+            updatePnLLastUpdated();
+        }
+    } catch (error) {
+        console.error('Error loading P&L data:', error);
+        // Show placeholder data
+        showPnLPlaceholder();
+    }
+}
+
+// Update P&L chart with data
+function updatePnLChart(timeline, period) {
+    if (!pnlChart) return;
+
+    var labels = timeline.map(function(item) {
+        var date = new Date(item.timestamp);
+        if (period === 'hourly') {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } else if (period === 'daily') {
+            return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        } else if (period === 'weekly') {
+            return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        } else {
+            return date.toLocaleDateString([], { month: 'short', year: '2-digit' });
+        }
+    });
+
+    var values = timeline.map(function(item) { return item.nlv; });
+
+    pnlChart.data.labels = labels;
+    pnlChart.data.datasets[0].data = values;
+    pnlChart.update();
+}
+
+// Load P&L summary
+async function loadPnLSummary() {
+    try {
+        const response = await fetch(DAXXON_API_URL + '/api/pnl/summary', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) {
+            throw new Error('HTTP error! status: ' + response.status);
+        }
+
+        const data = await response.json();
+
+        if (data.success && data.summary) {
+            updatePnLSummary(data.summary);
+        }
+    } catch (error) {
+        console.error('Error loading P&L summary:', error);
+    }
+}
+
+// Update P&L summary display
+function updatePnLSummary(summary) {
+    var currentNLV = document.getElementById('currentNLV');
+    var todayPnL = document.getElementById('todayPnL');
+    var weekPnL = document.getElementById('weekPnL');
+    var monthPnL = document.getElementById('monthPnL');
+    var allTimePnL = document.getElementById('allTimePnL');
+
+    if (currentNLV) {
+        currentNLV.textContent = '$' + summary.current_nlv.toFixed(2);
+    }
+
+    if (todayPnL) {
+        var today = summary.today;
+        todayPnL.textContent = formatPnLValue(today.pnl, today.pct);
+        todayPnL.className = 'pnl-value ' + (today.pnl >= 0 ? 'positive' : 'negative');
+    }
+
+    if (weekPnL) {
+        var week = summary.week;
+        weekPnL.textContent = formatPnLValue(week.pnl, week.pct);
+        weekPnL.className = 'pnl-value ' + (week.pnl >= 0 ? 'positive' : 'negative');
+    }
+
+    if (monthPnL) {
+        var month = summary.month;
+        monthPnL.textContent = formatPnLValue(month.pnl, month.pct);
+        monthPnL.className = 'pnl-value ' + (month.pnl >= 0 ? 'positive' : 'negative');
+    }
+
+    if (allTimePnL) {
+        var allTime = summary.all_time;
+        allTimePnL.textContent = formatPnLValue(allTime.pnl, allTime.pct);
+        allTimePnL.className = 'pnl-value ' + (allTime.pnl >= 0 ? 'positive' : 'negative');
+    }
+}
+
+// Format P&L display
+function formatPnLValue(pnl, pct) {
+    var sign = pnl >= 0 ? '+' : '';
+    return sign + '$' + pnl.toFixed(2) + ' (' + sign + pct.toFixed(2) + '%)';
+}
+
+// Setup P&L period buttons
+function setupPnLButtons() {
+    var buttons = document.querySelectorAll('.pnl-btn');
+    buttons.forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+            // Update active button
+            buttons.forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+
+            // Load new period data
+            currentPnLPeriod = btn.dataset.period;
+            await loadPnLData(currentPnLPeriod);
+        });
+    });
+}
+
+// Show placeholder when data unavailable
+function showPnLPlaceholder() {
+    if (!pnlChart) return;
+
+    // Generate sample data
+    var now = new Date();
+    var labels = [];
+    var values = [];
+    var baseValue = 2000;
+
+    for (var i = 24; i >= 0; i--) {
+        var time = new Date(now - i * 3600000);
+        labels.push(time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        baseValue += (Math.random() - 0.48) * 20;
+        values.push(baseValue);
+    }
+
+    pnlChart.data.labels = labels;
+    pnlChart.data.datasets[0].data = values;
+    pnlChart.update();
+}
+
+// Update last updated timestamp
+function updatePnLLastUpdated() {
+    var elem = document.getElementById('pnlLastUpdated');
+    if (elem) {
+        elem.textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+    }
+}
+
+// Initialize P&L chart when DOM is ready
+document.addEventListener('DOMContentLoaded', initPnLChart);

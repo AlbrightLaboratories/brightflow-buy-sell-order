@@ -121,6 +121,45 @@
             </div>
         </section>
 
+        <!-- P&L Timeline Section -->
+        <section class="pnl-section" id="pnlSection">
+            <div class="pnl-header">
+                <h2>Live P&L Timeline</h2>
+                <div class="pnl-summary" id="pnlSummary">
+                    <div class="pnl-stat">
+                        <span class="pnl-label">Current NLV:</span>
+                        <span class="pnl-value" id="currentNLV">$0.00</span>
+                    </div>
+                    <div class="pnl-stat">
+                        <span class="pnl-label">Today:</span>
+                        <span class="pnl-value" id="todayPnL">$0.00</span>
+                    </div>
+                    <div class="pnl-stat">
+                        <span class="pnl-label">Week:</span>
+                        <span class="pnl-value" id="weekPnL">$0.00</span>
+                    </div>
+                    <div class="pnl-stat">
+                        <span class="pnl-label">Month:</span>
+                        <span class="pnl-value" id="monthPnL">$0.00</span>
+                    </div>
+                    <div class="pnl-stat">
+                        <span class="pnl-label">All-Time:</span>
+                        <span class="pnl-value" id="allTimePnL">$0.00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="pnl-chart-container">
+                <canvas id="pnlChart"></canvas>
+                <div class="pnl-time-controls">
+                    <button class="pnl-btn active" data-period="hourly">Hourly</button>
+                    <button class="pnl-btn" data-period="daily">Daily</button>
+                    <button class="pnl-btn" data-period="weekly">Weekly</button>
+                    <button class="pnl-btn" data-period="monthly">Monthly</button>
+                </div>
+            </div>
+            <div class="pnl-last-updated" id="pnlLastUpdated">Last updated: --</div>
+        </section>
+
         <!-- Transaction Ledger Section -->
         <section class="ledger-section">
             <div class="ledger-header">
